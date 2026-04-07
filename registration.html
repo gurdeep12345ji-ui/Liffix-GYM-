@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body style="background:black;color:white;text-align:center;padding:50px;">
+
+<h2>Register</h2>
+
+<input id="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Password"><br><br>
+
+<button onclick="register()">Register</button>
+
+<p id="msg"></p>
+
+<script>
+const supabase = window.supabase.createClient(
+  "https://YOUR_PROJECT_ID.supabase.co",
+  "YOUR_ANON_KEY"
+)
+
+async function register() {
+  const email = document.getElementById("email").value
+  const password = document.getElementById("password").value
+
+  const { error } = await supabase.auth.signUp({
+    email, password
+  })
+
+  document.getElementById("msg").innerText =
+    error ? error.message : "Registered! Check email."
+}
+</script>
+
+</body>
+</html>
