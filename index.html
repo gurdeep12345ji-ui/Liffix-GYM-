@@ -1,812 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Website</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #050508;
-    --surface: #0d0d14;
-    --surface2: #13131e;
-    --border: rgba(255,255,255,0.07);
-    --accent: #7c5cfc;
-    --accent2: #fc5cf7;
-    --text: #f0f0f8;
-    --muted: #6b6b88;
-    --success: #22d3a5;
-    --danger: #fc5c5c;
-    --warning: #fcb95c;
-    --radius: 12px;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
-  .screen { display:none; min-height:100vh; }
-  .screen.active { display:flex; }
-
-  /* ── PUBLIC ── */
-  #publicScreen { flex-direction:column; align-items:center; justify-content:center; position:relative; }
-  #publicScreen::before {
-    content:''; position:fixed; inset:0;
-    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(124,92,252,0.18) 0%, transparent 70%),
-                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(252,92,247,0.12) 0%, transparent 60%);
-    pointer-events:none;
-  }
-  .public-content { text-align:center; z-index:1; padding:2rem; }
-  .public-title {
-    font-family:'Syne',sans-serif; font-size:clamp(2.5rem,8vw,6rem); font-weight:800;
-    background:linear-gradient(135deg,var(--text) 0%,var(--accent) 50%,var(--accent2) 100%);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    line-height:1.1; margin-bottom:1.5rem; animation:fadeUp 1s ease both;
-  }
-  .public-sub { font-size:1.2rem; color:var(--muted); max-width:500px; margin:0 auto 3rem; animation:fadeUp 1s 0.2s ease both; }
-  .public-orb {
-    width:300px; height:300px; border-radius:50%;
-    background:radial-gradient(circle,rgba(124,92,252,0.3) 0%,transparent 70%);
-    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    animation:pulse 4s ease-in-out infinite; pointer-events:none;
-  }
-  @keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.6}50%{transform:translate(-50%,-50%) scale(1.15);opacity:1}}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-  #websiteContent { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; width:100%; max-width:900px; margin-top:2rem; animation:fadeUp 1s 0.4s ease both; }
-  .feat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; text-align:left; transition:transform 0.3s,border-color 0.3s; }
-  .feat-card:hover { transform:translateY(-4px); border-color:rgba(124,92,252,0.3); }
-  .feat-card .icon { font-size:1.8rem; margin-bottom:.75rem; }
-  .feat-card h3 { font-family:'Syne',sans-serif; font-size:1rem; margin-bottom:.4rem; }
-  .feat-card p { font-size:.82rem; color:var(--muted); }
-
-  /* ── LOGIN ── */
-  #loginScreen { align-items:center; justify-content:center; background:var(--bg); }
-  #loginScreen::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(252,92,247,.1) 0%,transparent 70%); pointer-events:none; }
-  .login-box { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:2.5rem 2rem; width:100%; max-width:380px; box-shadow:0 0 60px rgba(124,92,252,.15); animation:fadeUp .6s ease; position:relative; z-index:1; }
-  .login-box h2 { font-family:'Syne',sans-serif; font-size:1.6rem; margin-bottom:.4rem; text-align:center; }
-  .login-role { text-align:center; color:var(--muted); font-size:.85rem; margin-bottom:2rem; }
-  .field { margin-bottom:1.2rem; }
-  .field label { display:block; font-size:.8rem; color:var(--muted); margin-bottom:.5rem; letter-spacing:.05em; text-transform:uppercase; }
-  .field input { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:.75rem 1rem; color:var(--text); font-family:inherit; font-size:.95rem; outline:none; transition:border-color .2s; }
-  .field input:focus { border-color:var(--accent); }
-  .btn-primary { width:100%; padding:.85rem; border:none; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; transition:opacity .2s,transform .2s; }
-  .btn-primary:hover { opacity:.88; transform:translateY(-1px); }
-  .login-err { color:var(--danger); font-size:.82rem; text-align:center; margin-top:.8rem; display:none; }
-  .back-link { text-align:center; margin-top:1.2rem; font-size:.82rem; color:var(--muted); }
-  .back-link a { color:var(--accent); cursor:pointer; text-decoration:none; }
-
-  /* ── ADMIN ── */
-  #adminScreen { flex-direction:row; }
-  .sidebar { width:240px; min-height:100vh; background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:1.5rem 1rem; flex-shrink:0; }
-  .sidebar-logo { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; padding:0 .5rem 1.5rem; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; border-bottom:1px solid var(--border); margin-bottom:1.5rem; }
-  .sidebar-label { font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); padding:0 .5rem; margin-bottom:.5rem; }
-  .nav-btn { display:flex; align-items:center; gap:.7rem; padding:.7rem .8rem; border-radius:8px; cursor:pointer; font-size:.9rem; color:var(--muted); transition:all .2s; border:none; background:transparent; width:100%; text-align:left; font-family:inherit; margin-bottom:.2rem; }
-  .nav-btn:hover { background:var(--surface2); color:var(--text); }
-  .nav-btn.active { background:rgba(124,92,252,.15); color:var(--accent); }
-  .nav-btn .icon { font-size:1.1rem; width:22px; text-align:center; }
-  .sidebar-bottom { margin-top:auto; }
-  .user-badge { display:flex; align-items:center; gap:.7rem; padding:.7rem .8rem; border-radius:8px; background:var(--surface2); border:1px solid var(--border); }
-  .avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:700; flex-shrink:0; }
-  .user-info { flex:1; min-width:0; }
-  .user-info .name { font-size:.85rem; font-weight:500; }
-  .user-info .role { font-size:.72rem; color:var(--muted); }
-  .logout-btn { background:none; border:none; color:var(--muted); cursor:pointer; font-size:.9rem; padding:2px; }
-  .logout-btn:hover { color:var(--danger); }
-
-  .admin-main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
-  .admin-header { padding:1.2rem 2rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--surface); flex-wrap:wrap; gap:.5rem; }
-  .admin-header h1 { font-family:'Syne',sans-serif; font-size:1.3rem; }
-  .header-right { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
-
-  .ai-selector { display:flex; align-items:center; gap:.5rem; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:.35rem .7rem; }
-  .ai-selector label { font-size:.72rem; color:var(--muted); white-space:nowrap; }
-  .ai-selector select { background:transparent; border:none; color:var(--text); font-family:inherit; font-size:.85rem; outline:none; cursor:pointer; }
-  .ai-selector select option { background:var(--surface2); }
-
-  .status-dots { display:flex; gap:.5rem; align-items:center; }
-  .dot { width:8px; height:8px; border-radius:50%; }
-  .dot-label { font-size:.75rem; color:var(--muted); }
-
-  .tab-panel { display:none; flex:1; overflow-y:auto; padding:2rem; }
-  .tab-panel.active { display:block; }
-
-  /* ── API CARDS ── */
-  .api-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:2rem; }
-  @media(max-width:700px){.api-grid{grid-template-columns:1fr;}}
-  .api-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; transition:border-color .3s; }
-  .api-card.highlight { border-color:var(--accent); }
-  .api-card-header { display:flex; align-items:center; gap:.8rem; margin-bottom:1.2rem; }
-  .api-logo { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
-  .api-logo.openai { background:rgba(16,163,127,.15); }
-  .api-logo.claude { background:rgba(252,92,247,.15); }
-  .api-logo.gemini { background:rgba(66,133,244,.15); }
-  .api-logo.github { background:rgba(255,255,255,.08); }
-  .api-logo.supabase { background:rgba(34,211,165,.15); }
-  .api-card-title { font-family:'Syne',sans-serif; font-size:1rem; }
-  .api-card-sub { font-size:.78rem; color:var(--muted); }
-  .api-status { margin-left:auto; font-size:.75rem; padding:2px 8px; border-radius:20px; white-space:nowrap; }
-  .api-status.connected { background:rgba(34,211,165,.15); color:var(--success); }
-  .api-status.disconnected { background:rgba(107,107,136,.15); color:var(--muted); }
-  .key-input-wrap { position:relative; }
-  .key-input-wrap input { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:.65rem 2.5rem .65rem .9rem; color:var(--text); font-family:'DM Mono','Courier New',monospace; font-size:.82rem; outline:none; transition:border-color .2s; }
-  .key-input-wrap input:focus { border-color:var(--accent); }
-  .toggle-eye { position:absolute; right:.7rem; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--muted); cursor:pointer; font-size:.9rem; }
-  .save-api-btn { margin-top:.8rem; width:100%; padding:.6rem; border:none; border-radius:8px; background:rgba(124,92,252,.2); color:var(--accent); font-family:'Syne',sans-serif; font-size:.85rem; cursor:pointer; transition:background .2s; }
-  .save-api-btn:hover { background:rgba(124,92,252,.35); }
-  .save-api-btn.saved { background:rgba(34,211,165,.15); color:var(--success); }
-  .set-active-btn { margin-top:.4rem; width:100%; padding:.5rem; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:.8rem; cursor:pointer; transition:background .2s; }
-  .model-select { margin-top:.6rem; width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:.55rem .8rem; color:var(--text); font-size:.82rem; outline:none; font-family:inherit; cursor:pointer; }
-  .model-select option { background:var(--surface2); }
-  .mini-field { margin-bottom:.5rem; }
-  .mini-field label { display:block; font-size:.75rem; color:var(--muted); margin-bottom:.35rem; }
-  .mini-field input { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:.55rem .8rem; color:var(--text); font-size:.85rem; outline:none; font-family:inherit; }
-  .mini-field input:focus { border-color:var(--accent); }
-
-  /* ── CHAT ── */
-  .chat-wrap { display:flex; flex-direction:column; height:calc(100vh - 175px); }
-  .chat-messages { flex:1; overflow-y:auto; padding:1.5rem; display:flex; flex-direction:column; gap:1rem; background:var(--surface2); border-radius:var(--radius); margin-bottom:1rem; border:1px solid var(--border); }
-  .msg { display:flex; flex-direction:column; gap:.3rem; max-width:85%; }
-  .msg.user { align-self:flex-end; }
-  .msg.ai { align-self:flex-start; }
-  .msg-bubble { padding:.9rem 1.1rem; border-radius:12px; font-size:.9rem; line-height:1.6; white-space:pre-wrap; word-break:break-word; }
-  .msg.user .msg-bubble { background:linear-gradient(135deg,var(--accent),rgba(124,92,252,.7)); color:#fff; border-radius:12px 12px 2px 12px; }
-  .msg.ai .msg-bubble { background:var(--surface); border:1px solid var(--border); border-radius:12px 12px 12px 2px; }
-  .msg-meta { font-size:.7rem; color:var(--muted); padding:0 4px; display:flex; gap:.5rem; align-items:center; }
-  .msg.user .msg-meta { align-self:flex-end; }
-  .ai-badge { font-size:.65rem; padding:1px 6px; border-radius:10px; background:rgba(124,92,252,.15); color:var(--accent); }
-  .chat-input-area { display:flex; gap:.8rem; align-items:flex-end; }
-  .chat-textarea { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:.85rem 1rem; color:var(--text); font-family:inherit; font-size:.9rem; resize:none; outline:none; transition:border-color .2s; min-height:52px; max-height:150px; }
-  .chat-textarea:focus { border-color:var(--accent); }
-  .chat-send-btn { padding:.85rem 1.5rem; background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; border-radius:10px; color:#fff; font-family:'Syne',sans-serif; font-size:.9rem; font-weight:700; cursor:pointer; white-space:nowrap; transition:opacity .2s,transform .15s; }
-  .chat-send-btn:hover { opacity:.85; transform:translateY(-1px); }
-  .chat-send-btn:disabled { opacity:.4; cursor:not-allowed; transform:none; }
-  .typing-indicator { display:flex; align-items:center; gap:4px; padding:.6rem 0; }
-  .typing-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); animation:blink 1.2s infinite; }
-  .typing-dot:nth-child(2){animation-delay:.2s}.typing-dot:nth-child(3){animation-delay:.4s}
-  @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
-  .action-chips { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.8rem; }
-  .chip { padding:.3rem .8rem; border-radius:20px; font-size:.78rem; background:rgba(124,92,252,.1); border:1px solid rgba(124,92,252,.25); color:var(--accent); cursor:pointer; transition:background .2s; }
-  .chip:hover { background:rgba(124,92,252,.25); }
-
-  /* ── WEBSITE PREVIEW ── */
-  .website-preview { border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; background:var(--surface2); height:calc(100vh - 200px); }
-  .preview-bar { padding:.6rem 1rem; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:.5rem; }
-  .preview-dot { width:10px; height:10px; border-radius:50%; }
-  .preview-dot:nth-child(1){background:#fc5c5c}.preview-dot:nth-child(2){background:#fcb95c}.preview-dot:nth-child(3){background:#22d3a5}
-  .preview-url { flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:.3rem .8rem; font-size:.8rem; color:var(--muted); margin:0 .5rem; }
-  .preview-frame { width:100%; height:100%; border:none; }
-
-  /* ── DEPLOY LOG ── */
-  .log-console { background:#000; border-radius:var(--radius); border:1px solid var(--border); padding:1.2rem; font-family:'DM Mono','Courier New',monospace; font-size:.82rem; height:340px; overflow-y:auto; color:#c0c0c0; margin-top:1rem; }
-  .log-line { line-height:1.8; }
-  .log-line.success{color:var(--success)}.log-line.error{color:var(--danger)}.log-line.info{color:#60a5fa}.log-line.warn{color:var(--warning)}
-
-  .section-h { font-family:'Syne',sans-serif; font-size:1.1rem; margin-bottom:1.2rem; display:flex; align-items:center; gap:.5rem; }
-  .section-h::after { content:''; flex:1; height:1px; background:var(--border); margin-left:.5rem; }
-
-  /* Toast */
-  .toast { position:fixed; bottom:2rem; right:2rem; z-index:9999; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:.9rem 1.3rem; font-size:.88rem; box-shadow:0 8px 30px rgba(0,0,0,.4); display:flex; align-items:center; gap:.7rem; animation:slideIn .3s ease; max-width:320px; }
-  .toast.success{border-color:rgba(34,211,165,.4)}.toast.error{border-color:rgba(252,92,92,.4)}
-  @keyframes slideIn{from{transform:translateX(100px);opacity:0}to{transform:translateX(0);opacity:1}}
-  ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Homepage</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #444;
+        }
+        /* Hero Section */
+        .hero {
+            background: url('gym.jpg') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .hero p {
+            font-size: 24px;
+            margin-bottom: 40px;
+        }
+        .hero .cta-btn {
+            padding: 15px 30px;
+            background-color: #e63946;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .cta-btn:hover {
+            background-color: #d62839;
+        }
+        /* Features Section */
+        .features {
+            padding: 50px 20px;
+            background-color: #f4f4f9;
+            text-align: center;
+        }
+        .features h2 {
+            font-size: 36px;
+            margin-bottom: 30px;
+        }
+        .features-grid {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .feature-item {
+            flex: 0 1 calc(33.333% - 40px);
+            box-sizing: border-box;
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .feature-item:hover {
+            transform: translateY(-5px);
+        }
+        .feature-item h3 {
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        .feature-item p {
+            font-size: 16px;
+        }
+        /* Contact Form Section */
+        .contact {
+            padding: 50px 20px;
+            background-color: #fff;
+            text-align: center;
+        }
+        .contact h2 {
+            font-size: 36px;
+            margin-bottom: 30px;
+        }
+        .contact form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .contact input, .contact textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .contact textarea {
+            height: 150px;
+        }
+        .contact .submit-btn {
+            padding: 15px 30px;
+            background-color: #e63946;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover {
+            background-color: #d62839;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .feature-item {
+                flex: 0 1 calc(100% - 40px);
+            }
+        }
+    </style>
 </head>
 <body>
-
-<!-- PUBLIC WEBSITE -->
-<div id="publicScreen" class="screen active">
-  <div class="public-orb"></div>
-  <div class="public-content">
-    <div class="public-title" id="siteTitle">Welcome</div>
-    <div class="public-sub" id="siteSubtitle">This website is powered by AI. Check back soon.</div>
-    <div id="websiteContent">
-      <div class="feat-card"><div class="icon">⚡</div><h3>Fast & Modern</h3><p>Built with cutting-edge technology for the best experience.</p></div>
-      <div class="feat-card"><div class="icon">🤖</div><h3>AI Powered</h3><p>Content and design updated instantly by artificial intelligence.</p></div>
-      <div class="feat-card"><div class="icon">🎨</div><h3>Dynamic Design</h3><p>Visuals, colors and animations adapted in real-time.</p></div>
-    </div>
-  </div>
-</div>
-
-<!-- LOGIN -->
-<div id="loginScreen" class="screen">
-  <div class="login-box">
-    <div style="text-align:center;font-size:2rem;margin-bottom:.5rem">🔐</div>
-    <h2>Admin Access</h2>
-    <p class="login-role">Restricted — Authorised Personnel Only</p>
-    <div class="field"><label>Username</label><input type="text" id="loginUser" placeholder="Enter username" autocomplete="off"></div>
-    <div class="field"><label>Password</label><input type="password" id="loginPass" placeholder="Enter password"></div>
-    <button class="btn-primary" onclick="doLogin()">Sign In →</button>
-    <div class="login-err" id="loginErr">❌ Invalid credentials. Try again.</div>
-    <div class="back-link"><a onclick="showScreen('publicScreen')">← Back to website</a></div>
-  </div>
-</div>
-
-<!-- ADMIN PANEL -->
-<div id="adminScreen" class="screen">
-  <div class="sidebar">
-    <div class="sidebar-logo">⚡ AdminAI</div>
-    <div class="sidebar-label">Navigation</div>
-    <button class="nav-btn active" onclick="switchTab('chat')" id="tab-chat"><span class="icon">💬</span> AI Chat</button>
-    <button class="nav-btn" onclick="switchTab('website')" id="tab-website"><span class="icon">🌐</span> Website</button>
-    <button class="nav-btn" onclick="switchTab('deploy')" id="tab-deploy"><span class="icon">🚀</span> Deploy Log</button>
-    <br>
-    <div class="sidebar-label">Settings</div>
-    <button class="nav-btn" onclick="switchTab('apis')" id="tab-apis"><span class="icon">🔑</span> API Keys</button>
-    <div class="sidebar-bottom">
-      <div class="user-badge">
-        <div class="avatar">A</div>
-        <div class="user-info"><div class="name">Admin</div><div class="role">Super Admin</div></div>
-        <button class="logout-btn" onclick="logout()" title="Logout">⏻</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="admin-main">
-    <div class="admin-header">
-      <h1 id="panelTitle">AI Chat</h1>
-      <div class="header-right">
-        <div class="ai-selector">
-          <label>Active AI:</label>
-          <select id="activeAI" onchange="changeActiveAI()">
-            <option value="openai">🟢 OpenAI</option>
-            <option value="claude">🟣 Claude</option>
-            <option value="gemini">🔵 Gemini</option>
-          </select>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div>
+            <h1>Welcome to FitLife Gym</h1>
+            <p>Your Fitness Journey Begins Here</p>
+            <button class="cta-btn">Join Now</button>
         </div>
-        <div class="status-dots">
-          <div class="dot" id="aiDot" style="background:var(--muted)"></div>
-          <span class="dot-label" id="aiStatus">Not connected</span>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features">
+        <h2>Our Features</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <h3>State-of-the-Art Equipment</h3>
+                <p>We provide top-notch equipment to ensure a high-quality workout experience.</p>
+            </div>
+            <div class="feature-item">
+                <h3>Expert Trainers</h3>
+                <p>Our certified trainers are here to help you achieve your fitness goals.</p>
+            </div>
+            <div class="feature-item">
+                <h3>Flexible Membership</h3>
+                <p>Affordable plans that fit your lifestyle, with no long-term contracts.</p>
+            </div>
         </div>
-      </div>
-    </div>
-
-    <!-- CHAT TAB -->
-    <div class="tab-panel active" id="panel-chat">
-      <div class="action-chips">
-        <div class="chip" onclick="insertPrompt('Change the website title and subtitle to something creative')">✏️ Change Title</div>
-        <div class="chip" onclick="insertPrompt('Add a new features section with icons and descriptions to the website')">➕ Add Section</div>
-        <div class="chip" onclick="insertPrompt('Change the website color scheme to a warm sunset orange theme with animations')">🎨 Change Colors</div>
-        <div class="chip" onclick="insertPrompt('Add smooth scroll animations and hover effects to the website')">✨ Add Animation</div>
-        <div class="chip" onclick="insertPrompt('Push the current website HTML to GitHub now')">🚀 Push to GitHub</div>
-        <div class="chip" onclick="insertPrompt('Save the current website data to Supabase')">💾 Save to Supabase</div>
-      </div>
-      <div class="chat-wrap">
-        <div class="chat-messages" id="chatMessages">
-          <div class="msg ai">
-            <div class="msg-bubble">👋 Hi Admin! I support 3 AI providers — pick one from the top bar:
-
-🟢 <strong>OpenAI</strong> — paste your key starting with sk-proj-... or sk-...
-🟣 <strong>Claude</strong> — paste your Anthropic key (sk-ant-...)
-🔵 <strong>Gemini</strong> — paste your Google AI key (AIza...)
-
-Go to <strong>API Keys</strong> tab → add your key → click <strong>"Set as Active AI"</strong> → come back and chat!</div>
-            <div class="msg-meta"><span>Just now</span><span class="ai-badge" id="chatAiBadge">🤖 AI</span></div>
-          </div>
-        </div>
-        <div class="chat-input-area">
-          <textarea class="chat-textarea" id="chatInput" placeholder="Tell me what to build or change on your website..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-          <button class="chat-send-btn" id="sendBtn" onclick="sendMessage()">Send ↑</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- WEBSITE TAB -->
-    <div class="tab-panel" id="panel-website">
-      <div class="section-h">🌐 Website Preview</div>
-      <div class="website-preview">
-        <div class="preview-bar">
-          <div class="preview-dot"></div><div class="preview-dot"></div><div class="preview-dot"></div>
-          <div class="preview-url">localhost/index.html</div>
-          <button class="save-api-btn" style="width:auto;margin:0;padding:.3rem .8rem" onclick="refreshPreview()">⟳ Refresh</button>
-        </div>
-        <iframe class="preview-frame" id="previewFrame"></iframe>
-      </div>
-    </div>
-
-    <!-- DEPLOY LOG TAB -->
-    <div class="tab-panel" id="panel-deploy">
-      <div class="section-h">🚀 Deploy Log</div>
-      <div style="display:flex;gap:.8rem;margin-bottom:1rem;flex-wrap:wrap">
-        <button class="save-api-btn" style="width:auto;padding:.5rem 1.2rem" onclick="pushToGitHub()">📤 Push to GitHub</button>
-        <button class="save-api-btn" style="width:auto;padding:.5rem 1.2rem" onclick="syncSupabase()">💾 Sync Supabase</button>
-        <button class="save-api-btn" style="width:auto;padding:.5rem 1.2rem;color:var(--muted)" onclick="clearLog()">🗑 Clear Log</button>
-      </div>
-      <div class="log-console" id="deployLog">
-        <div class="log-line info">$ AdminAI Deploy Console — ready</div>
-        <div class="log-line">$ Waiting for commands...</div>
-      </div>
-    </div>
-
-    <!-- API KEYS TAB -->
-    <div class="tab-panel" id="panel-apis">
-
-      <div class="section-h">🤖 AI Providers — Add Your API Key</div>
-      <div class="api-grid">
-
-        <!-- OpenAI -->
-        <div class="api-card" id="card-openai">
-          <div class="api-card-header">
-            <div class="api-logo openai">🟢</div>
-            <div><div class="api-card-title">OpenAI</div><div class="api-card-sub">GPT-4o · GPT-4 Turbo · GPT-3.5</div></div>
-            <div class="api-status disconnected" id="openaiStatus">Disconnected</div>
-          </div>
-          <div class="key-input-wrap">
-            <input type="password" id="openaiKey" placeholder="sk-proj-... or sk-...">
-            <button class="toggle-eye" onclick="toggleEye('openaiKey',this)">👁</button>
-          </div>
-          <select class="model-select" id="openaiModel">
-            <option value="gpt-4o">GPT-4o (Recommended)</option>
-            <option value="gpt-4o-mini">GPT-4o Mini (Fast & Cheap)</option>
-            <option value="gpt-4-turbo">GPT-4 Turbo</option>
-            <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Cheapest)</option>
-          </select>
-          <button class="save-api-btn" id="openaiSaveBtn" onclick="saveKey('openai')">💾 Save & Connect</button>
-          <button class="set-active-btn" style="background:rgba(16,163,127,.12);color:#10a37f;border:1px solid rgba(16,163,127,.3)" onclick="setActive('openai')">✅ Set as Active AI</button>
-        </div>
-
-        <!-- Claude -->
-        <div class="api-card" id="card-claude">
-          <div class="api-card-header">
-            <div class="api-logo claude">🟣</div>
-            <div><div class="api-card-title">Claude (Anthropic)</div><div class="api-card-sub">Sonnet 4 · Opus 4 · Haiku</div></div>
-            <div class="api-status disconnected" id="claudeStatus">Disconnected</div>
-          </div>
-          <div class="key-input-wrap">
-            <input type="password" id="claudeKey" placeholder="sk-ant-api03-...">
-            <button class="toggle-eye" onclick="toggleEye('claudeKey',this)">👁</button>
-          </div>
-          <select class="model-select" id="claudeModel">
-            <option value="claude-sonnet-4-20250514">Claude Sonnet 4 (Recommended)</option>
-            <option value="claude-opus-4-20250514">Claude Opus 4 (Most Powerful)</option>
-            <option value="claude-haiku-4-5-20251001">Claude Haiku (Fastest)</option>
-          </select>
-          <button class="save-api-btn" id="claudeSaveBtn" onclick="saveKey('claude')">💾 Save & Connect</button>
-          <button class="set-active-btn" style="background:rgba(252,92,247,.1);color:var(--accent2);border:1px solid rgba(252,92,247,.3)" onclick="setActive('claude')">✅ Set as Active AI</button>
-        </div>
-
-        <!-- Gemini -->
-        <div class="api-card" id="card-gemini">
-          <div class="api-card-header">
-            <div class="api-logo gemini">🔵</div>
-            <div><div class="api-card-title">Google Gemini</div><div class="api-card-sub">1.5 Pro · 1.5 Flash · 2.0 Flash</div></div>
-            <div class="api-status disconnected" id="geminiStatus">Disconnected</div>
-          </div>
-          <div class="key-input-wrap">
-            <input type="password" id="geminiKey" placeholder="AIza...">
-            <button class="toggle-eye" onclick="toggleEye('geminiKey',this)">👁</button>
-          </div>
-          <select class="model-select" id="geminiModel">
-            <option value="gemini-1.5-pro">Gemini 1.5 Pro (Best Quality)</option>
-            <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast)</option>
-            <option value="gemini-2.0-flash">Gemini 2.0 Flash (Newest)</option>
-          </select>
-          <button class="save-api-btn" id="geminiSaveBtn" onclick="saveKey('gemini')">💾 Save & Connect</button>
-          <button class="set-active-btn" style="background:rgba(66,133,244,.1);color:#4285f4;border:1px solid rgba(66,133,244,.3)" onclick="setActive('gemini')">✅ Set as Active AI</button>
-        </div>
-
-        <!-- GitHub -->
-        <div class="api-card" id="card-github">
-          <div class="api-card-header">
-            <div class="api-logo github">🐙</div>
-            <div><div class="api-card-title">GitHub</div><div class="api-card-sub">Personal Access Token + Repo</div></div>
-            <div class="api-status disconnected" id="githubStatus">Disconnected</div>
-          </div>
-          <div class="key-input-wrap" style="margin-bottom:.6rem">
-            <input type="password" id="githubKey" placeholder="ghp_...">
-            <button class="toggle-eye" onclick="toggleEye('githubKey',this)">👁</button>
-          </div>
-          <div class="mini-field"><label>GitHub Username</label><input type="text" id="ghOwner" placeholder="yourusername"></div>
-          <div class="mini-field"><label>Repository Name</label><input type="text" id="ghRepo" placeholder="my-website"></div>
-          <div class="mini-field"><label>Branch</label><input type="text" id="ghBranch" placeholder="main" value="main"></div>
-          <div class="mini-field"><label>File to Update</label><input type="text" id="ghFile" placeholder="index.html" value="index.html"></div>
-          <button class="save-api-btn" id="githubSaveBtn" onclick="saveKey('github')">💾 Save GitHub Settings</button>
-        </div>
-
-        <!-- Supabase -->
-        <div class="api-card" id="card-supabase">
-          <div class="api-card-header">
-            <div class="api-logo supabase">🟢</div>
-            <div><div class="api-card-title">Supabase</div><div class="api-card-sub">Project URL + API Key</div></div>
-            <div class="api-status disconnected" id="supabaseStatus">Disconnected</div>
-          </div>
-          <div class="key-input-wrap" style="margin-bottom:.6rem">
-            <input type="password" id="supabaseKey" placeholder="eyJhbGciOi...">
-            <button class="toggle-eye" onclick="toggleEye('supabaseKey',this)">👁</button>
-          </div>
-          <div class="mini-field"><label>Project URL</label><input type="text" id="supabaseUrl" placeholder="https://xxx.supabase.co"></div>
-          <button class="save-api-btn" id="supabaseSaveBtn" onclick="saveKey('supabase')">💾 Save Supabase Settings</button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-// ════════════════════════════════
-//  CREDENTIALS (change these!)
-// ════════════════════════════════
-const ADMIN_USER = 'admin';
-const ADMIN_PASS = 'Admin@2025!';
-
-// ════════════════════════════════
-//  STATE
-// ════════════════════════════════
-const state = {
-  activeAI: 'openai',
-  keys: { openai:'', claude:'', gemini:'', github:'', supabase:'', supabaseUrl:'' },
-  models: { openai:'gpt-4o', claude:'claude-sonnet-4-20250514', gemini:'gemini-1.5-pro' },
-  repo: { owner:'', repo:'', branch:'main', file:'index.html' },
-  websiteHTML: '',
-  chatHistory: []
-};
-
-function loadState() {
-  try {
-    const s = localStorage.getItem('adminAI_v2');
-    if (s) {
-      const p = JSON.parse(s);
-      if(p.keys) Object.assign(state.keys, p.keys);
-      if(p.models) Object.assign(state.models, p.models);
-      if(p.repo) Object.assign(state.repo, p.repo);
-      state.websiteHTML = p.websiteHTML || '';
-      state.activeAI = p.activeAI || 'openai';
-    }
-  } catch(e){}
-}
-function saveState() {
-  localStorage.setItem('adminAI_v2', JSON.stringify({
-    keys:state.keys, models:state.models, repo:state.repo,
-    websiteHTML:state.websiteHTML, activeAI:state.activeAI
-  }));
-}
-
-// ════════════════════════════════
-//  ROUTING
-// ════════════════════════════════
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-window.addEventListener('hashchange', checkHash);
-function checkHash() {
-  if (location.hash==='#admin') {
-    sessionStorage.getItem('adminLoggedIn') ? (showScreen('adminScreen'), initAdmin()) : showScreen('loginScreen');
-  } else {
-    if(!sessionStorage.getItem('adminLoggedIn')) showScreen('publicScreen');
-  }
-}
-
-// ════════════════════════════════
-//  AUTH
-// ════════════════════════════════
-function doLogin() {
-  const u = document.getElementById('loginUser').value.trim();
-  const p = document.getElementById('loginPass').value;
-  if (u===ADMIN_USER && p===ADMIN_PASS) {
-    sessionStorage.setItem('adminLoggedIn','1');
-    document.getElementById('loginErr').style.display='none';
-    showScreen('adminScreen');
-    initAdmin();
-  } else {
-    document.getElementById('loginErr').style.display='block';
-    document.getElementById('loginPass').value='';
-  }
-}
-function logout() {
-  sessionStorage.removeItem('adminLoggedIn');
-  location.hash='';
-  showScreen('publicScreen');
-}
-document.getElementById('loginPass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-
-// ════════════════════════════════
-//  INIT
-// ════════════════════════════════
-function initAdmin() {
-  loadState();
-  const fill = (id, val) => { if(val && document.getElementById(id)) document.getElementById(id).value=val; };
-  fill('openaiKey', state.keys.openai);
-  fill('claudeKey', state.keys.claude);
-  fill('geminiKey', state.keys.gemini);
-  fill('githubKey', state.keys.github);
-  fill('supabaseKey', state.keys.supabase);
-  fill('supabaseUrl', state.keys.supabaseUrl);
-  fill('ghOwner', state.repo.owner);
-  fill('ghRepo', state.repo.repo);
-  fill('ghBranch', state.repo.branch);
-  fill('ghFile', state.repo.file);
-  fill('openaiModel', state.models.openai);
-  fill('claudeModel', state.models.claude);
-  fill('geminiModel', state.models.gemini);
-  document.getElementById('activeAI').value = state.activeAI;
-  if(state.keys.openai) markConnected('openai');
-  if(state.keys.claude) markConnected('claude');
-  if(state.keys.gemini) markConnected('gemini');
-  if(state.keys.github) markConnected('github');
-  if(state.keys.supabase) markConnected('supabase');
-  updateAIStatus();
-}
-
-// ════════════════════════════════
-//  AI PROVIDER
-// ════════════════════════════════
-const provName = p => ({openai:'OpenAI',claude:'Claude',gemini:'Gemini'}[p]||p);
-const provEmoji = p => ({openai:'🟢',claude:'🟣',gemini:'🔵'}[p]||'🤖');
-
-function changeActiveAI() {
-  state.activeAI = document.getElementById('activeAI').value;
-  saveState(); updateAIStatus();
-}
-function setActive(p) {
-  state.activeAI = p;
-  document.getElementById('activeAI').value = p;
-  saveState(); updateAIStatus();
-  showToast('✅ '+provName(p)+' is now active AI!','success');
-}
-function updateAIStatus() {
-  const dot = document.getElementById('aiDot');
-  const label = document.getElementById('aiStatus');
-  const badge = document.getElementById('chatAiBadge');
-  const key = state.keys[state.activeAI];
-  if (key) {
-    dot.style.cssText='background:var(--success);box-shadow:0 0 6px var(--success)';
-    label.textContent=provEmoji(state.activeAI)+' '+provName(state.activeAI)+': Connected';
-  } else {
-    dot.style.cssText='background:var(--muted);box-shadow:none';
-    label.textContent=provName(state.activeAI)+': No key set';
-  }
-  if(badge) badge.textContent=provEmoji(state.activeAI)+' '+provName(state.activeAI);
-}
-
-// ════════════════════════════════
-//  TABS
-// ════════════════════════════════
-function switchTab(name) {
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('panel-'+name).classList.add('active');
-  document.getElementById('tab-'+name).classList.add('active');
-  document.getElementById('panelTitle').textContent={chat:'AI Chat',website:'Website Preview',deploy:'Deploy Log',apis:'API Keys'}[name]||name;
-  if(name==='website') refreshPreview();
-}
-
-// ════════════════════════════════
-//  API KEYS
-// ════════════════════════════════
-function toggleEye(inputId, btn) {
-  const inp=document.getElementById(inputId);
-  inp.type=inp.type==='password'?'text':'password';
-  btn.textContent=inp.type==='password'?'👁':'🙈';
-}
-function saveKey(s) {
-  if(s==='openai'){ state.keys.openai=document.getElementById('openaiKey').value.trim(); state.models.openai=document.getElementById('openaiModel').value; }
-  else if(s==='claude'){ state.keys.claude=document.getElementById('claudeKey').value.trim(); state.models.claude=document.getElementById('claudeModel').value; }
-  else if(s==='gemini'){ state.keys.gemini=document.getElementById('geminiKey').value.trim(); state.models.gemini=document.getElementById('geminiModel').value; }
-  else if(s==='github'){
-    state.keys.github=document.getElementById('githubKey').value.trim();
-    state.repo.owner=document.getElementById('ghOwner').value.trim();
-    state.repo.repo=document.getElementById('ghRepo').value.trim();
-    state.repo.branch=document.getElementById('ghBranch').value.trim()||'main';
-    state.repo.file=document.getElementById('ghFile').value.trim()||'index.html';
-  }
-  else if(s==='supabase'){
-    state.keys.supabase=document.getElementById('supabaseKey').value.trim();
-    state.keys.supabaseUrl=document.getElementById('supabaseUrl').value.trim();
-  }
-  markConnected(s); saveState(); updateAIStatus();
-  showToast('✅ '+s.charAt(0).toUpperCase()+s.slice(1)+' saved!','success');
-}
-function markConnected(s) {
-  const el=document.getElementById(s+'Status');
-  const btn=document.getElementById(s+'SaveBtn');
-  if(el){el.textContent='✓ Connected';el.className='api-status connected';}
-  if(btn){btn.textContent='✓ Connected';btn.classList.add('saved');}
-}
-
-// ════════════════════════════════
-//  CHAT
-// ════════════════════════════════
-function insertPrompt(t){ document.getElementById('chatInput').value=t; document.getElementById('chatInput').focus(); }
-function handleKey(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} }
-function autoResize(el){ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,150)+'px'; }
-
-async function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const msg = input.value.trim();
-  if(!msg) return;
-
-  const ai = state.activeAI;
-  const key = state.keys[ai];
-  if(!key){ showToast('⚠️ No '+provName(ai)+' key! Add it in API Keys tab.','error'); switchTab('apis'); return; }
-
-  input.value=''; input.style.height='auto';
-  document.getElementById('sendBtn').disabled=true;
-  addMessage('user', msg);
-
-  const system=`You are an AI assistant managing a website for the admin.
-Current website HTML:
-${state.websiteHTML||'(none yet — create a beautiful one from scratch)'}
-
-Rules:
-- When updating/creating the website, wrap the COMPLETE new HTML in <WEBSITE_HTML>...</WEBSITE_HTML>
-- When you should push to GitHub, add <GITHUB_PUSH>{"message":"your commit message","content":"full html here"}</GITHUB_PUSH>
-- When saving to Supabase, add <SUPABASE_DATA>{"table":"website_data","data":{"key":"value"}}</SUPABASE_DATA>
-- Always explain what you're doing before the tags
-- Write beautiful, working, production-quality HTML/CSS/JS
-- Be creative with designs, animations, colors, layouts`;
-
-  state.chatHistory.push({role:'user',content:msg});
-  const tid=showTyping();
-
-  try {
-    let reply='';
-    if(ai==='openai') reply = await callOpenAI(system);
-    else if(ai==='claude') reply = await callClaude(system);
-    else if(ai==='gemini') reply = await callGemini(system);
-
-    removeTyping(tid);
-    state.chatHistory.push({role:'assistant',content:reply});
-    processReply(reply, ai);
-  } catch(e) {
-    removeTyping(tid);
-    addMessage('ai','❌ Error from '+provName(ai)+':\n'+e.message+'\n\nCheck your API key in the API Keys tab.');
-    addLog('❌ '+provName(ai)+' error: '+e.message,'error');
-  }
-  document.getElementById('sendBtn').disabled=false;
-}
-
-async function callOpenAI(system) {
-  const msgs=[{role:'system',content:system},...state.chatHistory.slice(-12)];
-  const r=await fetch('https://api.openai.com/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+state.keys.openai},
-    body:JSON.stringify({model:state.models.openai,messages:msgs,max_tokens:4096})
-  });
-  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'HTTP '+r.status);}
-  const d=await r.json();
-  return d.choices[0].message.content;
-}
-
-async function callClaude(system) {
-  const r=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json','x-api-key':state.keys.claude,
-      'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'
-    },
-    body:JSON.stringify({model:state.models.claude,max_tokens:4096,system,messages:state.chatHistory.slice(-12)})
-  });
-  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'HTTP '+r.status);}
-  const d=await r.json();
-  return d.content[0].text;
-}
-
-async function callGemini(system) {
-  const contents=state.chatHistory.slice(-12).map(m=>({
-    role:m.role==='assistant'?'model':'user',
-    parts:[{text:m.content}]
-  }));
-  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${state.models.gemini}:generateContent?key=${state.keys.gemini}`,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({system_instruction:{parts:[{text:system}]},contents,generationConfig:{maxOutputTokens:4096}})
-  });
-  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'HTTP '+r.status);}
-  const d=await r.json();
-  if(!d.candidates?.[0]?.content?.parts?.[0]?.text) throw new Error('No response from Gemini. Check your key.');
-  return d.candidates[0].content.parts[0].text;
-}
-
-function processReply(reply, ai) {
-  const wm=reply.match(/<WEBSITE_HTML>([\s\S]*?)<\/WEBSITE_HTML>/);
-  const gm=reply.match(/<GITHUB_PUSH>([\s\S]*?)<\/GITHUB_PUSH>/);
-  const sm=reply.match(/<SUPABASE_DATA>([\s\S]*?)<\/SUPABASE_DATA>/);
-
-  let display=reply
-    .replace(/<WEBSITE_HTML>[\s\S]*?<\/WEBSITE_HTML>/g,'')
-    .replace(/<GITHUB_PUSH>[\s\S]*?<\/GITHUB_PUSH>/g,'')
-    .replace(/<SUPABASE_DATA>[\s\S]*?<\/SUPABASE_DATA>/g,'')
-    .trim();
-
-  if(wm){ state.websiteHTML=wm[1].trim(); saveState(); refreshPreview(); display+='\n\n✅ Website updated! Check the Website tab to preview.'; addLog('✅ Website updated by '+provName(ai),'success'); showToast('✅ Website updated!','success'); }
-  if(gm){ try{ const d=JSON.parse(gm[1].trim()); pushToGitHubWithContent(d.content||state.websiteHTML,d.message||'AI update'); }catch(e){ addLog('⚠️ GitHub JSON error','warn'); } }
-  if(sm){ try{ supabaseInsert(JSON.parse(sm[1].trim())); }catch(e){ addLog('⚠️ Supabase JSON error','warn'); } }
-
-  addMessage('ai', display, ai);
-}
-
-function addMessage(role, text, provider='') {
-  const c=document.getElementById('chatMessages');
-  const wrap=document.createElement('div');
-  wrap.className='msg '+role;
-  const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  const badge=provider?`<span class="ai-badge">${provEmoji(provider)} ${provName(provider)}</span>`:'';
-  const html=escHtml(text).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
-  wrap.innerHTML=`<div class="msg-bubble">${html}</div><div class="msg-meta"><span>${time}</span>${badge}</div>`;
-  c.appendChild(wrap); c.scrollTop=c.scrollHeight;
-}
-function showTyping(){
-  const c=document.getElementById('chatMessages'),id='t'+Date.now(),d=document.createElement('div');
-  d.className='msg ai';d.id=id;d.innerHTML='<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
-  c.appendChild(d);c.scrollTop=c.scrollHeight;return id;
-}
-function removeTyping(id){const el=document.getElementById(id);if(el)el.remove();}
-function escHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-// ════════════════════════════════
-//  PREVIEW
-// ════════════════════════════════
-function refreshPreview(){
-  document.getElementById('previewFrame').srcdoc=state.websiteHTML||
-    `<html><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;background:#050508;color:#6b6b88;flex-direction:column;gap:1rem;text-align:center"><div style="font-size:3rem">🌐</div><p>No website yet.<br>Chat with AI to generate it!</p></body></html>`;
-}
-
-// ════════════════════════════════
-//  GITHUB
-// ════════════════════════════════
-async function pushToGitHub(){
-  if(!state.websiteHTML){showToast('⚠️ No website to push!','error');return;}
-  if(!state.keys.github){showToast('⚠️ Add GitHub token in API Keys!','error');return;}
-  if(!state.repo.owner||!state.repo.repo){showToast('⚠️ Set repo details in API Keys!','error');return;}
-  await pushToGitHubWithContent(state.websiteHTML,'Manual push from AdminAI');
-}
-async function pushToGitHubWithContent(content,msg){
-  addLog('📤 Pushing to GitHub...','info');
-  try{
-    const{owner,repo,branch,file}=state.repo;
-    const h={'Authorization':'token '+state.keys.github,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'};
-    let sha=null;
-    try{const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${branch}`,{headers:h});if(r.ok){const d=await r.json();sha=d.sha;}}catch(e){}
-    const body={message:msg,content:btoa(unescape(encodeURIComponent(content))),branch};
-    if(sha)body.sha=sha;
-    const res=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${file}`,{method:'PUT',headers:h,body:JSON.stringify(body)});
-    if(res.ok){addLog(`✅ Pushed: ${owner}/${repo}/${file} [${branch}]`,'success');showToast('✅ Pushed to GitHub!','success');}
-    else{const e=await res.json();throw new Error(e.message);}
-  }catch(e){addLog('❌ GitHub: '+e.message,'error');showToast('❌ GitHub push failed','error');}
-}
-
-// ════════════════════════════════
-//  SUPABASE
-// ════════════════════════════════
-async function syncSupabase(){
-  if(!state.keys.supabase||!state.keys.supabaseUrl){showToast('⚠️ Set Supabase URL & key!','error');return;}
-  await supabaseInsert({table:'website_data',data:{html:state.websiteHTML,updated_at:new Date().toISOString()}});
-}
-async function supabaseInsert({table,data}){
-  addLog('💾 Saving to Supabase...','info');
-  try{
-    const res=await fetch(`${state.keys.supabaseUrl}/rest/v1/${table}`,{
-      method:'POST',
-      headers:{'apikey':state.keys.supabase,'Authorization':'Bearer '+state.keys.supabase,'Content-Type':'application/json','Prefer':'return=minimal'},
-      body:JSON.stringify(data)
-    });
-    if(res.ok||res.status===201){addLog('✅ Supabase save ok: '+table,'success');showToast('✅ Saved to Supabase!','success');}
-    else throw new Error(await res.text());
-  }catch(e){addLog('❌ Supabase: '+e.message,'error');showToast('❌ Supabase failed','error');}
-}
-
-// ════════════════════════════════
-//  UTILS
-// ════════════════════════════════
-function addLog(msg,type=''){
-  const l=document.getElementById('deployLog'),d=document.createElement('div');
-  d.className='log-line '+type;d.textContent=`[${new Date().toLocaleTimeString()}] ${msg}`;
-  l.appendChild(d);l.scrollTop=l.scrollHeight;
-}
-function clearLog(){document.getElementById('deployLog').innerHTML='<div class="log-line info">$ Log cleared</div>';}
-function showToast(msg,type=''){
-  const t=document.createElement('div');t.className='toast '+type;t.textContent=msg;
-  document.body.appendChild(t);setTimeout(()=>t.remove(),3500);
-}
-
-// ════════════════════════════════
-//  BOOT
-// ════════════════════════════════
-window.addEventListener('load',()=>{
-  loadState(); checkHash();
-  if(sessionStorage.getItem('adminLoggedIn')){showScreen('adminScreen');initAdmin();}
-});
-document.addEventListener('keydown',e=>{
-  if(e.ctrlKey&&e.shiftKey&&e.key==='A') location.hash='#admin';
-});
-</script>
+    </section>
+    
+    <!-- Contact Form Section -->
+    <section class="contact">
+        <h2>Contact Us</h2>
+        <form>
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" required></textarea>
+            <button type="submit" class="submit-btn">Send Message</button>
+        </form>
+    </section>
 </body>
 </html>
