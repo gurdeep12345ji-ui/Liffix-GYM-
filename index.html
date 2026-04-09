@@ -1,1569 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AdminAI Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#07070f;--surface:#0f0f1a;--surface2:#161625;--surface3:#1c1c30;
-  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);
-  --accent:#7c5cfc;--accent2:#fc5cf7;--accent3:#5cf7fc;
-  --text:#f0f0f8;--muted:#5a5a7a;--muted2:#8888aa;
-  --success:#22d3a5;--danger:#fc5c5c;--warning:#fcb95c;--info:#5cb8fc;
-  --r:10px;--r2:16px;
-  --sidebar-w:260px;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stunning Homepage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #ece9e6, #ffffff);
+            color: #333;
+            overflow-x: hidden;
+        }
 
-/* ═══ SCREENS ═══ */
-.screen{display:none;height:100vh;width:100vw;}
-.screen.active{display:flex;}
+        header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #ddd;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-/* ═══════════════════════════════
-   LOGIN
-═══════════════════════════════ */
-#loginScreen{
-  align-items:center;justify-content:center;
-  background:radial-gradient(ellipse 100% 100% at 50% 0%,rgba(124,92,252,.15) 0%,var(--bg) 60%);
-}
-.login-wrap{width:100%;max-width:400px;padding:1.5rem;}
-.login-card{
-  background:var(--surface);border:1px solid var(--border2);
-  border-radius:24px;padding:2.5rem 2rem;
-  box-shadow:0 0 80px rgba(124,92,252,.12),0 40px 80px rgba(0,0,0,.4);
-}
-.login-logo{
-  text-align:center;margin-bottom:2rem;
-}
-.login-logo .logo-icon{
-  width:64px;height:64px;border-radius:18px;margin:0 auto 1rem;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex;align-items:center;justify-content:center;font-size:1.8rem;
-  box-shadow:0 8px 24px rgba(124,92,252,.4);
-}
-.login-logo h1{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;}
-.login-logo p{color:var(--muted2);font-size:.85rem;margin-top:.3rem;}
-.field{margin-bottom:1.1rem;}
-.field label{display:block;font-size:.75rem;color:var(--muted2);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em;}
-.field input{
-  width:100%;background:var(--surface2);border:1px solid var(--border);
-  border-radius:var(--r);padding:.8rem 1rem;color:var(--text);
-  font-family:inherit;font-size:.95rem;outline:none;transition:border-color .2s,box-shadow .2s;
-}
-.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,252,.15);}
-.btn-login{
-  width:100%;padding:.9rem;border:none;border-radius:var(--r);
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#fff;font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;
-  cursor:pointer;transition:opacity .2s,transform .15s;
-  box-shadow:0 4px 20px rgba(124,92,252,.4);
-}
-.btn-login:hover{opacity:.88;transform:translateY(-1px);}
-.btn-login:active{transform:translateY(0);}
-.login-err{color:var(--danger);font-size:.82rem;text-align:center;margin-top:.8rem;display:none;}
-.login-hint{text-align:center;margin-top:1.2rem;font-size:.78rem;color:var(--muted);border-top:1px solid var(--border);padding-top:1rem;}
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-/* ═══════════════════════════════
-   ADMIN LAYOUT
-═══════════════════════════════ */
-#adminScreen{flex-direction:row;position:relative;}
+        nav a {
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            margin: 0 15px;
+            transition: color 0.3s;
+        }
 
-/* OVERLAY for mobile */
-.sidebar-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
-  z-index:99;backdrop-filter:blur(2px);
-}
-.sidebar-overlay.show{display:block;}
+        nav a:hover {
+            color: #007BFF;
+        }
 
-/* SIDEBAR */
-.sidebar{
-  width:var(--sidebar-w);height:100vh;
-  background:var(--surface);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;flex-shrink:0;
-  position:relative;z-index:100;
-  transition:transform .3s cubic-bezier(.4,0,.2,1);
-  overflow-y:auto;
-}
-.sidebar-head{
-  padding:1.2rem 1rem 1rem;
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:.8rem;flex-shrink:0;
-}
-.s-logo-icon{
-  width:36px;height:36px;border-radius:10px;flex-shrink:0;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex;align-items:center;justify-content:center;font-size:1rem;
-}
-.s-logo-text{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.s-logo-ver{font-size:.65rem;color:var(--muted);background:rgba(124,92,252,.15);
-  color:var(--accent);padding:1px 6px;border-radius:4px;margin-left:auto;}
+        .hero {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: url('https://source.unsplash.com/1600x900/?nature,water') center/cover no-repeat;
+        }
 
-.sidebar-body{flex:1;padding:.8rem .7rem;overflow-y:auto;}
-.s-section{margin-bottom:1.2rem;}
-.s-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);
-  padding:.3rem .5rem;margin-bottom:.3rem;}
-.nav-btn{
-  display:flex;align-items:center;gap:.75rem;
-  padding:.7rem .8rem;border-radius:var(--r);cursor:pointer;
-  font-size:.88rem;color:var(--muted2);transition:all .18s;
-  border:none;background:transparent;width:100%;text-align:left;
-  font-family:inherit;position:relative;
-}
-.nav-btn:hover{background:var(--surface2);color:var(--text);}
-.nav-btn.active{
-  background:linear-gradient(135deg,rgba(124,92,252,.18),rgba(252,92,247,.1));
-  color:var(--accent);border:1px solid rgba(124,92,252,.2);
-}
-.nav-btn .ni{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
-.nav-btn .nb{flex:1;}
-.nav-btn .badge{
-  font-size:.6rem;background:var(--accent);color:#fff;
-  padding:1px 5px;border-radius:4px;
-}
-.nav-btn .new-badge{
-  font-size:.6rem;background:var(--success);color:#000;
-  padding:1px 5px;border-radius:4px;font-weight:700;
-}
+        .hero h1 {
+            font-size: 3rem;
+            color: #fff;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
 
-.sidebar-foot{
-  padding:.8rem;border-top:1px solid var(--border);flex-shrink:0;
-}
-.user-card{
-  display:flex;align-items:center;gap:.7rem;
-  padding:.7rem;border-radius:var(--r);background:var(--surface2);
-  border:1px solid var(--border);
-}
-.u-avatar{
-  width:34px;height:34px;border-radius:50%;flex-shrink:0;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex;align-items:center;justify-content:center;
-  font-size:.85rem;font-weight:800;
-}
-.u-info{flex:1;min-width:0;}
-.u-name{font-size:.85rem;font-weight:600;}
-.u-role{font-size:.68rem;color:var(--muted2);}
-.u-logout{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:2px;transition:color .2s;}
-.u-logout:hover{color:var(--danger);}
+        .hero p {
+            font-size: 1.2rem;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            margin-top: 10px;
+        }
 
-/* MAIN */
-.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;min-width:0;}
+        .features,
+        .testimonials,
+        .contact {
+            padding: 50px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
 
-/* TOPBAR */
-.topbar{
-  height:56px;background:var(--surface);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:.8rem;padding:0 1rem;flex-shrink:0;
-}
-.menu-toggle{
-  display:none;background:none;border:none;color:var(--text);
-  font-size:1.3rem;cursor:pointer;padding:.3rem;border-radius:6px;
-  transition:background .2s;
-}
-.menu-toggle:hover{background:var(--surface2);}
-.topbar-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;flex:1;}
-.topbar-right{display:flex;align-items:center;gap:.6rem;}
+        .features h2, .testimonials h2, .contact h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
 
-/* AI selector pill */
-.ai-pill{
-  display:flex;align-items:center;gap:.4rem;
-  background:var(--surface2);border:1px solid var(--border2);
-  border-radius:20px;padding:.3rem .7rem .3rem .5rem;cursor:pointer;
-  font-size:.8rem;transition:border-color .2s;
-}
-.ai-pill:hover{border-color:var(--accent);}
-.ai-pill-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);}
-.ai-pill select{
-  background:transparent;border:none;color:var(--text);
-  font-family:inherit;font-size:.8rem;outline:none;cursor:pointer;
-  max-width:90px;
-}
-.ai-pill select option{background:var(--surface2);}
+        .features p, .testimonials p, .contact p {
+            color: #666;
+            margin-bottom: 40px;
+        }
 
-.status-chip{
-  display:flex;align-items:center;gap:.4rem;
-  font-size:.75rem;color:var(--muted2);
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:20px;padding:.3rem .7rem;white-space:nowrap;
-}
-.s-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);}
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
 
-/* CONTENT */
-.content{flex:1;overflow:hidden;position:relative;}
-.tab-panel{display:none;height:100%;overflow-y:auto;padding:1.2rem;}
-.tab-panel.active{display:flex;flex-direction:column;}
+        .feature-box {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
 
-/* ═══ CHAT TAB ═══ */
-#panel-chat{padding:0;flex-direction:column;}
-.chat-toolbar{
-  padding:.7rem 1rem;background:var(--surface);border-bottom:1px solid var(--border);
-  display:flex;gap:.5rem;flex-wrap:wrap;flex-shrink:0;
-}
-.chip{
-  padding:.35rem .8rem;border-radius:20px;font-size:.75rem;
-  background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.2);
-  color:var(--accent);cursor:pointer;transition:all .15s;white-space:nowrap;
-}
-.chip:hover{background:rgba(124,92,252,.25);transform:translateY(-1px);}
-.chip:active{transform:translateY(0);}
-.chip.green{background:rgba(34,211,165,.1);border-color:rgba(34,211,165,.2);color:var(--success);}
-.chip.orange{background:rgba(252,185,92,.1);border-color:rgba(252,185,92,.2);color:var(--warning);}
-.chip.red{background:rgba(252,92,92,.1);border-color:rgba(252,92,92,.2);color:var(--danger);}
+        .feature-box:hover {
+            transform: translateY(-10px);
+        }
 
-.chat-messages{
-  flex:1;overflow-y:auto;padding:1rem;
-  display:flex;flex-direction:column;gap:.9rem;
-}
-.msg{display:flex;flex-direction:column;gap:.3rem;max-width:88%;}
-.msg.user{align-self:flex-end;}
-.msg.ai{align-self:flex-start;}
-.msg-bubble{
-  padding:.8rem 1rem;border-radius:14px;
-  font-size:.875rem;line-height:1.65;word-break:break-word;
-}
-.msg.user .msg-bubble{
-  background:linear-gradient(135deg,var(--accent),rgba(252,92,247,.8));
-  color:#fff;border-radius:14px 14px 3px 14px;
-}
-.msg.ai .msg-bubble{
-  background:var(--surface);border:1px solid var(--border2);
-  border-radius:14px 14px 14px 3px;
-}
-.msg-meta{font-size:.65rem;color:var(--muted);padding:0 4px;display:flex;gap:.5rem;align-items:center;}
-.msg.user .msg-meta{align-self:flex-end;}
-.ai-tag{
-  font-size:.62rem;padding:1px 6px;border-radius:4px;
-  background:rgba(124,92,252,.15);color:var(--accent);
-}
-.typing-wrap{display:flex;align-items:center;gap:4px;padding:.5rem 0;}
-.td{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:td 1.2s infinite;}
-.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
-@keyframes td{0%,80%,100%{opacity:.2}40%{opacity:1}}
+        .testimonials .testimonial-item {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
 
-.chat-bottom{
-  padding:.8rem;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;
-}
-.chat-input-row{display:flex;gap:.6rem;align-items:flex-end;}
-.chat-ta{
-  flex:1;background:var(--surface2);border:1px solid var(--border2);
-  border-radius:12px;padding:.75rem .9rem;color:var(--text);
-  font-family:inherit;font-size:.9rem;resize:none;outline:none;
-  transition:border-color .2s;min-height:44px;max-height:130px;line-height:1.5;
-}
-.chat-ta:focus{border-color:var(--accent);}
-.send-btn{
-  width:44px;height:44px;border-radius:12px;border:none;flex-shrink:0;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#fff;font-size:1.1rem;cursor:pointer;
-  transition:opacity .2s,transform .15s;display:flex;align-items:center;justify-content:center;
-}
-.send-btn:hover{opacity:.85;transform:scale(1.05);}
-.send-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+        .testimonial-item p {
+            font-style: italic;
+        }
 
-/* ═══ WEBSITE PREVIEW ═══ */
-#panel-website{padding:0;}
-.preview-wrap{
-  display:flex;flex-direction:column;height:100%;
-}
-.preview-topbar{
-  padding:.6rem 1rem;background:var(--surface);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:.5rem;flex-shrink:0;
-}
-.p-dot{width:10px;height:10px;border-radius:50%;}
-.p-dot:nth-child(1){background:#fc5c5c}
-.p-dot:nth-child(2){background:#fcb95c}
-.p-dot:nth-child(3){background:#22d3a5}
-.p-url{
-  flex:1;background:var(--surface2);border:1px solid var(--border);
-  border-radius:6px;padding:.3rem .8rem;font-size:.78rem;color:var(--muted2);margin:0 .5rem;
-}
-.p-actions{display:flex;gap:.4rem;}
-.icon-btn{
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:6px;padding:.3rem .6rem;color:var(--muted2);
-  cursor:pointer;font-size:.8rem;transition:all .15s;white-space:nowrap;
-}
-.icon-btn:hover{border-color:var(--accent);color:var(--accent);}
-.preview-frame-wrap{flex:1;position:relative;overflow:hidden;}
-.preview-iframe{width:100%;height:100%;border:none;background:#fff;}
-.preview-device-bar{
-  padding:.5rem 1rem;background:var(--surface);border-top:1px solid var(--border);
-  display:flex;gap:.5rem;justify-content:center;
-}
-.dev-btn{
-  padding:.3rem .8rem;border-radius:6px;font-size:.75rem;
-  background:var(--surface2);border:1px solid var(--border);
-  color:var(--muted2);cursor:pointer;transition:all .15s;
-}
-.dev-btn.active{background:rgba(124,92,252,.15);border-color:var(--accent);color:var(--accent);}
+        .testimonial-item h4 {
+            margin-top: 10px;
+            color: #007BFF;
+        }
 
-/* ═══ DEPLOY TAB ═══ */
-#panel-deploy .deploy-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;}
-.d-btn{
-  padding:.55rem 1rem;border:none;border-radius:var(--r);
-  font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;
-  cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.4rem;
-}
-.d-btn.purple{background:rgba(124,92,252,.15);color:var(--accent);border:1px solid rgba(124,92,252,.25);}
-.d-btn.green{background:rgba(34,211,165,.12);color:var(--success);border:1px solid rgba(34,211,165,.2);}
-.d-btn.gray{background:var(--surface2);color:var(--muted2);border:1px solid var(--border);}
-.d-btn:hover{opacity:.8;transform:translateY(-1px);}
-.log-box{
-  background:#000;border:1px solid var(--border);border-radius:var(--r);
-  padding:1rem;font-family:'Courier New',monospace;font-size:.78rem;
-  height:300px;overflow-y:auto;color:#bbb;
-}
-.ll{line-height:1.9;}
-.ll.s{color:var(--success)}.ll.e{color:var(--danger)}.ll.i{color:var(--info)}.ll.w{color:var(--warning)}
-.deploy-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin-bottom:1rem;}
-.stat-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-  padding:1rem;text-align:center;
-}
-.stat-card .sv{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;}
-.stat-card .sl{font-size:.72rem;color:var(--muted2);margin-top:.2rem;}
+        .contact form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-/* ═══ API KEYS TAB ═══ */
-#panel-apis{overflow-y:auto;}
-.api-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
-@media(max-width:600px){.api-grid{grid-template-columns:1fr;}}
-.api-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r2);padding:1.3rem;transition:border-color .2s;
-}
-.api-card:hover{border-color:var(--border2);}
-.api-card-head{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;}
-.api-ico{
-  width:38px;height:38px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;
-}
-.ico-openai{background:rgba(16,163,127,.15);}
-.ico-claude{background:rgba(252,92,247,.15);}
-.ico-gemini{background:rgba(66,133,244,.15);}
-.ico-github{background:rgba(255,255,255,.08);}
-.ico-supabase{background:rgba(34,211,165,.12);}
-.api-card-title{font-family:'Syne',sans-serif;font-size:.92rem;font-weight:700;}
-.api-card-sub{font-size:.72rem;color:var(--muted2);}
-.api-status{margin-left:auto;font-size:.68rem;padding:2px 8px;border-radius:20px;white-space:nowrap;}
-.api-status.on{background:rgba(34,211,165,.12);color:var(--success);}
-.api-status.off{background:rgba(107,107,136,.1);color:var(--muted2);}
-.key-wrap{position:relative;margin-bottom:.6rem;}
-.key-wrap input{
-  width:100%;background:var(--surface2);border:1px solid var(--border);
-  border-radius:8px;padding:.6rem 2.4rem .6rem .8rem;
-  color:var(--text);font-family:'Courier New',monospace;font-size:.78rem;
-  outline:none;transition:border-color .2s;
-}
-.key-wrap input:focus{border-color:var(--accent);}
-.eye-btn{position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;}
-.model-sel{
-  width:100%;background:var(--surface2);border:1px solid var(--border);
-  border-radius:8px;padding:.55rem .8rem;color:var(--text);
-  font-size:.8rem;outline:none;font-family:inherit;cursor:pointer;margin-bottom:.6rem;
-}
-.model-sel option{background:var(--surface2);}
-.mini-inp{
-  width:100%;background:var(--surface2);border:1px solid var(--border);
-  border-radius:8px;padding:.55rem .8rem;color:var(--text);
-  font-size:.82rem;outline:none;font-family:inherit;margin-bottom:.5rem;
-}
-.mini-inp:focus{border-color:var(--accent);outline:none;}
-.mini-label{display:block;font-size:.7rem;color:var(--muted2);margin-bottom:.3rem;}
-.save-btn{
-  width:100%;padding:.55rem;border:none;border-radius:8px;
-  background:rgba(124,92,252,.15);color:var(--accent);
-  font-family:'Syne',sans-serif;font-size:.82rem;cursor:pointer;
-  transition:background .2s;margin-bottom:.4rem;
-}
-.save-btn:hover{background:rgba(124,92,252,.3);}
-.save-btn.done{background:rgba(34,211,165,.12);color:var(--success);}
-.set-active-btn{
-  width:100%;padding:.5rem;border-radius:8px;
-  font-family:'Syne',sans-serif;font-size:.78rem;cursor:pointer;
-  transition:all .15s;border:1px solid;
-}
+        .contact form input, .contact form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
 
-/* ═══ WEBSITE BUILDER TAB ═══ */
-.builder-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-@media(max-width:700px){.builder-grid{grid-template-columns:1fr;}}
-.builder-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r2);padding:1.2rem;cursor:pointer;
-  transition:all .2s;
-}
-.builder-card:hover{border-color:var(--accent);transform:translateY(-2px);}
-.builder-card h3{font-family:'Syne',sans-serif;font-size:.95rem;margin:.6rem 0 .4rem;}
-.builder-card p{font-size:.78rem;color:var(--muted2);line-height:1.5;}
-.builder-icon{font-size:1.8rem;}
-.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.8rem;margin-top:.8rem;}
-.theme-card{
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:var(--r);padding:.8rem;text-align:center;cursor:pointer;
-  transition:all .2s;font-size:.78rem;
-}
-.theme-card:hover{border-color:var(--accent);}
-.theme-card .tc-preview{height:50px;border-radius:6px;margin-bottom:.5rem;}
+        .contact form button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-/* ═══ ANALYTICS TAB ═══ */
-.analytics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;}
-.a-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r2);padding:1.2rem;
-}
-.a-card .aval{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;}
-.a-card .albl{font-size:.72rem;color:var(--muted2);margin-top:.3rem;}
-.a-card .achange{font-size:.75rem;margin-top:.5rem;}
-.a-card .achange.up{color:var(--success);}
-.a-card .achange.down{color:var(--danger);}
+        .contact form button:hover {
+            background-color: #0056b3;
+        }
 
-/* ═══ SECTION HEADER ═══ */
-.sec-h{
-  font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;
-  margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;
-}
-.sec-h::after{content:'';flex:1;height:1px;background:var(--border);margin-left:.5rem;}
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
 
-/* ═══ TOAST ═══ */
-.toast{
-  position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;
-  background:var(--surface);border:1px solid var(--border2);
-  border-radius:12px;padding:.9rem 1.2rem;font-size:.85rem;
-  box-shadow:0 8px 32px rgba(0,0,0,.5);
-  display:flex;align-items:center;gap:.6rem;
-  animation:toastIn .3s ease;max-width:300px;
-}
-@keyframes toastIn{from{transform:translateX(100px);opacity:0}to{transform:none;opacity:1}}
-.toast.s{border-color:rgba(34,211,165,.3);}
-.toast.e{border-color:rgba(252,92,92,.3);}
-.toast.w{border-color:rgba(252,185,92,.3);}
-
-/* SCROLLBAR */
-::-webkit-scrollbar{width:4px;height:4px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px;}
-
-/* MOBILE */
-@media(max-width:768px){
-  .sidebar{
-    position:fixed;top:0;left:0;height:100%;z-index:100;
-    transform:translateX(-100%);
-  }
-  .sidebar.open{transform:none;}
-  .menu-toggle{display:flex;}
-  .status-chip .chip-label{display:none;}
-  .topbar-title{font-size:.95rem;}
-}
-
-/* TOGGLE */
-.toggle-wrap{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;}
-.toggle-wrap label{font-size:.82rem;color:var(--muted2);}
-.toggle{
-  position:relative;width:36px;height:20px;
-}
-.toggle input{opacity:0;width:0;height:0;}
-.toggle-slider{
-  position:absolute;inset:0;background:var(--surface2);
-  border-radius:20px;cursor:pointer;transition:.2s;border:1px solid var(--border);
-}
-.toggle-slider:before{
-  content:'';position:absolute;width:14px;height:14px;
-  border-radius:50%;background:var(--muted);
-  top:2px;left:2px;transition:.2s;
-}
-.toggle input:checked + .toggle-slider{background:rgba(124,92,252,.2);border-color:var(--accent);}
-.toggle input:checked + .toggle-slider:before{transform:translateX(16px);background:var(--accent);}
-
-/* COLOR PICKER */
-.color-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem;}
-.color-swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;}
-.color-swatch:hover,.color-swatch.active{border-color:#fff;transform:scale(1.15);}
-
-/* Code block in chat */
-pre.code-block{
-  background:#000;border:1px solid var(--border);border-radius:8px;
-  padding:.8rem;font-size:.75rem;overflow-x:auto;margin-top:.5rem;
-  color:#e2e8f0;white-space:pre;font-family:'Courier New',monospace;
-}
-</style>
+            .features h2, .testimonials h2, .contact h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
+
 <body>
-
-<!-- ═══════ LOGIN ═══════ -->
-<div id="loginScreen" class="screen active">
-  <div class="login-wrap">
-    <div class="login-card">
-      <div class="login-logo">
-        <div class="logo-icon">⚡</div>
-        <h1>AdminAI Pro</h1>
-        <p>Secure Admin Access Only</p>
-      </div>
-      <div class="field">
-        <label>Username</label>
-        <input type="text" id="lu" placeholder="Enter username" autocomplete="off">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="lp" placeholder="Enter password">
-      </div>
-      <button class="btn-login" onclick="doLogin()">Sign In →</button>
-      <div class="login-err" id="lerr">❌ Wrong credentials. Try again.</div>
-      <div class="login-hint">🔒 This panel is hidden from public visitors</div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════ ADMIN ═══════ -->
-<div id="adminScreen" class="screen">
-
-  <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
-
-  <!-- SIDEBAR -->
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-head">
-      <div class="s-logo-icon">⚡</div>
-      <div class="s-logo-text">AdminAI</div>
-      <div class="s-logo-ver">PRO</div>
-    </div>
-    <div class="sidebar-body">
-
-      <div class="s-section">
-        <div class="s-label">Main</div>
-        <button class="nav-btn active" onclick="goTab('chat')" id="t-chat">
-          <span class="ni">💬</span><span class="nb">AI Chat</span>
-        </button>
-        <button class="nav-btn" onclick="goTab('website')" id="t-website">
-          <span class="ni">🌐</span><span class="nb">Live Preview</span>
-        </button>
-        <button class="nav-btn" onclick="goTab('builder')" id="t-builder">
-          <span class="ni">🏗️</span><span class="nb">Page Builder</span>
-          <span class="new-badge">NEW</span>
-        </button>
-      </div>
-
-      <div class="s-section">
-        <div class="s-label">Tools</div>
-        <button class="nav-btn" onclick="goTab('analytics')" id="t-analytics">
-          <span class="ni">📊</span><span class="nb">Analytics</span>
-        </button>
-        <button class="nav-btn" onclick="goTab('deploy')" id="t-deploy">
-          <span class="ni">🚀</span><span class="nb">Deploy Log</span>
-        </button>
-        <button class="nav-btn" onclick="goTab('history')" id="t-history">
-          <span class="ni">📜</span><span class="nb">Version History</span>
-        </button>
-      </div>
-
-      <div class="s-section">
-        <div class="s-label">Settings</div>
-        <button class="nav-btn" onclick="goTab('apis')" id="t-apis">
-          <span class="ni">🔑</span><span class="nb">API Keys</span>
-        </button>
-        <button class="nav-btn" onclick="goTab('settings')" id="t-settings">
-          <span class="ni">⚙️</span><span class="nb">Settings</span>
-        </button>
-      </div>
-
-    </div>
-    <div class="sidebar-foot">
-      <div class="user-card">
-        <div class="u-avatar">A</div>
-        <div class="u-info">
-          <div class="u-name">Admin</div>
-          <div class="u-role">Super Administrator</div>
-        </div>
-        <button class="u-logout" onclick="logout()" title="Logout">⏻</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MAIN -->
-  <div class="main">
-    <!-- TOPBAR -->
-    <div class="topbar">
-      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-      <div class="topbar-title" id="pageTitle">AI Chat</div>
-      <div class="topbar-right">
-        <div class="ai-pill">
-          <div class="ai-pill-dot" id="aiDot"></div>
-          <select id="aiSel" onchange="changeAI()">
-            <option value="openai">🟢 OpenAI</option>
-            <option value="claude">🟣 Claude</option>
-            <option value="gemini">🔵 Gemini</option>
-          </select>
-        </div>
-        <div class="status-chip">
-          <div class="s-dot" id="sDot"></div>
-          <span id="sLabel" class="chip-label">Offline</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- CONTENT -->
-    <div class="content">
-
-      <!-- ═══ CHAT ═══ -->
-      <div class="tab-panel active" id="panel-chat">
-        <div class="chat-toolbar">
-          <div class="chip" onclick="qi('Create a stunning homepage with hero, features, testimonials and contact section')">🏠 Homepage</div>
-          <div class="chip" onclick="qi('Add a beautiful animated hero section with gradient background')">✨ Hero Section</div>
-          <div class="chip" onclick="qi('Change the color scheme to a vibrant modern palette with animations')">🎨 Restyle</div>
-          <div class="chip" onclick="qi('Add smooth scroll animations, hover effects and micro-interactions')">💫 Animations</div>
-          <div class="chip" onclick="qi('Add a pricing section with 3 plans: Basic, Pro and Enterprise')">💰 Pricing</div>
-          <div class="chip" onclick="qi('Add a contact form with name, email, phone and message fields')">📬 Contact Form</div>
-          <div class="chip green" onclick="qi('Push the current website to GitHub and save to Supabase')">🚀 Deploy All</div>
-          <div class="chip orange" onclick="qi('Make the website fully mobile responsive and optimize for speed')">📱 Mobile Fix</div>
-          <div class="chip" onclick="qi('Add a navigation bar with logo, menu links and mobile hamburger menu')">🗂️ Navbar</div>
-          <div class="chip" onclick="qi('Add a footer with links, social media icons and copyright')">🦶 Footer</div>
-          <div class="chip" onclick="qi('Add a gallery or portfolio section with a grid layout')">🖼️ Gallery</div>
-          <div class="chip red" onclick="clearChat()">🗑️ Clear Chat</div>
-        </div>
-        <div class="chat-messages" id="msgs">
-          <div class="msg ai">
-            <div class="msg-bubble">👋 <strong>Welcome to AdminAI Pro!</strong>
-
-I can build and update your entire website. Here's what I can do:
-
-🏗️ <strong>Build</strong> — Create pages, sections, components
-🎨 <strong>Design</strong> — Colors, fonts, animations, themes
-📱 <strong>Optimize</strong> — Mobile friendly, fast loading
-🚀 <strong>Deploy</strong> — Push to GitHub → Vercel auto-deploys
-💾 <strong>Save</strong> — Store in Supabase for Hostinger
-
-<strong>Quick start:</strong> Use the chips above or just tell me what you want!</div>
-            <div class="msg-meta"><span>Now</span><span class="ai-tag">🤖 AI</span></div>
-          </div>
-        </div>
-        <div class="chat-bottom">
-          <div class="chat-input-row">
-            <textarea class="chat-ta" id="cta" placeholder="Tell me what to build or change..." rows="1"
-              onkeydown="ck(event)" oninput="ar(this)"></textarea>
-            <button class="send-btn" id="sendBtn" onclick="send()">↑</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══ PREVIEW ═══ -->
-      <div class="tab-panel" id="panel-website">
-        <div class="preview-wrap">
-          <div class="preview-topbar">
-            <div class="p-dot"></div><div class="p-dot"></div><div class="p-dot"></div>
-            <div class="p-url" id="pUrl">No website loaded</div>
-            <div class="p-actions">
-              <div class="icon-btn" onclick="refreshPreview()">⟳ Refresh</div>
-              <div class="icon-btn" onclick="openInNew()">↗ Open</div>
-              <div class="icon-btn" onclick="copyHTML()">📋 Copy HTML</div>
+    <header>
+        <nav>
+            <div>Logo</div>
+            <div>
+                <a href="#features">Features</a>
+                <a href="#testimonials">Testimonials</a>
+                <a href="#contact">Contact</a>
             </div>
-          </div>
-          <div class="preview-frame-wrap">
-            <iframe class="preview-iframe" id="pFrame"></iframe>
-          </div>
-          <div class="preview-device-bar">
-            <div class="dev-btn active" onclick="setDevice('full',this)">🖥 Desktop</div>
-            <div class="dev-btn" onclick="setDevice('tablet',this)">📱 Tablet</div>
-            <div class="dev-btn" onclick="setDevice('mobile',this)">📲 Mobile</div>
-          </div>
-        </div>
-      </div>
+        </nav>
+    </header>
 
-      <!-- ═══ BUILDER ═══ -->
-      <div class="tab-panel" id="panel-builder" style="overflow-y:auto;">
-        <div class="sec-h">🏗️ Quick Page Builder</div>
-        <div class="builder-grid">
-          <div class="builder-card" onclick="qi('Create a complete gym/fitness website with dark theme, hero, services, pricing and contact')">
-            <div class="builder-icon">🏋️</div>
-            <h3>Gym / Fitness</h3>
-            <p>Dark hero, workout plans, trainers, membership pricing</p>
-          </div>
-          <div class="builder-card" onclick="qi('Create a restaurant website with menu, gallery, reservations and contact info')">
-            <div class="builder-icon">🍽️</div>
-            <h3>Restaurant</h3>
-            <p>Menu, gallery, online reservations, location map</p>
-          </div>
-          <div class="builder-card" onclick="qi('Create a portfolio website with projects, skills, about me and hire me sections')">
-            <div class="builder-icon">💼</div>
-            <h3>Portfolio</h3>
-            <p>Projects showcase, skills, about, contact form</p>
-          </div>
-          <div class="builder-card" onclick="qi('Create an e-commerce landing page with product showcase, features, testimonials and buy now button')">
-            <div class="builder-icon">🛒</div>
-            <h3>E-Commerce</h3>
-            <p>Products, cart, checkout, testimonials</p>
-          </div>
-          <div class="builder-card" onclick="qi('Create a SaaS startup landing page with features, pricing, testimonials and CTA')">
-            <div class="builder-icon">🚀</div>
-            <h3>SaaS / Startup</h3>
-            <p>Hero, features, pricing plans, CTA, footer</p>
-          </div>
-          <div class="builder-card" onclick="qi('Create a blog website with featured posts, categories, author bio and newsletter signup')">
-            <div class="builder-icon">📝</div>
-            <h3>Blog</h3>
-            <p>Featured posts, categories, author bio, newsletter</p>
-          </div>
-          <div class="builder-card" onclick="qi('Create a real estate website with property listings, search filters, agent profiles and contact')">
-            <div class="builder-icon">🏠</div>
-            <h3>Real Estate</h3>
-            <p>Property listings, search, agent profiles</p>
-          </div>
-          <div class="builder-card" onclick="qi('Create a photography portfolio with fullscreen gallery, lightbox and booking form')">
-            <div class="builder-icon">📸</div>
-            <h3>Photography</h3>
-            <p>Fullscreen gallery, lightbox, booking form</p>
-          </div>
+    <section class="hero">
+        <div>
+            <h1>Welcome to Our Stunning Website!</h1>
+            <p>We Create Experiences That Transform Brands</p>
         </div>
+    </section>
 
-        <div class="sec-h" style="margin-top:1.5rem;">🎨 Color Themes</div>
-        <div class="theme-grid">
-          <div class="theme-card" onclick="qi('Change website to dark purple/violet theme with neon accents and modern glassmorphism')">
-            <div class="tc-preview" style="background:linear-gradient(135deg,#1a0533,#4a0080)"></div>
-            Dark Purple
-          </div>
-          <div class="theme-card" onclick="qi('Change website to ocean blue theme with cyan accents, waves and clean layout')">
-            <div class="tc-preview" style="background:linear-gradient(135deg,#001a3a,#0066cc)"></div>
-            Ocean Blue
-          </div>
-          <div class="theme-card" onclick="qi('Change website to sunset orange and red theme with warm gradients and bold typography')">
-            <div class="tc-preview" style="background:linear-gradient(135deg,#3a1500,#cc4400)"></div>
-            Sunset Fire
-          </div>
-          <div class="theme-card" onclick="qi('Change website to emerald green theme with nature feeling and clean minimal design')">
-            <div class="tc-preview" style="background:linear-gradient(135deg,#003320,#00aa55)"></div>
-            Emerald
-          </div>
-          <div class="theme-card" onclick="qi('Change website to clean white/light theme with minimal design and black typography')">
-            <div class="tc-preview" style="background:linear-gradient(135deg,#f8f8f8,#e0e0e0);border:1px solid #ddd"></div>
-            Clean White
-          </div>
-          <div class="theme-card" onclick="qi('Change website to gold/luxury black theme with premium look and elegant fonts')">
-            <div class="tc-preview" style="background:linear-gradient(135deg,#1a1200,#aa8800)"></div>
-            Gold Luxury
-          </div>
-        </div>
-
-        <div class="sec-h" style="margin-top:1.5rem;">⚡ Quick Add Sections</div>
-        <div style="display:flex;flex-wrap:wrap;gap:.5rem;">
-          <div class="chip" onclick="qi('Add a testimonials section with 3 customer reviews, stars and photos')">⭐ Testimonials</div>
-          <div class="chip" onclick="qi('Add a FAQ accordion section with 5 common questions and answers')">❓ FAQ</div>
-          <div class="chip" onclick="qi('Add a team section with 4 team member cards with photos and roles')">👥 Team</div>
-          <div class="chip" onclick="qi('Add a stats counter section showing 4 impressive numbers with animation')">📊 Stats</div>
-          <div class="chip" onclick="qi('Add a newsletter signup section with email input and subscribe button')">📧 Newsletter</div>
-          <div class="chip" onclick="qi('Add a video background hero section with overlay text and CTA button')">🎬 Video Hero</div>
-          <div class="chip" onclick="qi('Add a floating WhatsApp chat button in bottom right corner')">💬 WhatsApp Btn</div>
-          <div class="chip" onclick="qi('Add a cookie consent banner at the bottom of the page')">🍪 Cookie Banner</div>
-          <div class="chip" onclick="qi('Add a back to top button that appears when scrolling down')">⬆️ Back to Top</div>
-          <div class="chip" onclick="qi('Add smooth scroll reveal animations to all sections using CSS')">🌊 Scroll Reveal</div>
-        </div>
-      </div>
-
-      <!-- ═══ ANALYTICS ═══ -->
-      <div class="tab-panel" id="panel-analytics" style="overflow-y:auto;">
-        <div class="sec-h">📊 Website Analytics</div>
-        <div class="analytics-grid">
-          <div class="a-card">
-            <div class="aval" id="aDeployCount">0</div>
-            <div class="albl">Total Deploys</div>
-            <div class="achange up" id="aDeployChange">↑ Active</div>
-          </div>
-          <div class="a-card">
-            <div class="aval" id="aAIMessages">0</div>
-            <div class="albl">AI Messages</div>
-            <div class="achange up">↑ Growing</div>
-          </div>
-          <div class="a-card">
-            <div class="aval" id="aVersions">0</div>
-            <div class="albl">Versions Saved</div>
-            <div class="achange up">↑ History tracked</div>
-          </div>
-          <div class="a-card">
-            <div class="aval" id="aProvider">—</div>
-            <div class="albl">Active AI</div>
-            <div class="achange up" id="aProviderStatus">Connected</div>
-          </div>
-        </div>
-
-        <div class="sec-h">🔌 Connection Status</div>
-        <div style="display:grid;gap:.6rem;">
-          <div id="conn-openai" class="api-card" style="padding:.8rem 1rem;">
-            <div class="api-card-head" style="margin:0">
-              <div class="api-ico ico-openai">🟢</div>
-              <div><div class="api-card-title">OpenAI</div></div>
-              <div class="api-status off" id="cs-openai">Not set</div>
+    <section id="features" class="features">
+        <h2>Features</h2>
+        <p>Explore the amazing features that we offer to you.</p>
+        <div class="feature-grid">
+            <div class="feature-box">
+                <h4>Feature One</h4>
+                <p>Our feature helps you to achieve A...</p>
             </div>
-          </div>
-          <div class="api-card" style="padding:.8rem 1rem;">
-            <div class="api-card-head" style="margin:0">
-              <div class="api-ico ico-claude">🟣</div>
-              <div><div class="api-card-title">Claude (Anthropic)</div></div>
-              <div class="api-status off" id="cs-claude">Not set</div>
+            <div class="feature-box">
+                <h4>Feature Two</h4>
+                <p>With this feature, you can easily B...</p>
             </div>
-          </div>
-          <div class="api-card" style="padding:.8rem 1rem;">
-            <div class="api-card-head" style="margin:0">
-              <div class="api-ico ico-gemini">🔵</div>
-              <div><div class="api-card-title">Google Gemini</div></div>
-              <div class="api-status off" id="cs-gemini">Not set</div>
+            <div class="feature-box">
+                <h4>Feature Three</h4>
+                <p>Enhance your productivity by C...</p>
             </div>
-          </div>
-          <div class="api-card" style="padding:.8rem 1rem;">
-            <div class="api-card-head" style="margin:0">
-              <div class="api-ico ico-github">🐙</div>
-              <div><div class="api-card-title">GitHub</div></div>
-              <div class="api-status off" id="cs-github">Not set</div>
-            </div>
-          </div>
-          <div class="api-card" style="padding:.8rem 1rem;">
-            <div class="api-card-head" style="margin:0">
-              <div class="api-ico ico-supabase">🟢</div>
-              <div><div class="api-card-title">Supabase</div></div>
-              <div class="api-status off" id="cs-supabase">Not set</div>
-            </div>
-          </div>
         </div>
-      </div>
+    </section>
 
-      <!-- ═══ DEPLOY ═══ -->
-      <div class="tab-panel" id="panel-deploy" style="overflow-y:auto;">
-        <div class="sec-h">🚀 Deploy & Sync</div>
-        <div class="deploy-stats">
-          <div class="stat-card"><div class="sv" id="dCount">0</div><div class="sl">Deploys</div></div>
-          <div class="stat-card"><div class="sv" id="dSyncs">0</div><div class="sl">Supabase Syncs</div></div>
-          <div class="stat-card"><div class="sv" id="dVersions">0</div><div class="sl">Versions</div></div>
+    <section id="testimonials" class="testimonials">
+        <h2>Testimonials</h2>
+        <p>What our happy clients say about us.</p>
+        <div class="testimonial-item">
+            <p>"The service was excellent! I couldn't be happier."</p>
+            <h4>- John Doe</h4>
         </div>
-        <div class="deploy-actions">
-          <button class="d-btn purple" onclick="pushGH()">📤 Push GitHub</button>
-          <button class="d-btn green" onclick="syncSB()">💾 Sync Supabase</button>
-          <button class="d-btn purple" onclick="deployAll()">⚡ Deploy All</button>
-          <button class="d-btn gray" onclick="clearLog()">🗑 Clear Log</button>
+        <div class="testimonial-item">
+            <p>"Absolutely wonderful experience. Truly professional."</p>
+            <h4>- Jane Smith</h4>
         </div>
-        <div class="log-box" id="log">
-          <div class="ll i">$ AdminAI Pro — Deploy Console ready</div>
-        </div>
-      </div>
+    </section>
 
-      <!-- ═══ HISTORY ═══ -->
-      <div class="tab-panel" id="panel-history" style="overflow-y:auto;">
-        <div class="sec-h">📜 Version History</div>
-        <div id="historyList" style="display:flex;flex-direction:column;gap:.6rem;">
-          <div style="color:var(--muted2);text-align:center;padding:2rem;font-size:.85rem;">
-            No versions saved yet. Every time you push to GitHub, a version is saved here.
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══ API KEYS ═══ -->
-      <div class="tab-panel" id="panel-apis" style="overflow-y:auto;">
-        <div class="sec-h">🤖 AI Providers</div>
-        <div class="api-grid">
-
-          <!-- OpenAI -->
-          <div class="api-card">
-            <div class="api-card-head">
-              <div class="api-ico ico-openai">🟢</div>
-              <div><div class="api-card-title">OpenAI</div><div class="api-card-sub">GPT-4o · GPT-4o Mini</div></div>
-              <div class="api-status off" id="st-openai">Off</div>
-            </div>
-            <div class="key-wrap">
-              <input type="password" id="k-openai" placeholder="sk-proj-... or sk-...">
-              <button class="eye-btn" onclick="eye('k-openai',this)">👁</button>
-            </div>
-            <select class="model-sel" id="m-openai">
-              <option value="gpt-4o">GPT-4o (Best)</option>
-              <option value="gpt-4o-mini">GPT-4o Mini (Fast)</option>
-              <option value="gpt-4-turbo">GPT-4 Turbo</option>
-              <option value="gpt-3.5-turbo">GPT-3.5 (Cheapest)</option>
-            </select>
-            <button class="save-btn" id="sb-openai" onclick="saveKey('openai')">💾 Save</button>
-            <button class="set-active-btn" style="background:rgba(16,163,127,.1);color:#10a37f;border-color:rgba(16,163,127,.3)" onclick="setAI('openai')">✅ Set Active</button>
-          </div>
-
-          <!-- Claude -->
-          <div class="api-card">
-            <div class="api-card-head">
-              <div class="api-ico ico-claude">🟣</div>
-              <div><div class="api-card-title">Claude</div><div class="api-card-sub">Sonnet · Opus · Haiku</div></div>
-              <div class="api-status off" id="st-claude">Off</div>
-            </div>
-            <div class="key-wrap">
-              <input type="password" id="k-claude" placeholder="sk-ant-api03-...">
-              <button class="eye-btn" onclick="eye('k-claude',this)">👁</button>
-            </div>
-            <select class="model-sel" id="m-claude">
-              <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
-              <option value="claude-opus-4-20250514">Claude Opus 4 (Best)</option>
-              <option value="claude-haiku-4-5-20251001">Claude Haiku (Fast)</option>
-            </select>
-            <button class="save-btn" id="sb-claude" onclick="saveKey('claude')">💾 Save</button>
-            <button class="set-active-btn" style="background:rgba(252,92,247,.1);color:#fc5cf7;border-color:rgba(252,92,247,.3)" onclick="setAI('claude')">✅ Set Active</button>
-          </div>
-
-          <!-- Gemini -->
-          <div class="api-card">
-            <div class="api-card-head">
-              <div class="api-ico ico-gemini">🔵</div>
-              <div><div class="api-card-title">Google Gemini</div><div class="api-card-sub">1.5 Pro · Flash · 2.0</div></div>
-              <div class="api-status off" id="st-gemini">Off</div>
-            </div>
-            <div class="key-wrap">
-              <input type="password" id="k-gemini" placeholder="AIza...">
-              <button class="eye-btn" onclick="eye('k-gemini',this)">👁</button>
-            </div>
-            <select class="model-sel" id="m-gemini">
-              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-              <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-              <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-            </select>
-            <button class="save-btn" id="sb-gemini" onclick="saveKey('gemini')">💾 Save</button>
-            <button class="set-active-btn" style="background:rgba(66,133,244,.1);color:#4285f4;border-color:rgba(66,133,244,.3)" onclick="setAI('gemini')">✅ Set Active</button>
-          </div>
-
-        </div>
-
-        <div class="sec-h">🔗 Integrations</div>
-        <div class="api-grid">
-
-          <!-- GitHub -->
-          <div class="api-card">
-            <div class="api-card-head">
-              <div class="api-ico ico-github">🐙</div>
-              <div><div class="api-card-title">GitHub</div><div class="api-card-sub">Auto-deploy to Vercel</div></div>
-              <div class="api-status off" id="st-github">Off</div>
-            </div>
-            <div class="key-wrap"><input type="password" id="k-github" placeholder="ghp_..."><button class="eye-btn" onclick="eye('k-github',this)">👁</button></div>
-            <label class="mini-label">GitHub Username</label>
-            <input class="mini-inp" id="gh-owner" placeholder="yourusername">
-            <label class="mini-label">Repository Name</label>
-            <input class="mini-inp" id="gh-repo" placeholder="my-website">
-            <label class="mini-label">Branch</label>
-            <input class="mini-inp" id="gh-branch" placeholder="main" value="main">
-            <label class="mini-label">File Path</label>
-            <input class="mini-inp" id="gh-file" placeholder="index.html" value="index.html">
-            <button class="save-btn" id="sb-github" onclick="saveKey('github')">💾 Save GitHub</button>
-          </div>
-
-          <!-- Supabase -->
-          <div class="api-card">
-            <div class="api-card-head">
-              <div class="api-ico ico-supabase">🟢</div>
-              <div><div class="api-card-title">Supabase</div><div class="api-card-sub">Bridge for Hostinger</div></div>
-              <div class="api-status off" id="st-supabase">Off</div>
-            </div>
-            <div class="key-wrap"><input type="password" id="k-supabase" placeholder="eyJhbGciOi..."><button class="eye-btn" onclick="eye('k-supabase',this)">👁</button></div>
-            <label class="mini-label">Project URL</label>
-            <input class="mini-inp" id="sb-url" placeholder="https://xxx.supabase.co">
-            <button class="save-btn" id="sb-supabase" onclick="saveKey('supabase')">💾 Save Supabase</button>
-            <div style="font-size:.72rem;color:var(--muted2);margin-top:.4rem;line-height:1.5;">
-              💡 Your Hostinger site loads content from Supabase automatically every 30s
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- ═══ SETTINGS ═══ -->
-      <div class="tab-panel" id="panel-settings" style="overflow-y:auto;">
-        <div class="sec-h">⚙️ Admin Settings</div>
-        <div class="api-card" style="margin-bottom:1rem;">
-          <h3 style="font-family:'Syne',sans-serif;font-size:.95rem;margin-bottom:1rem;">🔐 Change Admin Password</h3>
-          <label class="mini-label">Current Password</label>
-          <input class="mini-inp" type="password" id="cur-pass" placeholder="Current password">
-          <label class="mini-label">New Password</label>
-          <input class="mini-inp" type="password" id="new-pass" placeholder="New password">
-          <label class="mini-label">Confirm New Password</label>
-          <input class="mini-inp" type="password" id="conf-pass" placeholder="Confirm new password">
-          <button class="save-btn" onclick="changePass()">🔐 Update Password</button>
-        </div>
-
-        <div class="api-card" style="margin-bottom:1rem;">
-          <h3 style="font-family:'Syne',sans-serif;font-size:.95rem;margin-bottom:1rem;">🤖 AI Behavior</h3>
-          <div class="toggle-wrap">
-            <label>Auto-push to GitHub after AI updates</label>
-            <label class="toggle"><input type="checkbox" id="tog-autopush"><span class="toggle-slider"></span></label>
-          </div>
-          <div class="toggle-wrap">
-            <label>Auto-sync Supabase after AI updates</label>
-            <label class="toggle"><input type="checkbox" id="tog-autosync" checked><span class="toggle-slider"></span></label>
-          </div>
-          <div class="toggle-wrap">
-            <label>Save version history</label>
-            <label class="toggle"><input type="checkbox" id="tog-history" checked><span class="toggle-slider"></span></label>
-          </div>
-          <button class="save-btn" onclick="saveSettings()">💾 Save Settings</button>
-        </div>
-
-        <div class="api-card">
-          <h3 style="font-family:'Syne',sans-serif;font-size:.95rem;margin-bottom:1rem;">🌐 Hostinger Setup</h3>
-          <div style="font-size:.82rem;color:var(--muted2);line-height:1.7;">
-            <p style="margin-bottom:.5rem;">To use with Hostinger:</p>
-            <p>1️⃣ Download the <strong>index.html</strong> (Hostinger file) below</p>
-            <p>2️⃣ Edit it — add your Supabase URL and key</p>
-            <p>3️⃣ Upload to Hostinger via File Manager</p>
-            <p>4️⃣ Your public site auto-loads from Supabase! ✅</p>
-          </div>
-          <button class="save-btn" style="margin-top:1rem" onclick="downloadHostingerFile()">⬇️ Download Hostinger index.html</button>
-        </div>
-      </div>
-
-    </div><!-- /content -->
-  </div><!-- /main -->
-</div><!-- /adminScreen -->
-
-<script>
-// ════════════════════════════════════════
-//  CONFIG
-// ════════════════════════════════════════
-let ADMIN_PASS = 'Admin@2025!';
-const ADMIN_USER = 'admin';
-
-// ════════════════════════════════════════
-//  STATE
-// ════════════════════════════════════════
-const S = {
-  ai:'openai',
-  keys:{openai:'',claude:'',gemini:'',github:'',supabase:'',sbUrl:''},
-  models:{openai:'gpt-4o',claude:'claude-sonnet-4-20250514',gemini:'gemini-1.5-pro'},
-  repo:{owner:'',repo:'',branch:'main',file:'index.html'},
-  html:'',
-  history:[],
-  stats:{deploys:0,syncs:0,msgs:0},
-  settings:{autopush:false,autosync:true,saveHistory:true},
-  chatHistory:[]
-};
-
-function load(){
-  try{
-    const d=JSON.parse(localStorage.getItem('aai_pro')||'{}');
-    if(d.keys) Object.assign(S.keys,d.keys);
-    if(d.models) Object.assign(S.models,d.models);
-    if(d.repo) Object.assign(S.repo,d.repo);
-    if(d.settings) Object.assign(S.settings,d.settings);
-    S.html=d.html||'';
-    S.history=d.history||[];
-    S.stats=d.stats||{deploys:0,syncs:0,msgs:0};
-    S.ai=d.ai||'openai';
-    if(d.pass) ADMIN_PASS=d.pass;
-  }catch(e){}
-}
-function save(){
-  localStorage.setItem('aai_pro',JSON.stringify({
-    keys:S.keys,models:S.models,repo:S.repo,
-    settings:S.settings,html:S.html,
-    history:S.history.slice(-20),
-    stats:S.stats,ai:S.ai,pass:ADMIN_PASS
-  }));
-}
-
-// ════════════════════════════════════════
-//  AUTH
-// ════════════════════════════════════════
-function doLogin(){
-  const u=v('lu'),p=v('lp');
-  if(u===ADMIN_USER&&p===ADMIN_PASS){
-    sessionStorage.setItem('ok','1');
-    g('lerr').style.display='none';
-    g('lp').value='';
-    showAdmin();
-  } else {
-    g('lerr').style.display='block';
-    g('lp').value='';
-  }
-}
-function logout(){sessionStorage.removeItem('ok');location.hash='';showLogin();}
-function showLogin(){g('loginScreen').classList.add('active');g('adminScreen').classList.remove('active');}
-function showAdmin(){g('loginScreen').classList.remove('active');g('adminScreen').classList.add('active');initAdmin();}
-g('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-g('lu').addEventListener('keydown',e=>{if(e.key==='Enter')g('lp').focus();});
-
-function changePass(){
-  const cur=v('cur-pass'),np=v('new-pass'),cp=v('conf-pass');
-  if(cur!==ADMIN_PASS){toast('❌ Current password wrong','e');return;}
-  if(np.length<6){toast('❌ Password too short (min 6)','e');return;}
-  if(np!==cp){toast('❌ Passwords do not match','e');return;}
-  ADMIN_PASS=np;save();
-  g('cur-pass').value='';g('new-pass').value='';g('conf-pass').value='';
-  toast('✅ Password updated!','s');
-}
-
-// ════════════════════════════════════════
-//  INIT
-// ════════════════════════════════════════
-function initAdmin(){
-  load();
-  fill('k-openai',S.keys.openai);fill('k-claude',S.keys.claude);
-  fill('k-gemini',S.keys.gemini);fill('k-github',S.keys.github);
-  fill('k-supabase',S.keys.supabase);fill('sb-url',S.keys.sbUrl);
-  fill('gh-owner',S.repo.owner);fill('gh-repo',S.repo.repo);
-  fill('gh-branch',S.repo.branch);fill('gh-file',S.repo.file);
-  fill('m-openai',S.models.openai);fill('m-claude',S.models.claude);fill('m-gemini',S.models.gemini);
-  g('aiSel').value=S.ai;
-  g('tog-autopush').checked=S.settings.autopush;
-  g('tog-autosync').checked=S.settings.autosync;
-  g('tog-history').checked=S.settings.saveHistory;
-  if(S.keys.openai)markOn('openai');
-  if(S.keys.claude)markOn('claude');
-  if(S.keys.gemini)markOn('gemini');
-  if(S.keys.github)markOn('github');
-  if(S.keys.supabase)markOn('supabase');
-  updateStatus();updateAnalytics();renderHistory();
-}
-
-// ════════════════════════════════════════
-//  TABS
-// ════════════════════════════════════════
-const tabTitles={chat:'AI Chat',website:'Live Preview',builder:'Page Builder',analytics:'Analytics',deploy:'Deploy Log',history:'Version History',apis:'API Keys',settings:'Settings'};
-function goTab(name){
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  g('panel-'+name).classList.add('active');
-  const tb=g('t-'+name);if(tb)tb.classList.add('active');
-  g('pageTitle').textContent=tabTitles[name]||name;
-  closeSidebar();
-  if(name==='website')refreshPreview();
-  if(name==='analytics')updateAnalytics();
-  if(name==='history')renderHistory();
-}
-
-// ════════════════════════════════════════
-//  MOBILE SIDEBAR
-// ════════════════════════════════════════
-function toggleSidebar(){
-  g('sidebar').classList.toggle('open');
-  g('overlay').classList.toggle('show');
-}
-function closeSidebar(){
-  g('sidebar').classList.remove('open');
-  g('overlay').classList.remove('show');
-}
-
-// ════════════════════════════════════════
-//  AI PROVIDER
-// ════════════════════════════════════════
-const pName=p=>({openai:'OpenAI',claude:'Claude',gemini:'Gemini'}[p]||p);
-const pEmoji=p=>({openai:'🟢',claude:'🟣',gemini:'🔵'}[p]||'🤖');
-
-function changeAI(){S.ai=g('aiSel').value;save();updateStatus();}
-function setAI(p){S.ai=p;g('aiSel').value=p;save();updateStatus();toast('✅ '+pName(p)+' set as active!','s');}
-
-function updateStatus(){
-  const key=S.keys[S.ai];
-  const dot=g('aiDot'),sdot=g('sDot'),sl=g('sLabel');
-  if(key){
-    dot.style.cssText='background:var(--success);box-shadow:0 0 6px var(--success)';
-    sdot.style.cssText=dot.style.cssText;
-    sl.textContent=pName(S.ai)+' ✓';
-  } else {
-    dot.style.cssText='background:var(--muted)';
-    sdot.style.cssText=dot.style.cssText;
-    sl.textContent=pName(S.ai)+' — No key';
-  }
-}
-
-// ════════════════════════════════════════
-//  API KEYS
-// ════════════════════════════════════════
-function eye(id,btn){
-  const el=g(id);el.type=el.type==='password'?'text':'password';
-  btn.textContent=el.type==='password'?'👁':'🙈';
-}
-function saveKey(svc){
-  if(svc==='openai'){S.keys.openai=v('k-openai');S.models.openai=v('m-openai');}
-  else if(svc==='claude'){S.keys.claude=v('k-claude');S.models.claude=v('m-claude');}
-  else if(svc==='gemini'){S.keys.gemini=v('k-gemini');S.models.gemini=v('m-gemini');}
-  else if(svc==='github'){
-    S.keys.github=v('k-github');S.repo.owner=v('gh-owner');
-    S.repo.repo=v('gh-repo');S.repo.branch=v('gh-branch')||'main';S.repo.file=v('gh-file')||'index.html';
-  }
-  else if(svc==='supabase'){S.keys.supabase=v('k-supabase');S.keys.sbUrl=v('sb-url');}
-  markOn(svc);save();updateStatus();
-  toast('✅ '+svc+' saved!','s');
-}
-function markOn(svc){
-  const el=g('st-'+svc),btn=g('sb-'+svc);
-  if(el){el.textContent='✓ On';el.className='api-status on';}
-  if(btn){btn.textContent='✓ Saved';btn.classList.add('done');}
-  const cs=g('cs-'+svc);if(cs){cs.textContent='✓ Connected';cs.className='api-status on';}
-}
-function saveSettings(){
-  S.settings.autopush=g('tog-autopush').checked;
-  S.settings.autosync=g('tog-autosync').checked;
-  S.settings.saveHistory=g('tog-history').checked;
-  save();toast('✅ Settings saved!','s');
-}
-
-// ════════════════════════════════════════
-//  CHAT
-// ════════════════════════════════════════
-function qi(t){g('cta').value=t;g('cta').focus();goTab('chat');}
-function clearChat(){g('msgs').innerHTML='';S.chatHistory=[];}
-function ck(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
-function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,130)+'px';}
-
-async function send(){
-  const ta=g('cta'),msg=ta.value.trim();
-  if(!msg)return;
-  const key=S.keys[S.ai];
-  if(!key){toast('⚠️ No '+pName(S.ai)+' key! Go to API Keys.','w');goTab('apis');return;}
-  ta.value='';ta.style.height='auto';
-  g('sendBtn').disabled=true;
-  addMsg('user',msg);
-  S.stats.msgs++;S.chatHistory.push({role:'user',content:msg});
-
-  const sys=`You are AdminAI Pro — an expert web developer AI assistant managing a website.
-Current website HTML (full):
-${S.html||'(empty — create a beautiful complete website from scratch)'}
-
-IMPORTANT RULES:
-1. When updating/creating website HTML, ALWAYS wrap it: <WEBSITE_HTML>complete html here</WEBSITE_HTML>
-2. For GitHub push: <GITHUB_PUSH>{"message":"commit msg"}</GITHUB_PUSH>
-3. For Supabase save: <SUPABASE_SAVE>true</SUPABASE_SAVE>
-4. Write COMPLETE beautiful production HTML — include all CSS inline in <style> tags, all JS in <script> tags
-5. Make designs stunning: gradients, animations, glassmorphism, modern fonts from Google Fonts
-6. Always make websites MOBILE RESPONSIVE
-7. Be creative and make designs that look professional and modern`;
-
-  const tid=showTyping();
-  try{
-    let reply='';
-    if(S.ai==='openai') reply=await callOAI(sys);
-    else if(S.ai==='claude') reply=await callClaude(sys);
-    else if(S.ai==='gemini') reply=await callGemini(sys);
-    removeTyping(tid);
-    S.chatHistory.push({role:'assistant',content:reply});
-    processReply(reply);
-  }catch(err){
-    removeTyping(tid);
-    addMsg('ai','❌ Error: '+err.message+'\n\nCheck your '+pName(S.ai)+' API key in the API Keys tab.');
-    addLog('❌ '+pName(S.ai)+': '+err.message,'e');
-  }
-  g('sendBtn').disabled=false;save();
-}
-
-async function callOAI(sys){
-  const msgs=[{role:'system',content:sys},...S.chatHistory.slice(-14)];
-  const r=await fetch('https://api.openai.com/v1/chat/completions',{
-    method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.keys.openai},
-    body:JSON.stringify({model:S.models.openai,messages:msgs,max_tokens:4096})
-  });
-  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'HTTP '+r.status);}
-  return (await r.json()).choices[0].message.content;
-}
-async function callClaude(sys){
-  const r=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':S.keys.claude,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:S.models.claude,max_tokens:4096,system:sys,messages:S.chatHistory.slice(-14)})
-  });
-  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'HTTP '+r.status);}
-  return (await r.json()).content[0].text;
-}
-async function callGemini(sys){
-  const contents=S.chatHistory.slice(-14).map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]}));
-  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${S.models.gemini}:generateContent?key=${S.keys.gemini}`,{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents,generationConfig:{maxOutputTokens:4096}})
-  });
-  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'HTTP '+r.status);}
-  const d=await r.json();
-  if(!d.candidates?.[0]?.content?.parts?.[0]?.text)throw new Error('No response from Gemini');
-  return d.candidates[0].content.parts[0].text;
-}
-
-function processReply(reply){
-  const wm=reply.match(/<WEBSITE_HTML>([\s\S]*?)<\/WEBSITE_HTML>/);
-  const gm=reply.match(/<GITHUB_PUSH>([\s\S]*?)<\/GITHUB_PUSH>/);
-  const sm=reply.match(/<SUPABASE_SAVE>true<\/SUPABASE_SAVE>/);
-
-  let display=reply
-    .replace(/<WEBSITE_HTML>[\s\S]*?<\/WEBSITE_HTML>/g,'')
-    .replace(/<GITHUB_PUSH>[\s\S]*?<\/GITHUB_PUSH>/g,'')
-    .replace(/<SUPABASE_SAVE>[\s\S]*?<\/SUPABASE_SAVE>/g,'')
-    .trim();
-
-  if(wm){
-    S.html=wm[1].trim();
-    addVersion('AI Update');
-    if(S.settings.autosync&&S.keys.supabase&&S.keys.sbUrl)syncSB();
-    if(S.settings.autopush&&S.keys.github&&S.repo.owner)pushGH();
-    display+='\n\n✅ Website updated! Check Live Preview tab.';
-    addLog('✅ Website HTML updated by '+pName(S.ai),'s');
-    toast('✅ Website updated!','s');
-  }
-  if(gm||(!wm&&reply.toLowerCase().includes('github'))){}
-  if(sm)syncSB();
-
-  addMsg('ai',display,S.ai);
-  save();
-}
-
-function addMsg(role,text,provider=''){
-  const c=g('msgs');
-  const w=document.createElement('div');w.className='msg '+role;
-  const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  const badge=provider?`<span class="ai-tag">${pEmoji(provider)} ${pName(provider)}</span>`:'';
-  const html=esc(text).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
-  w.innerHTML=`<div class="msg-bubble">${html}</div><div class="msg-meta"><span>${t}</span>${badge}</div>`;
-  c.appendChild(w);c.scrollTop=c.scrollHeight;
-}
-function showTyping(){
-  const c=g('msgs'),id='ty'+Date.now(),d=document.createElement('div');
-  d.className='msg ai';d.id=id;
-  d.innerHTML='<div class="msg-bubble"><div class="typing-wrap"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>';
-  c.appendChild(d);c.scrollTop=c.scrollHeight;return id;
-}
-function removeTyping(id){const el=g(id);if(el)el.remove();}
-
-// ════════════════════════════════════════
-//  PREVIEW
-// ════════════════════════════════════════
-function refreshPreview(){
-  const f=g('pFrame');
-  if(S.html){f.srcdoc=S.html;g('pUrl').textContent='Website Preview';}
-  else f.srcdoc=`<html><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;background:#050508;color:#666;flex-direction:column;gap:1rem;text-align:center"><div style="font-size:3rem">🌐</div><p>No website yet.<br>Use AI Chat to generate!</p></body></html>`;
-}
-function openInNew(){
-  if(!S.html){toast('No website yet!','w');return;}
-  const b=URL.createObjectURL(new Blob([S.html],{type:'text/html'}));
-  window.open(b,'_blank');
-}
-function copyHTML(){
-  if(!S.html){toast('No HTML yet!','w');return;}
-  navigator.clipboard.writeText(S.html).then(()=>toast('✅ HTML copied!','s'));
-}
-function setDevice(mode,btn){
-  const f=g('pFrame');
-  document.querySelectorAll('.dev-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  if(mode==='mobile'){f.style.width='375px';f.style.margin='0 auto';}
-  else if(mode==='tablet'){f.style.width='768px';f.style.margin='0 auto';}
-  else{f.style.width='100%';f.style.margin='0';}
-}
-
-// ════════════════════════════════════════
-//  DEPLOY
-// ════════════════════════════════════════
-async function pushGH(){
-  if(!S.html){toast('⚠️ No website to push!','w');return;}
-  if(!S.keys.github){toast('⚠️ Add GitHub token!','w');goTab('apis');return;}
-  if(!S.repo.owner||!S.repo.repo){toast('⚠️ Set repo details!','w');goTab('apis');return;}
-  addLog('📤 Pushing to GitHub...','i');
-  try{
-    const{owner,repo,branch,file}=S.repo;
-    const h={'Authorization':'token '+S.keys.github,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'};
-    let sha=null;
-    try{const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${branch}`,{headers:h});if(r.ok)sha=(await r.json()).sha;}catch(e){}
-    const body={message:'AdminAI update — '+new Date().toLocaleString(),content:btoa(unescape(encodeURIComponent(S.html))),branch};
-    if(sha)body.sha=sha;
-    const res=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${file}`,{method:'PUT',headers:h,body:JSON.stringify(body)});
-    if(res.ok){
-      S.stats.deploys++;
-      addLog(`✅ Pushed: ${owner}/${repo}/${file} [${branch}]`,'s');
-      toast('✅ Pushed to GitHub!','s');
-      addVersion('GitHub Push');
-      save();updateAnalytics();
-    } else {const e=await res.json();throw new Error(e.message);}
-  }catch(e){addLog('❌ GitHub: '+e.message,'e');toast('❌ Push failed: '+e.message,'e');}
-}
-
-async function syncSB(){
-  if(!S.keys.supabase||!S.keys.sbUrl){toast('⚠️ Set Supabase in API Keys!','w');return;}
-  addLog('💾 Syncing Supabase...','i');
-  try{
-    const res=await fetch(`${S.keys.sbUrl}/rest/v1/website_data`,{
-      method:'POST',
-      headers:{'apikey':S.keys.supabase,'Authorization':'Bearer '+S.keys.supabase,'Content-Type':'application/json','Prefer':'return=minimal'},
-      body:JSON.stringify({html:S.html,updated_at:new Date().toISOString()})
-    });
-    if(res.ok||res.status===201){
-      S.stats.syncs++;
-      addLog('✅ Supabase synced!','s');
-      toast('✅ Supabase synced!','s');
-      save();updateAnalytics();
-    } else throw new Error(await res.text());
-  }catch(e){addLog('❌ Supabase: '+e.message,'e');toast('❌ Supabase failed','e');}
-}
-
-async function deployAll(){
-  if(!S.html){toast('⚠️ No website yet!','w');return;}
-  toast('🚀 Deploying all...','s');
-  await pushGH();
-  await syncSB();
-  toast('✅ All deployed!','s');
-}
-
-function addLog(msg,type=''){
-  const l=g('log'),d=document.createElement('div');
-  d.className='ll '+(type||'');
-  d.textContent=`[${new Date().toLocaleTimeString()}] ${msg}`;
-  l.appendChild(d);l.scrollTop=l.scrollHeight;
-}
-function clearLog(){g('log').innerHTML='<div class="ll i">$ Log cleared</div>';}
-
-// ════════════════════════════════════════
-//  VERSION HISTORY
-// ════════════════════════════════════════
-function addVersion(label){
-  if(!S.settings.saveHistory)return;
-  S.history.unshift({label,time:new Date().toISOString(),size:S.html.length,preview:S.html.substring(0,200)});
-  if(S.history.length>20)S.history.pop();
-  S.stats.deploys++;
-}
-function renderHistory(){
-  const c=g('historyList');
-  if(!S.history.length){c.innerHTML='<div style="color:var(--muted2);text-align:center;padding:2rem;font-size:.85rem;">No versions yet.</div>';return;}
-  c.innerHTML=S.history.map((v,i)=>`
-    <div class="api-card" style="padding:.8rem 1rem">
-      <div style="display:flex;align-items:center;gap:.7rem">
-        <div style="width:36px;height:36px;border-radius:8px;background:rgba(124,92,252,.15);display:flex;align-items:center;justify-content:center;font-size:1rem">📄</div>
-        <div style="flex:1">
-          <div style="font-size:.85rem;font-weight:600">${v.label}</div>
-          <div style="font-size:.72rem;color:var(--muted2)">${new Date(v.time).toLocaleString()} · ${(v.size/1024).toFixed(1)}KB</div>
-        </div>
-        <button class="icon-btn" onclick="restoreVersion(${i})">↩ Restore</button>
-      </div>
-    </div>
-  `).join('');
-}
-function restoreVersion(i){
-  if(!confirm('Restore this version? Current version will be lost.'))return;
-  S.html=S.history[i].html||S.html;
-  toast('✅ Version restored!','s');
-  save();
-}
-
-// ════════════════════════════════════════
-//  ANALYTICS
-// ════════════════════════════════════════
-function updateAnalytics(){
-  g('aDeployCount').textContent=S.stats.deploys||0;
-  g('aAIMessages').textContent=S.stats.msgs||0;
-  g('aVersions').textContent=S.history.length||0;
-  g('aProvider').textContent=pEmoji(S.ai)+' '+pName(S.ai);
-  g('aProviderStatus').textContent=S.keys[S.ai]?'✓ Connected':'No key set';
-  g('aProviderStatus').className='achange '+(S.keys[S.ai]?'up':'down');
-  // Update deploy stats
-  g('dCount').textContent=S.stats.deploys||0;
-  g('dSyncs').textContent=S.stats.syncs||0;
-  g('dVersions').textContent=S.history.length||0;
-  // Connection status
-  ['openai','claude','gemini','github','supabase'].forEach(k=>{
-    const el=g('cs-'+k);
-    if(el){
-      const has=k==='supabase'?S.keys.supabase&&S.keys.sbUrl:S.keys[k];
-      el.textContent=has?'✓ Connected':'Not set';
-      el.className='api-status '+(has?'on':'off');
-    }
-  });
-}
-
-// ════════════════════════════════════════
-//  HOSTINGER FILE DOWNLOAD
-// ════════════════════════════════════════
-function downloadHostingerFile(){
-  const sbUrl=S.keys.sbUrl||'https://YOUR-PROJECT.supabase.co';
-  const sbKey=S.keys.supabase||'YOUR-ANON-KEY-HERE';
-  const html=`<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>My Website</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-#loader{position:fixed;inset:0;background:#050508;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;z-index:999;}
-.ring{width:50px;height:50px;border-radius:50%;border:3px solid rgba(124,92,252,.2);border-top-color:#7c5cfc;animation:spin .9s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
-.ltxt{color:#6b6b88;font-family:sans-serif;font-size:.9rem;}
-#err{display:none;position:fixed;inset:0;background:#050508;align-items:center;justify-content:center;flex-direction:column;gap:1rem;text-align:center;padding:2rem;font-family:sans-serif;}
-#err h2{color:#f0f0f8;}#err p{color:#6b6b88;max-width:400px;font-size:.85rem;}
-.ec{font-family:monospace;font-size:.75rem;color:#fc5c5c;background:rgba(252,92,92,.1);padding:.5rem 1rem;border-radius:6px;}
-</style>
-</head>
-<body>
-<div id="loader"><div class="ring"></div><div class="ltxt">Loading...</div></div>
-<div id="err"><div style="font-size:3rem">⚠️</div><h2>Could not load</h2><p>Check Supabase config</p><div class="ec" id="ec"></div></div>
-<div id="site"></div>
-<script>
-const URL2='${sbUrl}';
-const KEY='${sbKey}';
-async function load(){
-  try{
-    const r=await fetch(URL2+'/rest/v1/website_data?select=html&order=id.desc&limit=1',{
-      headers:{'apikey':KEY,'Authorization':'Bearer '+KEY}
-    });
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const d=await r.json();
-    if(!d.length||!d[0].html)throw new Error('No content in Supabase yet');
-    document.getElementById('loader').style.display='none';
-    const s=document.getElementById('site');
-    s.innerHTML=d[0].html;
-    s.querySelectorAll('script').forEach(o=>{
-      const n=document.createElement('script');
-      [...o.attributes].forEach(a=>n.setAttribute(a.name,a.value));
-      n.textContent=o.textContent;o.parentNode.replaceChild(n,o);
-    });
-  }catch(e){
-    document.getElementById('loader').style.display='none';
-    const er=document.getElementById('err');
-    er.style.display='flex';
-    document.getElementById('ec').textContent=e.message;
-  }
-}
-load();
-setInterval(load,30000);
-<\/script>
+    <section id="contact" class="contact">
+        <h2>Contact Us</h2>
+        <p>We’d love to hear from you!</p>
+        <form action="#">
+            <input type="text" placeholder="Your Name" required>
+            <input type="email" placeholder="Your Email" required>
+            <textarea rows="5" placeholder="Your Message" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </section>
 </body>
-</html>`;
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
-  a.download='index.html';a.click();
-  toast('✅ Hostinger file downloaded!','s');
-}
 
-// ════════════════════════════════════════
-//  UTILS
-// ════════════════════════════════════════
-function g(id){return document.getElementById(id);}
-function v(id){return (g(id)?.value||'').trim();}
-function fill(id,val){const el=g(id);if(el&&val)el.value=val;}
-function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-function toast(msg,type=''){
-  const t=document.createElement('div');
-  t.className='toast '+(type||'');t.textContent=msg;
-  document.body.appendChild(t);
-  setTimeout(()=>t.style.opacity='0',2800);
-  setTimeout(()=>t.remove(),3200);
-}
-
-// ════════════════════════════════════════
-//  BOOT
-// ════════════════════════════════════════
-window.addEventListener('load',()=>{
-  load();
-  if(sessionStorage.getItem('ok')){showAdmin();}
-  else{
-    g('loginScreen').classList.add('active');
-    g('adminScreen').classList.remove('active');
-  }
-});
-
-// Secret access via URL hash
-window.addEventListener('hashchange',()=>{
-  if(location.hash==='#admin'){
-    if(sessionStorage.getItem('ok'))showAdmin();
-    else{
-      g('loginScreen').classList.add('active');
-      g('adminScreen').classList.remove('active');
-    }
-  }
-});
-
-// Keyboard shortcut
-document.addEventListener('keydown',e=>{
-  if(e.ctrlKey&&e.shiftKey&&e.key==='A'){location.hash='#admin';}
-});
-</script>
-</body>
 </html>
