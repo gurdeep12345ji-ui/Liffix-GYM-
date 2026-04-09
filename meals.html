@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meal Planner — Liffix GYM AI</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.mtabs{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:1.4rem;}
+.mtab{background:var(--bg3);border:1px solid var(--br);color:var(--t2);padding:.48rem 1.1rem;border-radius:100px;cursor:pointer;font-size:.78rem;font-weight:600;letter-spacing:.4px;transition:.2s;}
+.mtab.on{background:var(--g);color:#000;border-color:var(--g);}
+.mpanel{display:none;}.mpanel.on{display:block;}
+.cal-bar{background:var(--bg2);border:1px solid var(--br);border-radius:12px;padding:1.2rem;margin-bottom:1.4rem;display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;}
+.cb-item{text-align:center;}
+.cb-val{font-family:'Bebas Neue',sans-serif;font-size:1.75rem;line-height:1;}
+.cb-lbl{font-size:.62rem;color:var(--t3);text-transform:uppercase;letter-spacing:1px;}
+.msec-h{display:flex;align-items:center;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid var(--br);margin-bottom:.65rem;margin-top:1rem;}
+.msec-l{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:1px;}
+.add-r{border:1px dashed var(--br);border-radius:8px;padding:.65rem 1rem;text-align:center;cursor:pointer;font-size:.76rem;color:var(--t3);transition:.2s;margin-top:.3rem;}
+.add-r:hover{border-color:var(--bn);color:var(--g);}
+.week-g{display:grid;grid-template-columns:repeat(7,1fr);gap:.45rem;}
+.wdc{background:var(--bg3);border:1px solid var(--br);border-radius:10px;padding:.65rem .45rem;min-height:150px;}
+.wdc.today{border-color:var(--g);}
+.wdn{font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:1px;color:var(--g);text-align:center;margin-bottom:.45rem;border-bottom:1px solid var(--br);padding-bottom:.35rem;}
+.wmc{background:var(--bg4);border-radius:4px;padding:.28rem .35rem;font-size:.58rem;color:var(--t2);margin-bottom:.2rem;line-height:1.3;}
+.gro-item{display:flex;align-items:center;justify-content:space-between;padding:.65rem .85rem;background:var(--bg3);border:1px solid var(--br);border-radius:8px;margin-bottom:.45rem;}
+.gro-l{display:flex;align-items:center;gap:.7rem;}
+.gro-ico{font-size:1.2rem;width:26px;text-align:center;}
+.gro-name{font-size:.83rem;font-weight:600;}
+.gro-sub{font-size:.68rem;color:var(--t3);}
+.gro-price{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;color:var(--g);}
+.fr-item{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1rem;background:var(--bg3);border:1px solid var(--br);border-radius:8px;margin-bottom:.45rem;transition:.2s;}
+.fr-item:hover{border-color:var(--bn);}
+.fr-name{font-size:.83rem;font-weight:600;}
+.fr-sub{font-size:.68rem;color:var(--t3);margin-top:2px;}
+.fr-kcal{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--g);}
+@media(max-width:900px){.week-g{grid-template-columns:repeat(4,1fr);}}
+@media(max-width:580px){.week-g{grid-template-columns:repeat(2,1fr);}.cal-bar{gap:.9rem;}}
+</style>
+</head>
+<body>
+<script src="../assets/app.js"></script>
+<script>buildNav('Meals');</script>
+
+<div class="ph">
+  <div class="wrap">
+    <span class="eyebrow">Nutrition Center</span>
+    <h1 style="font-size:clamp(2rem,6vw,3rem);">MEAL <span class="text-g">PLANNER</span></h1>
+    <p style="color:var(--t2);font-size:.86rem;margin-top:.25rem;">Log meals, build plans, or let AI do it — budget-friendly options included.</p>
+  </div>
+</div>
+
+<section class="sec-sm">
+  <div class="wrap">
+    <!-- CALORIE BAR -->
+    <div class="cal-bar an">
+      <div class="cb-item"><div class="cb-val text-g">1,540</div><div class="cb-lbl">Eaten</div></div>
+      <div style="flex:1;min-width:80px;"><div class="track" style="height:7px;"><div class="fill f-g" style="width:67%"></div></div></div>
+      <div class="cb-item"><div class="cb-val">2,290</div><div class="cb-lbl">Goal</div></div>
+      <div style="width:1px;height:38px;background:var(--br);"></div>
+      <div class="cb-item"><div class="cb-val text-b">750</div><div class="cb-lbl">Left</div></div>
+      <div class="cb-item"><div class="cb-val" style="color:var(--or)">128g</div><div class="cb-lbl">Protein</div></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="mtabs">
+      <button class="mtab on" onclick="mTab('today',this)">📅 Today</button>
+      <button class="mtab" onclick="mTab('week',this)">📆 Weekly</button>
+      <button class="mtab" onclick="mTab('budget',this)">💸 Budget</button>
+      <button class="mtab" onclick="mTab('search',this)">🔍 Food Search</button>
+    </div>
+
+    <!-- TODAY -->
+    <div class="mpanel on" id="mp-today">
+      <div class="df g2 mb3 an" style="flex-wrap:wrap;">
+        <button class="btn btn-p" onclick="toast('🤖 AI building your full day plan...','🤖')">🤖 Auto Plan My Day</button>
+        <button class="btn btn-o" onclick="toast('Log exported!','📄')">Export Log</button>
+      </div>
+      <div class="an">
+        <div class="msec-h"><span class="msec-l">🌅 Breakfast</span><span style="font-size:.72rem;color:var(--t3)">380 kcal</span></div>
+        <div class="mrow"><div class="moji">🥣</div><div class="minfo"><div class="mname">Oats with Banana & Honey</div><div class="msub">P:12g · C:68g · F:6g</div></div><div class="mkcal">380</div></div>
+        <div class="add-r" onclick="toast('Food search opened','🔍')">+ Add Breakfast Item</div>
+
+        <div class="msec-h"><span class="msec-l">☀️ Lunch</span><span style="font-size:.72rem;color:var(--t3)">620 kcal</span></div>
+        <div class="mrow"><div class="moji">🍗</div><div class="minfo"><div class="mname">Grilled Chicken Rice Bowl</div><div class="msub">P:52g · C:65g · F:8g</div></div><div class="mkcal">620</div></div>
+        <div class="add-r" onclick="toast('Food search opened','🔍')">+ Add Lunch Item</div>
+
+        <div class="msec-h"><span class="msec-l">⚡ Pre-Workout</span><span style="font-size:.72rem;color:var(--t3)">260 kcal</span></div>
+        <div class="mrow"><div class="moji">🍌</div><div class="minfo"><div class="mname">Banana + Black Coffee</div><div class="msub">P:1g · C:27g · F:0g</div></div><div class="mkcal">105</div></div>
+        <div class="mrow"><div class="moji">🥛</div><div class="minfo"><div class="mname">Whey Protein Shake</div><div class="msub">P:24g · C:3g · F:1g</div></div><div class="mkcal">117</div></div>
+
+        <div class="msec-h"><span class="msec-l">🌙 Dinner</span><span style="color:var(--g);font-size:.72rem">750 kcal remaining</span></div>
+        <div style="background:var(--bg3);border:1px solid var(--bn);border-radius:10px;padding:1.1rem;text-align:center;">
+          <p style="font-size:.83rem;color:var(--t2);margin-bottom:.8rem;">You have <strong style="color:var(--g)">750 kcal</strong> left. Need <strong style="color:var(--g)">32g more protein</strong>.</p>
+          <div class="df g2" style="justify-content:center;flex-wrap:wrap;">
+            <button class="btn btn-p btn-sm" onclick="toast('🤖 AI suggests: Salmon + sweet potato + broccoli = 740 kcal · 52g protein','🤖')">🤖 AI Suggest Dinner</button>
+            <button class="btn btn-o btn-sm" onclick="mTab('search',document.querySelectorAll('.mtab')[3])">Search Food</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEKLY -->
+    <div class="mpanel" id="mp-week">
+      <div class="df g2 mb3 an" style="flex-wrap:wrap;">
+        <button class="btn btn-p" onclick="toast('🤖 Building your 7-day meal plan...','🤖')">🤖 Generate Week Plan</button>
+        <button class="btn btn-o" onclick="toast('Plan printed!','🖨️')">Print Plan</button>
+      </div>
+      <div class="week-g an">
+        <div class="wdc today"><div class="wdn">MON</div><div class="wmc">🥣 Oats+Banana</div><div class="wmc">🍗 Chicken Rice</div><div class="wmc">🥛 Protein Shake</div><div class="wmc">🐟 Salmon Bowl</div></div>
+        <div class="wdc"><div class="wdn">TUE</div><div class="wmc">🍳 Eggs+Toast</div><div class="wmc">🥗 Tuna Salad</div><div class="wmc">🍎 Apple+PB</div><div class="wmc">🥩 Lean Beef</div></div>
+        <div class="wdc"><div class="wdn">WED</div><div class="wmc">🥛 Greek Yogurt</div><div class="wmc">🍗 Turkey Wrap</div><div class="wmc">🥛 Whey Shake</div><div class="wmc">🍝 Chicken Pasta</div></div>
+        <div class="wdc"><div class="wdn">THU</div><div class="wmc">🥚 Scrambled Eggs</div><div class="wmc">🍗 Chicken Rice</div><div class="wmc">🍫 Protein Bar</div><div class="wmc">🐟 Tilapia</div></div>
+        <div class="wdc"><div class="wdn">FRI</div><div class="wmc">🥣 Overnight Oats</div><div class="wmc">🥗 Chicken Salad</div><div class="wmc">🍌 Banana</div><div class="wmc">🥩 Steak+Veg</div></div>
+        <div class="wdc"><div class="wdn">SAT</div><div class="wmc">🍳 Full Breakfast</div><div class="wmc">🍗 Meal Prep</div><div class="wmc">🥛 Protein Shake</div><div class="wmc">🍣 Sushi Bowl</div></div>
+        <div class="wdc"><div class="wdn">SUN</div><div class="wmc">🥞 Protein Pancakes</div><div class="wmc">🥗 Big Salad</div><div class="wmc">🍎 Fruit+Nuts</div><div class="wmc">🍗 Roast Chicken</div></div>
+      </div>
+    </div>
+
+    <!-- BUDGET -->
+    <div class="mpanel" id="mp-budget">
+      <div class="card card-p2 mb3 an">
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:1px;margin-bottom:1.1rem;">💸 BUDGET MEAL PLANNER</h3>
+        <div class="frow">
+          <div class="fg"><label class="fl">Monthly Budget</label><input class="fc" type="number" id="bgt-amt" placeholder="100" value="100"></div>
+          <div class="fg"><label class="fl">Country / Currency</label>
+            <select class="fc" id="bgt-cur">
+              <option>£ GBP — United Kingdom</option>
+              <option>$ USD — United States</option>
+              <option>€ EUR — Europe</option>
+              <option>₹ INR — India</option>
+              <option>PKR — Pakistan</option>
+            </select>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label class="fl">Diet Preference</label><select class="fc"><option>No restriction</option><option>High protein</option><option>Vegetarian</option><option>Halal</option></select></div>
+          <div class="fg"><label class="fl">Meals Per Day</label><select class="fc"><option>3 meals</option><option selected>4 meals</option><option>5 meals</option></select></div>
+        </div>
+        <button class="btn btn-p" onclick="genBudget()">🤖 Generate Budget Plan →</button>
+      </div>
+      <div id="bgt-out">
+        <div class="df ac jb mb2 an" style="flex-wrap:wrap;gap:.7rem;">
+          <div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:1px;">GROCERY LIST — £100/MONTH</div><div style="font-size:.72rem;color:var(--t3);">Full macros · Avg 2,200 kcal/day · 160g protein</div></div>
+          <button class="btn btn-o btn-sm" onclick="toast('Grocery list exported!','🛒')">Export List</button>
+        </div>
+        <div class="an">
+          <div class="gro-item"><div class="gro-l"><span class="gro-ico">🥚</span><div><div class="gro-name">Free Range Eggs (30 × 4 packs)</div><div class="gro-sub">6g protein per egg · Versatile</div></div></div><div class="gro-price">£14</div></div>
+          <div class="gro-item"><div class="gro-l"><span class="gro-ico">🍗</span><div><div class="gro-name">Chicken Breast (1kg × 6)</div><div class="gro-sub">31g protein/100g · Lean</div></div></div><div class="gro-price">£30</div></div>
+          <div class="gro-item"><div class="gro-l"><span class="gro-ico">🌾</span><div><div class="gro-name">Porridge Oats (1kg × 3)</div><div class="gro-sub">Complex carbs · Cheap</div></div></div><div class="gro-price">£6</div></div>
+          <div class="gro-item"><div class="gro-l"><span class="gro-ico">🥛</span><div><div class="gro-name">Skimmed Milk (2L × 4)</div><div class="gro-sub">3.5g protein/100ml</div></div></div><div class="gro-price">£6</div></div>
+          <div class="gro-item"><div class="gro-l"><span class="gro-ico">🍌</span><div><div class="gro-name">Bananas (bunch × 4)</div><div class="gro-sub">Pre-workout fuel</div></div></div><div class="gro-price">£8</div></div>
+          <div class="gro-item"><div class="gro-l"><span class="gro-ico">🥦</span><div><div class="gro-name">Frozen Veg Mix (1kg × 4)</div><div class="gro-sub">Fiber + micronutrients</div></div></div><div class="gro-price">£8</div></div>
+          <div class="gro-item"><div class="gro-l"><span class="gro-ico">🍚</span><div><div class="gro-name">Brown Rice (1kg × 3)</div><div class="gro-sub">Complex carbs · Meal prep</div></div></div><div class="gro-price">£6</div></div>
+          <div class="gro-item"><div class="gro-l"><span class="gro-ico">🐟</span><div><div class="gro-name">Canned Tuna (160g × 8)</div><div class="gro-sub">26g protein/100g · Omega-3</div></div></div><div class="gro-price">£8</div></div>
+          <div class="df ac jb" style="padding:.9rem;background:rgba(57,255,20,.05);border:1px solid var(--bn);border-radius:10px;margin-top:.7rem;">
+            <span style="font-weight:600;font-size:.88rem;">Total</span>
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.45rem;color:var(--g);">£86 / £100</span>
+          </div>
+          <p style="font-size:.72rem;color:var(--t3);text-align:right;margin-top:.3rem;">£14 remaining for extras, spices, treats</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOD SEARCH -->
+    <div class="mpanel" id="mp-search">
+      <input class="fc mb2 an" type="text" placeholder="Search 100,000+ foods... (e.g. chicken, oats, banana)" style="font-size:.9rem;">
+      <div class="df g1 mb3 an" style="flex-wrap:wrap;">
+        <span class="qp" style="background:var(--bg3);border:1px solid var(--br);color:var(--t2);font-size:.72rem;padding:.32rem .7rem;border-radius:100px;cursor:pointer;" onclick="toast('Searching chicken...','🔍')">🍗 Chicken</span>
+        <span class="qp" style="background:var(--bg3);border:1px solid var(--br);color:var(--t2);font-size:.72rem;padding:.32rem .7rem;border-radius:100px;cursor:pointer;" onclick="toast('Searching eggs...','🔍')">🥚 Eggs</span>
+        <span class="qp" style="background:var(--bg3);border:1px solid var(--br);color:var(--t2);font-size:.72rem;padding:.32rem .7rem;border-radius:100px;cursor:pointer;" onclick="toast('Searching rice...','🔍')">🍚 Rice</span>
+        <span class="qp" style="background:var(--bg3);border:1px solid var(--br);color:var(--t2);font-size:.72rem;padding:.32rem .7rem;border-radius:100px;cursor:pointer;" onclick="toast('Searching oats...','🔍')">🌾 Oats</span>
+        <span class="qp" style="background:var(--bg3);border:1px solid var(--br);color:var(--t2);font-size:.72rem;padding:.32rem .7rem;border-radius:100px;cursor:pointer;" onclick="toast('Searching salmon...','🔍')">🐟 Salmon</span>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--br);border-radius:10px;overflow:hidden;" class="an">
+        <div class="fr-item"><div><div class="fr-name">Chicken Breast (cooked)</div><div class="fr-sub">per 100g · P:31g C:0g F:3.6g</div></div><div class="df ac g2"><div class="fr-kcal">165</div><button class="btn btn-no btn-sm" onclick="toast('Chicken Breast added!','✅')">+ Add</button></div></div>
+        <div class="fr-item"><div><div class="fr-name">Brown Rice (cooked)</div><div class="fr-sub">per 100g · P:2.7g C:22g F:0.9g</div></div><div class="df ac g2"><div class="fr-kcal">111</div><button class="btn btn-no btn-sm" onclick="toast('Brown Rice added!','✅')">+ Add</button></div></div>
+        <div class="fr-item"><div><div class="fr-name">Whole Eggs (large)</div><div class="fr-sub">per egg · P:6g C:0.6g F:5g</div></div><div class="df ac g2"><div class="fr-kcal">78</div><button class="btn btn-no btn-sm" onclick="toast('Egg added!','✅')">+ Add</button></div></div>
+        <div class="fr-item"><div><div class="fr-name">Porridge Oats (dry)</div><div class="fr-sub">per 100g · P:11g C:60g F:7g</div></div><div class="df ac g2"><div class="fr-kcal">389</div><button class="btn btn-no btn-sm" onclick="toast('Oats added!','✅')">+ Add</button></div></div>
+        <div class="fr-item"><div><div class="fr-name">Greek Yogurt (0% fat)</div><div class="fr-sub">per 100g · P:10g C:4g F:0.4g</div></div><div class="df ac g2"><div class="fr-kcal">59</div><button class="btn btn-no btn-sm" onclick="toast('Greek Yogurt added!','✅')">+ Add</button></div></div>
+        <div class="fr-item"><div><div class="fr-name">Salmon (raw)</div><div class="fr-sub">per 100g · P:20g C:0g F:13g</div></div><div class="df ac g2"><div class="fr-kcal">208</div><button class="btn btn-no btn-sm" onclick="toast('Salmon added!','✅')">+ Add</button></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+buildFooter();
+function mTab(id,btn){
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.mpanel').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('mp-'+id).classList.add('on');
+}
+function genBudget(){
+  const a=document.getElementById('bgt-amt').value||100;
+  const c=document.getElementById('bgt-cur').value.split('—')[0].trim().split(' ')[0];
+  toast(`🤖 Building your meal plan for ${c}${a}/month...`,'🤖');
+}
+</script>
+</body>
+</html>

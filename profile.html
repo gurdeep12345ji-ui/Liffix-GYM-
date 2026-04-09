@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Profile — Liffix GYM AI</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.prof-grid{display:grid;grid-template-columns:1fr 1.35fr;gap:1.5rem;}
+.sel-grid{display:grid;gap:.7rem;}
+.sel-card{background:var(--bg3);border:2px solid var(--br);border-radius:10px;padding:.95rem;text-align:center;cursor:pointer;transition:.2s;}
+.sel-card.on{border-color:var(--g);background:rgba(57,255,20,.06);}
+.sel-card:hover{border-color:var(--bn);}
+.sel-ico{font-size:1.6rem;margin-bottom:.35rem;}
+.sel-n{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:1px;margin-bottom:.2rem;}
+.sel-d{font-size:.66rem;color:var(--t3);line-height:1.4;}
+@media(max-width:900px){.prof-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<script src="../assets/app.js"></script>
+<script>buildNav('Profile');</script>
+
+<div class="ph">
+  <div class="wrap">
+    <span class="eyebrow">Body Data</span>
+    <h1 style="font-size:clamp(2rem,6vw,3rem);">MY <span class="text-g">PROFILE</span></h1>
+    <p style="color:var(--t2);font-size:.86rem;margin-top:.25rem;">Fill in your stats to get accurate AI-generated plans.</p>
+  </div>
+</div>
+
+<section class="sec-sm">
+  <div class="wrap">
+    <div class="prof-grid">
+
+      <!-- FORM -->
+      <div style="display:flex;flex-direction:column;gap:1.4rem;">
+
+        <div class="card card-p an">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;margin-bottom:1.1rem;color:var(--g);">PERSONAL STATS</div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Age</label><input class="fc" type="number" id="p-age" value="25" min="13" max="100" oninput="calcStats()"></div>
+            <div class="fg"><label class="fl">Gender</label>
+              <select class="fc" id="p-gender" onchange="calcStats()">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Weight (kg)</label><input class="fc" type="number" id="p-weight" value="82" min="30" max="300" oninput="calcStats()"></div>
+            <div class="fg"><label class="fl">Height (cm)</label><input class="fc" type="number" id="p-height" value="178" min="100" max="250" oninput="calcStats()"></div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Target Weight (kg)</label><input class="fc" type="number" value="75" min="30" max="300"></div>
+            <div class="fg"><label class="fl">Target Date</label><input class="fc" type="date" value="2025-10-01"></div>
+          </div>
+        </div>
+
+        <div class="card card-p an">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;margin-bottom:1.1rem;color:var(--g);">ACTIVITY LEVEL</div>
+          <div class="fg">
+            <label class="fl">Activity</label>
+            <select class="fc" id="p-activity" onchange="calcStats()">
+              <option value="1.2">Sedentary — little/no exercise</option>
+              <option value="1.375">Lightly Active — 1–3x/week</option>
+              <option value="1.55" selected>Moderately Active — 3–5x/week</option>
+              <option value="1.725">Very Active — 6–7x/week</option>
+              <option value="1.9">Extremely Active — twice daily</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="fl">Gym Days/Week: <span id="freq-lbl" style="color:var(--g);">4</span></label>
+            <input type="range" min="0" max="7" value="4" oninput="document.getElementById('freq-lbl').textContent=this.value">
+          </div>
+        </div>
+
+        <div class="card card-p an">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;margin-bottom:1rem;color:var(--g);">GOAL</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;">
+            <div class="sel-card" onclick="setGoal('cut',this)"><div class="sel-ico">🔥</div><div class="sel-n">Cut</div><div class="sel-d">Lose fat</div></div>
+            <div class="sel-card on" onclick="setGoal('maintain',this)"><div class="sel-ico">⚖️</div><div class="sel-n">Maintain</div><div class="sel-d">Stay lean</div></div>
+            <div class="sel-card" onclick="setGoal('bulk',this)"><div class="sel-ico">💪</div><div class="sel-n">Bulk</div><div class="sel-d">Build muscle</div></div>
+          </div>
+          <input type="hidden" id="p-goal" value="maintain">
+        </div>
+
+        <div class="card card-p an">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;margin-bottom:1rem;color:var(--g);">BODY TYPE</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;">
+            <div class="sel-card" onclick="setBT(this)"><div class="sel-ico">🦴</div><div class="sel-n">Ectomorph</div><div class="sel-d">Slim, fast metabolism</div></div>
+            <div class="sel-card on" onclick="setBT(this)"><div class="sel-ico">💪</div><div class="sel-n">Mesomorph</div><div class="sel-d">Athletic, gains easily</div></div>
+            <div class="sel-card" onclick="setBT(this)"><div class="sel-ico">🧱</div><div class="sel-n">Endomorph</div><div class="sel-d">Broader, gains fat easily</div></div>
+          </div>
+        </div>
+
+        <button class="btn btn-p btn-full btn-lg an" onclick="toast('✅ Profile saved! AI plan updated.','✅')">Save Profile & Update Plan →</button>
+      </div>
+
+      <!-- RESULTS -->
+      <div style="display:flex;flex-direction:column;gap:1.4rem;">
+
+        <div class="sgrid an">
+          <div class="sbox"><div class="sbox-l">BMI</div><div class="sbox-v" id="s-bmi">25.9</div><div class="sbox-s" id="s-bmi-cat">Overweight</div></div>
+          <div class="sbox"><div class="sbox-l">TDEE</div><div class="sbox-v" id="s-tdee">2,840</div><div class="sbox-s">kcal / day</div></div>
+          <div class="sbox"><div class="sbox-l">Target Calories</div><div class="sbox-v" id="s-target">2,840</div><div class="sbox-s" id="s-target-lbl">maintenance</div></div>
+          <div class="sbox"><div class="sbox-l">Body Type (AI)</div><div class="sbox-v" id="s-type" style="font-size:1.25rem;line-height:1.35;">Meso</div><div class="sbox-s" id="s-type-full">Mesomorph</div></div>
+        </div>
+
+        <div class="card card-p an">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;margin-bottom:1.1rem;">DAILY MACROS</div>
+          <div class="mbar"><div class="mbar-h"><span class="mbar-l">🥩 Protein</span><span class="mbar-v text-g" id="m-prot">164g</span></div><div class="track"><div class="fill f-g" id="bp" style="width:35%"></div></div></div>
+          <div class="mbar"><div class="mbar-h"><span class="mbar-l">🌾 Carbohydrates</span><span class="mbar-v text-b" id="m-carbs">319g</span></div><div class="track"><div class="fill f-b" id="bc" style="width:45%"></div></div></div>
+          <div class="mbar"><div class="mbar-h"><span class="mbar-l">🥑 Fats</span><span class="mbar-v" style="color:var(--or)" id="m-fats">79g</span></div><div class="track"><div class="fill f-or" id="bf" style="width:20%"></div></div></div>
+          <div style="margin-top:1rem;padding:.9rem;background:var(--bg3);border-radius:8px;">
+            <div style="font-size:.68rem;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;">🤖 AI Insight</div>
+            <p style="font-size:.8rem;color:var(--t2);line-height:1.6;">Based on your mesomorph body type and maintenance goal, your macro split is optimal. Prioritize protein timing around workouts.</p>
+          </div>
+        </div>
+
+        <div class="card card-p an">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;margin-bottom:1rem;">GOAL PREDICTION</div>
+          <div style="display:flex;flex-direction:column;gap:.65rem;">
+            <div class="df ac jb" style="padding:.7rem;background:var(--bg3);border-radius:8px;"><span style="font-size:.8rem;color:var(--t2)">Current Weight</span><span style="font-family:'Bebas Neue',sans-serif;font-size:1.15rem;">82 kg</span></div>
+            <div class="df ac jb" style="padding:.7rem;background:var(--bg3);border-radius:8px;"><span style="font-size:.8rem;color:var(--t2)">Target Weight</span><span style="font-family:'Bebas Neue',sans-serif;font-size:1.15rem;color:var(--g);">75 kg</span></div>
+            <div class="df ac jb" style="padding:.7rem;background:rgba(57,255,20,.05);border:1px solid var(--bn);border-radius:8px;"><span style="font-size:.8rem;color:var(--t2)">Estimated Time</span><span style="font-family:'Bebas Neue',sans-serif;font-size:1.15rem;color:var(--g);">14 weeks</span></div>
+            <div class="df ac jb" style="padding:.7rem;background:var(--bg3);border-radius:8px;"><span style="font-size:.8rem;color:var(--t2)">Weekly Change</span><span style="font-family:'Bebas Neue',sans-serif;font-size:1.15rem;color:var(--g);">−0.5 kg</span></div>
+          </div>
+          <a href="diet.html" class="btn btn-p w100 mt3">View My Diet Plan →</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+buildFooter();
+function setGoal(val,el){document.querySelectorAll('.sel-grid .sel-card, .prof-grid .sel-card').forEach(c=>{if(c.closest('[onclick^="setGoal"]')||c.getAttribute('onclick')?.startsWith('setGoal'))c.classList.remove('on');});el.classList.add('on');document.getElementById('p-goal').value=val;calcStats();}
+function setBT(el){const p=el.parentElement;p.querySelectorAll('.sel-card').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+// Fix setGoal to only affect goal cards
+document.querySelectorAll('[onclick^="setGoal"]').forEach(c=>c.classList.remove('on'));
+</script>
+<script>
+// Override setGoal to scope correctly
+function setGoal(val,el){
+  el.parentElement.querySelectorAll('.sel-card').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('p-goal').value=val;
+  calcStats();
+}
+</script>
+</body>
+</html>

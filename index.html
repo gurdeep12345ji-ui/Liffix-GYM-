@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LIFFIX GYM AI — Your AI Fitness Partner</title>
+<meta name="description" content="AI-powered fitness platform for diet, muscle gain, health tracking and more."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="styles/main.css"/>
+</head>
+<body>
+<div id="app">
+  <!-- LANDING PAGE -->
+  <div id="landing-page" class="page active">
+    <nav class="landing-nav">
+      <div class="logo">LIFFIX <span class="accent">GYM AI</span></div>
+      <div class="nav-actions">
+        <button class="btn-ghost" onclick="showAuth('login')">Login</button>
+        <button class="btn-primary" onclick="showAuth('register')">Register</button>
+      </div>
+    </nav>
+    <div class="hero">
+      <div class="hero-badge">🤖 Powered by Advanced AI</div>
+      <h1 class="hero-title">Your AI Fitness Partner for<br/><span class="accent">Diet, Muscle Gain</span><br/>& Health Tracking</h1>
+      <p class="hero-sub">Personalized meal plans, workout programs, supplement analysis<br/>and real-time AI coaching — all in one platform.</p>
+      <button class="btn-cta" onclick="showAuth('register')">Start Your Transformation</button>
+      <div class="demo-search">
+        <input type="text" placeholder="🔍 Search 100,000+ foods, supplements, vitamins... (login required)" disabled/>
+        <span class="lock-badge">🔒</span>
+      </div>
+    </div>
+    <div class="features-preview">
+      <div class="features-grid">
+        <div class="feature-card locked"><div class="lock-overlay">🔒</div><div class="fi">🍽️</div><h3>AI Meal Planner</h3><p>Personalized daily meal plans</p></div>
+        <div class="feature-card locked"><div class="lock-overlay">🔒</div><div class="fi">📊</div><h3>Diet Tracker</h3><p>Log and analyze every meal</p></div>
+        <div class="feature-card locked"><div class="lock-overlay">🔒</div><div class="fi">💊</div><h3>Supplement Analyzer</h3><p>100k+ supplements database</p></div>
+        <div class="feature-card locked"><div class="lock-overlay">🔒</div><div class="fi">💰</div><h3>Budget Planner</h3><p>Optimize nutrition by budget</p></div>
+        <div class="feature-card locked"><div class="lock-overlay">🔒</div><div class="fi">🏋️</div><h3>Workout Plans</h3><p>AI-generated weekly programs</p></div>
+        <div class="feature-card locked"><div class="lock-overlay">🔒</div><div class="fi">🤖</div><h3>AI Coach</h3><p>24/7 personal fitness assistant</p></div>
+      </div>
+    </div>
+    <footer class="landing-footer"><p>© 2025 LIFFIX GYM AI — Built for Champions</p></footer>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div id="auth-modal" class="modal hidden">
+    <div class="modal-overlay" onclick="closeAuth()"></div>
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeAuth()">✕</button>
+      <div class="auth-tabs">
+        <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+        <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+      </div>
+      <div id="auth-login">
+        <h2>Welcome Back</h2>
+        <input type="email" id="login-email" placeholder="Email address" class="input-field"/>
+        <input type="password" id="login-password" placeholder="Password" class="input-field"/>
+        <button class="btn-primary full" onclick="loginUser()">Login</button>
+        <p class="auth-switch">No account? <a onclick="switchAuthTab('register')">Register free</a></p>
+        <div class="demo-login-box">
+          <p style="color:#888;font-size:12px;margin-bottom:8px">— Demo Access —</p>
+          <button class="btn-ghost full" onclick="demoLogin('user')">Demo User Login</button>
+          <button class="btn-ghost full" style="margin-top:6px" onclick="demoLogin('admin')">Demo Admin Login</button>
+        </div>
+      </div>
+      <div id="auth-register" class="hidden">
+        <h2>Create Account</h2>
+        <input type="text" id="reg-name" placeholder="Full name" class="input-field"/>
+        <input type="email" id="reg-email" placeholder="Email address" class="input-field"/>
+        <input type="password" id="reg-password" placeholder="Password (min 6 chars)" class="input-field"/>
+        <button class="btn-primary full" onclick="registerUser()">Create Account</button>
+        <p class="auth-switch">Have account? <a onclick="switchAuthTab('login')">Login</a></p>
+      </div>
+      <div id="auth-msg" class="auth-msg"></div>
+    </div>
+  </div>
+
+  <!-- MAIN APP (after login) -->
+  <div id="main-app" class="hidden">
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-logo">LIFFIX <span class="accent">AI</span></div>
+      <nav class="sidebar-nav">
+        <a class="nav-item active" onclick="showSection('dashboard')" data-section="dashboard"><span class="ni">📊</span> Dashboard</a>
+        <a class="nav-item" onclick="showSection('profile')" data-section="profile"><span class="ni">👤</span> Profile</a>
+        <a class="nav-item" onclick="showSection('meal-planner')" data-section="meal-planner"><span class="ni">🍽️</span> Meal Planner</a>
+        <a class="nav-item" onclick="showSection('diet-tracker')" data-section="diet-tracker"><span class="ni">📈</span> Diet Tracker</a>
+        <a class="nav-item" onclick="showSection('supplements')" data-section="supplements"><span class="ni">💊</span> Supplements</a>
+        <a class="nav-item" onclick="showSection('budget')" data-section="budget"><span class="ni">💰</span> Budget Plan</a>
+        <a class="nav-item" onclick="showSection('workout')" data-section="workout"><span class="ni">🏋️</span> Workout Plan</a>
+        <a class="nav-item" onclick="showSection('ai-coach')" data-section="ai-coach"><span class="ni">🤖</span> AI Coach</a>
+        <a class="nav-item" onclick="showSection('pricing')" data-section="pricing"><span class="ni">💎</span> Pricing</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="user-chip">
+          <div class="user-avatar" id="sb-avatar">U</div>
+          <div class="user-info">
+            <span id="sb-name">User</span>
+            <span class="plan-badge" id="sb-plan">Free</span>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="logoutUser()">Logout</button>
+      </div>
+    </aside>
+
+    <!-- MOBILE NAV -->
+    <nav class="mobile-nav">
+      <button onclick="showSection('dashboard')" class="mn-btn active" data-section="dashboard">📊</button>
+      <button onclick="showSection('profile')" class="mn-btn" data-section="profile">👤</button>
+      <button onclick="showSection('meal-planner')" class="mn-btn" data-section="meal-planner">🍽️</button>
+      <button onclick="showSection('ai-coach')" class="mn-btn" data-section="ai-coach">🤖</button>
+      <button onclick="showSection('workout')" class="mn-btn" data-section="workout">🏋️</button>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- TOP BAR -->
+      <div class="topbar">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+        <div class="search-wrap">
+          <input type="text" id="global-search" class="search-bar" placeholder="🔍 Search 100,000+ foods, supplements, vitamins, minerals..." oninput="globalSearch(this.value)"/>
+          <div id="search-results" class="search-dropdown hidden"></div>
+        </div>
+        <div class="topbar-right">
+          <button class="lang-toggle" onclick="toggleLang()">🌐 EN</button>
+          <div class="notif-bell" onclick="toggleNotif()">🔔<span class="notif-dot"></span></div>
+        </div>
+      </div>
+
+      <!-- SECTIONS -->
+
+      <!-- DASHBOARD -->
+      <section id="sec-dashboard" class="section active">
+        <h2 class="section-title">Dashboard</h2>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val" id="dash-calories">0</div><div class="stat-label">Calories Today</div></div>
+          <div class="stat-card"><div class="stat-icon">💧</div><div class="stat-val" id="dash-water">0 / 8</div><div class="stat-label">Water Glasses</div></div>
+          <div class="stat-card"><div class="stat-icon">🏋️</div><div class="stat-val" id="dash-workouts">0</div><div class="stat-label">Workouts Done</div></div>
+          <div class="stat-card"><div class="stat-icon">⚖️</div><div class="stat-val" id="dash-weight">-- kg</div><div class="stat-label">Current Weight</div></div>
+        </div>
+        <div class="dash-grid">
+          <div class="dash-card">
+            <h3>Today's Macros</h3>
+            <div class="macro-bars">
+              <div class="macro-row"><span>Protein</span><div class="bar-wrap"><div class="bar protein-bar" id="bar-protein" style="width:0%"></div></div><span id="val-protein">0g</span></div>
+              <div class="macro-row"><span>Carbs</span><div class="bar-wrap"><div class="bar carbs-bar" id="bar-carbs" style="width:0%"></div></div><span id="val-carbs">0g</span></div>
+              <div class="macro-row"><span>Fats</span><div class="bar-wrap"><div class="bar fats-bar" id="bar-fats" style="width:0%"></div></div><span id="val-fats">0g</span></div>
+            </div>
+          </div>
+          <div class="dash-card">
+            <h3>Water Intake</h3>
+            <div class="water-grid" id="water-grid"></div>
+            <button class="btn-sm" onclick="addWater()">+ Add Glass</button>
+          </div>
+          <div class="dash-card full-width">
+            <h3>Weekly Progress</h3>
+            <canvas id="progress-chart" height="120"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFILE -->
+      <section id="sec-profile" class="section hidden">
+        <h2 class="section-title">My Profile</h2>
+        <div class="profile-form">
+          <div class="form-grid">
+            <div class="form-group"><label>Full Name</label><input type="text" id="p-name" class="input-field" placeholder="Your name"/></div>
+            <div class="form-group"><label>Age</label><input type="number" id="p-age" class="input-field" placeholder="Age"/></div>
+            <div class="form-group"><label>Weight (kg)</label><input type="number" id="p-weight" class="input-field" placeholder="Current weight"/></div>
+            <div class="form-group"><label>Height (cm)</label><input type="number" id="p-height" class="input-field" placeholder="Height"/></div>
+            <div class="form-group"><label>Target Weight (kg)</label><input type="number" id="p-target" class="input-field" placeholder="Goal weight"/></div>
+            <div class="form-group"><label>Goal</label>
+              <select id="p-goal" class="input-field">
+                <option value="gain">Muscle / Weight Gain</option>
+                <option value="loss">Fat Loss</option>
+                <option value="maintain">Maintain</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Gym Frequency</label>
+              <select id="p-gym" class="input-field">
+                <option value="daily">Daily</option>
+                <option value="sometimes">3-4x / week</option>
+                <option value="beginner">Beginner (1-2x)</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Timeline</label>
+              <select id="p-timeline" class="input-field">
+                <option value="weekly">Weekly targets</option>
+                <option value="monthly">Monthly targets</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="saveProfile()">Save & Analyze</button>
+          <div id="profile-analysis" class="analysis-box hidden"></div>
+        </div>
+      </section>
+
+      <!-- MEAL PLANNER -->
+      <section id="sec-meal-planner" class="section hidden">
+        <h2 class="section-title">AI Meal Planner</h2>
+        <div class="planner-header">
+          <button class="btn-primary" onclick="generateMealPlan()">🤖 Generate My Plan</button>
+          <select class="input-field" id="meal-goal-select" style="width:auto">
+            <option value="gain">Muscle Gain</option>
+            <option value="loss">Fat Loss</option>
+            <option value="maintain">Maintain</option>
+          </select>
+        </div>
+        <div id="meal-plan-grid" class="meal-plan-grid">
+          <div class="meal-slot" id="meal-morning"><div class="meal-time">🌅 Morning</div><div class="meal-items">Click Generate to create your plan</div></div>
+          <div class="meal-slot" id="meal-lunch"><div class="meal-time">☀️ Lunch</div><div class="meal-items">—</div></div>
+          <div class="meal-slot" id="meal-evening"><div class="meal-time">🌆 Evening</div><div class="meal-items">—</div></div>
+          <div class="meal-slot" id="meal-night"><div class="meal-time">🌙 Night</div><div class="meal-items">—</div></div>
+        </div>
+      </section>
+
+      <!-- DIET TRACKER -->
+      <section id="sec-diet-tracker" class="section hidden">
+        <h2 class="section-title">Diet Tracker</h2>
+        <div class="tracker-tabs">
+          <button class="t-tab active" onclick="switchMealTab('morning')">Morning</button>
+          <button class="t-tab" onclick="switchMealTab('afternoon')">Afternoon</button>
+          <button class="t-tab" onclick="switchMealTab('evening')">Evening</button>
+          <button class="t-tab" onclick="switchMealTab('night')">Night</button>
+          <button class="t-tab" onclick="switchMealTab('extra')">Extra</button>
+        </div>
+        <div class="tracker-add">
+          <input type="text" id="food-input" class="input-field" placeholder="Type food name..." oninput="foodSuggest(this.value)"/>
+          <div id="food-suggest-list" class="suggest-list hidden"></div>
+          <button class="btn-primary" onclick="logFood()">Add Food</button>
+        </div>
+        <div class="photo-upload">
+          <label class="upload-label">
+            📷 Upload Food Photo (AI Analysis)
+            <input type="file" accept="image/*" onchange="analyzeFoodPhoto(this)" style="display:none"/>
+          </label>
+        </div>
+        <div id="diet-log" class="diet-log"></div>
+        <div class="daily-summary" id="daily-summary">
+          <div class="sum-item"><span>Calories</span><strong id="sum-cal">0</strong></div>
+          <div class="sum-item"><span>Protein</span><strong id="sum-pro">0g</strong></div>
+          <div class="sum-item"><span>Carbs</span><strong id="sum-carb">0g</strong></div>
+          <div class="sum-item"><span>Fats</span><strong id="sum-fat">0g</strong></div>
+        </div>
+      </section>
+
+      <!-- SUPPLEMENTS -->
+      <section id="sec-supplements" class="section hidden">
+        <h2 class="section-title">Supplement Analyzer</h2>
+        <div class="supp-search">
+          <input type="text" id="supp-search" class="input-field" placeholder="Search supplements, vitamins, minerals..." oninput="searchSupplements(this.value)"/>
+        </div>
+        <div id="supp-results" class="supp-grid"></div>
+        <div class="supp-tracker">
+          <h3>My Supplements</h3>
+          <div class="my-supps">
+            <button class="supp-quick" onclick="addQuickSupp('Creatine')">+ Creatine</button>
+            <button class="supp-quick" onclick="addQuickSupp('Whey Protein')">+ Whey Protein</button>
+            <button class="supp-quick" onclick="addQuickSupp('Mass Gainer')">+ Mass Gainer</button>
+            <button class="supp-quick" onclick="addQuickSupp('Vitamin D')">+ Vitamin D</button>
+            <button class="supp-quick" onclick="addQuickSupp('Omega-3')">+ Omega-3</button>
+          </div>
+          <div id="my-supp-list" class="my-supp-list"></div>
+        </div>
+      </section>
+
+      <!-- BUDGET -->
+      <section id="sec-budget" class="section hidden">
+        <h2 class="section-title">Budget Planner</h2>
+        <div class="budget-form">
+          <div class="form-grid">
+            <div class="form-group"><label>Budget Amount ($)</label><input type="number" id="b-amount" class="input-field" placeholder="e.g. 200"/></div>
+            <div class="form-group"><label>Period</label>
+              <select id="b-period" class="input-field">
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Goal</label>
+              <select id="b-goal" class="input-field">
+                <option value="gain">Muscle Gain</option>
+                <option value="loss">Fat Loss</option>
+                <option value="maintain">Maintain</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="generateBudgetPlan()">🤖 Optimize My Budget</button>
+        </div>
+        <div id="budget-results" class="budget-results"></div>
+      </section>
+
+      <!-- WORKOUT -->
+      <section id="sec-workout" class="section hidden">
+        <h2 class="section-title">Workout Plan</h2>
+        <div class="workout-header">
+          <button class="btn-primary" onclick="generateWorkout()">🤖 Generate Weekly Plan</button>
+          <select class="input-field" id="workout-level" style="width:auto">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+        <div id="workout-grid" class="workout-week-grid"></div>
+      </section>
+
+      <!-- AI COACH -->
+      <section id="sec-ai-coach" class="section hidden">
+        <h2 class="section-title">AI Coach</h2>
+        <div class="chat-container">
+          <div id="chat-messages" class="chat-messages">
+            <div class="msg ai-msg">
+              <div class="msg-avatar">🤖</div>
+              <div class="msg-bubble">Hi! I'm your LIFFIX AI Coach. Ask me anything about fitness, nutrition, or supplements. I'm here to help you reach your goals! 💪</div>
+            </div>
+          </div>
+          <div class="chat-suggestions">
+            <button onclick="sendQuick('What should I eat today?')">What should I eat today?</button>
+            <button onclick="sendQuick('Best supplements for muscle gain?')">Best supplements?</button>
+            <button onclick="sendQuick('How to lose fat fast?')">How to lose fat?</button>
+          </div>
+          <div class="chat-input-wrap">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Ask your AI coach..." onkeydown="if(event.key==='Enter')sendChat()"/>
+            <button class="btn-send" onclick="sendChat()">➤</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRICING -->
+      <section id="sec-pricing" class="section hidden">
+        <h2 class="section-title">Choose Your Plan</h2>
+        <div class="pricing-grid">
+          <div class="price-card">
+            <div class="price-badge free">Free</div>
+            <div class="price-amount">$0<span>/mo</span></div>
+            <ul class="price-features">
+              <li>✓ Basic search (100 items)</li>
+              <li>✓ 3 AI coach messages/day</li>
+              <li>✓ Basic meal planner</li>
+              <li class="locked-f">✗ Advanced AI analysis</li>
+              <li class="locked-f">✗ Unlimited search</li>
+            </ul>
+            <button class="btn-ghost full">Current Plan</button>
+          </div>
+          <div class="price-card">
+            <div class="price-badge">Starter</div>
+            <div class="price-amount">$9.99<span>/mo</span></div>
+            <ul class="price-features">
+              <li>✓ Everything in Free</li>
+              <li>✓ 30 AI coach messages/day</li>
+              <li>✓ Full meal planner</li>
+              <li>✓ Diet tracker</li>
+              <li>✓ 10,000 food database</li>
+            </ul>
+            <button class="btn-primary full" onclick="selectPlan('starter')">Get Started</button>
+          </div>
+          <div class="price-card featured">
+            <div class="price-badge popular">Most Popular</div>
+            <div class="price-amount">$19.99<span>/2mo</span></div>
+            <ul class="price-features">
+              <li>✓ Everything in Starter</li>
+              <li>✓ Unlimited AI messages</li>
+              <li>✓ Supplement analyzer</li>
+              <li>✓ Budget planner</li>
+              <li>✓ 100,000+ database</li>
+            </ul>
+            <button class="btn-primary full" onclick="selectPlan('pro')">Go Pro</button>
+          </div>
+          <div class="price-card">
+            <div class="price-badge elite">Elite</div>
+            <div class="price-amount">$49.99<span>/yr</span></div>
+            <ul class="price-features">
+              <li>✓ All Pro features</li>
+              <li>✓ Image AI scanner</li>
+              <li>✓ Priority support</li>
+              <li>✓ Advanced analytics</li>
+              <li>✓ Multi-language</li>
+            </ul>
+            <button class="btn-primary full" onclick="selectPlan('elite')">Go Elite</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="admin-panel" class="hidden">
+    <div class="admin-sidebar">
+      <div class="admin-logo">LIFFIX <span class="accent">ADMIN</span></div>
+      <nav class="admin-nav">
+        <a class="admin-nav-item active" onclick="showAdminSection('overview')" data-section="overview">📊 Overview</a>
+        <a class="admin-nav-item" onclick="showAdminSection('users')" data-section="users">👥 Users</a>
+        <a class="admin-nav-item" onclick="showAdminSection('analytics')" data-section="analytics">📈 Analytics</a>
+        <a class="admin-nav-item" onclick="showAdminSection('team')" data-section="team">🏢 Team</a>
+        <a class="admin-nav-item" onclick="showAdminSection('ai-settings')" data-section="ai-settings">🤖 AI Settings</a>
+        <a class="admin-nav-item" onclick="showAdminSection('github')" data-section="github">⚙️ GitHub/Deploy</a>
+        <a class="admin-nav-item" onclick="showAdminSection('promoter')" data-section="promoter">📣 Promoter</a>
+        <a class="admin-nav-item" onclick="showAdminSection('errors')" data-section="errors">🐛 Error Log</a>
+      </nav>
+      <button class="btn-logout" onclick="exitAdmin()">← Exit Admin</button>
+    </div>
+    <div class="admin-main">
+
+      <!-- ADMIN OVERVIEW -->
+      <div id="admin-sec-overview" class="admin-section active">
+        <div class="admin-topbar">
+          <h1>Admin Control Center</h1>
+          <div class="admin-role-badge" id="admin-role-badge">CEO</div>
+        </div>
+        <div class="admin-stats-grid">
+          <div class="admin-stat"><div class="as-icon">👥</div><div class="as-val" id="a-users">0</div><div class="as-lbl">Total Users</div></div>
+          <div class="admin-stat"><div class="as-icon">🟢</div><div class="as-val" id="a-online">0</div><div class="as-lbl">Online Now</div></div>
+          <div class="admin-stat"><div class="as-icon">💰</div><div class="as-val" id="a-revenue">$0</div><div class="as-lbl">Revenue</div></div>
+          <div class="admin-stat"><div class="as-icon">📈</div><div class="as-val" id="a-growth">+0%</div><div class="as-lbl">Growth</div></div>
+          <div class="admin-stat"><div class="as-icon">🔍</div><div class="as-val" id="a-searches">0</div><div class="as-lbl">Searches Today</div></div>
+          <div class="admin-stat"><div class="as-icon">⏱️</div><div class="as-val" id="a-avgtime">0m</div><div class="as-lbl">Avg Session</div></div>
+        </div>
+        <div class="admin-grid-2">
+          <div class="admin-card">
+            <h3>Live User Activity</h3>
+            <canvas id="activity-chart" height="150"></canvas>
+          </div>
+          <div class="admin-card">
+            <h3>Recent Signups</h3>
+            <div id="recent-signups" class="user-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div id="admin-sec-users" class="admin-section hidden">
+        <h2>User Management</h2>
+        <div class="user-controls">
+          <input type="text" class="input-field" placeholder="Search users by name, email, IP..." id="user-search-input" oninput="filterUsers(this.value)"/>
+          <select class="input-field" style="width:auto" onchange="filterByPlan(this.value)">
+            <option value="">All Plans</option>
+            <option value="free">Free</option>
+            <option value="starter">Starter</option>
+            <option value="pro">Pro</option>
+            <option value="elite">Elite</option>
+          </select>
+        </div>
+        <table class="admin-table">
+          <thead><tr><th>User</th><th>Email</th><th>Plan</th><th>Location</th><th>IP</th><th>Last Active</th><th>Session</th><th>Actions</th></tr></thead>
+          <tbody id="users-table-body"></tbody>
+        </table>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div id="admin-sec-analytics" class="admin-section hidden">
+        <h2>Website Analytics</h2>
+        <div class="analytics-row">
+          <div class="analytics-card">
+            <h4>Daily Active Users</h4>
+            <canvas id="dau-chart" height="120"></canvas>
+          </div>
+          <div class="analytics-card">
+            <h4>Top Search Terms</h4>
+            <div id="top-searches" class="top-list"></div>
+          </div>
+          <div class="analytics-card">
+            <h4>User Locations</h4>
+            <div id="location-map" class="location-list"></div>
+          </div>
+          <div class="analytics-card">
+            <h4>Device Types</h4>
+            <canvas id="device-chart" height="120"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEAM -->
+      <div id="admin-sec-team" class="admin-section hidden">
+        <h2>Team Management</h2>
+        <div class="team-grid" id="team-grid"></div>
+        <div class="add-team-form">
+          <h3>Add Team Member</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Name</label><input type="text" id="tm-name" class="input-field" placeholder="Full name"/></div>
+            <div class="form-group"><label>Role</label>
+              <select id="tm-role" class="input-field">
+                <option>CEO</option><option>Director</option><option>Research & Development</option>
+                <option>Coder</option><option>Building</option><option>Thinker</option>
+                <option>Graphic Designer</option><option>Video Designer</option>
+                <option>Error Searcher</option><option>Rebuild Specialist</option>
+                <option>Promoter</option><option>Advisor</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Email</label><input type="email" id="tm-email" class="input-field" placeholder="Email"/></div>
+            <div class="form-group"><label>Password</label><input type="password" id="tm-pass" class="input-field" placeholder="Access password"/></div>
+          </div>
+          <button class="btn-primary" onclick="addTeamMember()">Add Member</button>
+        </div>
+      </div>
+
+      <!-- AI SETTINGS -->
+      <div id="admin-sec-ai-settings" class="admin-section hidden">
+        <h2>AI Configuration</h2>
+        <div class="ai-config-grid">
+          <div class="admin-card">
+            <h3>OpenAI Settings</h3>
+            <div class="form-group"><label>API Key</label><input type="password" id="ai-key" class="input-field" placeholder="sk-..."/></div>
+            <div class="form-group"><label>Model</label>
+              <select id="ai-model" class="input-field">
+                <option>gpt-4o</option><option>gpt-4o-mini</option><option>gpt-4-turbo</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Max tokens per message</label><input type="number" id="ai-tokens" class="input-field" value="500"/></div>
+            <button class="btn-primary" onclick="saveAIConfig()">Save AI Config</button>
+          </div>
+          <div class="admin-card">
+            <h3>Supabase Config</h3>
+            <div class="form-group"><label>Supabase URL</label><input type="text" id="sb-url" class="input-field" placeholder="https://xxx.supabase.co"/></div>
+            <div class="form-group"><label>Anon Key</label><input type="password" id="sb-key" class="input-field" placeholder="eyJ..."/></div>
+            <button class="btn-primary" onclick="saveSupabaseConfig()">Connect Supabase</button>
+            <div id="sb-status" class="status-indicator"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GITHUB / DEPLOY -->
+      <div id="admin-sec-github" class="admin-section hidden">
+        <h2>GitHub & Deployment</h2>
+        <div class="admin-card">
+          <h3>Auto-Deploy Pipeline</h3>
+          <div class="form-group"><label>GitHub Repo URL</label><input type="text" id="gh-repo" class="input-field" placeholder="https://github.com/user/liffix"/></div>
+          <div class="form-group"><label>GitHub Token</label><input type="password" id="gh-token" class="input-field" placeholder="ghp_..."/></div>
+          <div class="form-group"><label>Branch</label><input type="text" id="gh-branch" class="input-field" value="main"/></div>
+          <div class="deploy-actions">
+            <button class="btn-primary" onclick="triggerDeploy()">🚀 Deploy Now</button>
+            <button class="btn-ghost" onclick="checkStatus()">📋 Check Status</button>
+            <button class="btn-ghost" onclick="rollback()">↩ Rollback</button>
+          </div>
+          <div id="deploy-log" class="deploy-log"></div>
+        </div>
+        <div class="admin-card">
+          <h3>File Manager</h3>
+          <div class="file-tree" id="file-tree">
+            <div class="file-item">📁 /src</div>
+            <div class="file-item sub">📄 index.html</div>
+            <div class="file-item sub">📄 styles/main.css</div>
+            <div class="file-item sub">📄 scripts/app.js</div>
+            <div class="file-item sub">📁 admin/</div>
+            <div class="file-item">📁 /supabase</div>
+            <div class="file-item sub">📄 schema.sql</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROMOTER -->
+      <div id="admin-sec-promoter" class="admin-section hidden">
+        <h2>Promoter & Social Media</h2>
+        <div class="promo-grid">
+          <div class="admin-card">
+            <h3>Social Media Accounts</h3>
+            <div class="form-group"><label>Instagram</label><input type="text" id="sm-ig" class="input-field" placeholder="@liffix.gym"/></div>
+            <div class="form-group"><label>TikTok</label><input type="text" id="sm-tt" class="input-field" placeholder="@liffix.gym"/></div>
+            <div class="form-group"><label>Twitter/X</label><input type="text" id="sm-tw" class="input-field" placeholder="@lifffixgym"/></div>
+            <div class="form-group"><label>YouTube</label><input type="text" id="sm-yt" class="input-field" placeholder="LIFFIX GYM AI"/></div>
+            <button class="btn-primary" onclick="saveSocialAccounts()">Save Accounts</button>
+          </div>
+          <div class="admin-card">
+            <h3>Viral Campaign Generator</h3>
+            <div class="form-group"><label>Campaign Goal</label>
+              <select class="input-field" id="campaign-goal">
+                <option>Increase signups</option>
+                <option>Promote new feature</option>
+                <option>Flash sale</option>
+                <option>Brand awareness</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Target Audience</label><input type="text" class="input-field" id="campaign-audience" placeholder="Fitness beginners, 18-35"/></div>
+            <button class="btn-primary" onclick="generateCampaign()">🤖 Generate Viral Content</button>
+            <div id="campaign-output" class="campaign-output"></div>
+          </div>
+          <div class="admin-card">
+            <h3>Advertisement Manager</h3>
+            <div id="ad-list" class="ad-list">
+              <div class="ad-item"><span>Summer Body Campaign</span><span class="ad-status active">Active</span></div>
+              <div class="ad-item"><span>New User Offer</span><span class="ad-status active">Active</span></div>
+              <div class="ad-item"><span>Pro Plan Promo</span><span class="ad-status paused">Paused</span></div>
+            </div>
+            <button class="btn-sm" onclick="addAdCampaign()">+ New Campaign</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ERROR LOG -->
+      <div id="admin-sec-errors" class="admin-section hidden">
+        <h2>Error Log & Rebuild</h2>
+        <div class="error-controls">
+          <button class="btn-primary" onclick="scanErrors()">🔍 Scan for Errors</button>
+          <button class="btn-ghost" onclick="autoFix()">🤖 Auto-Fix with AI</button>
+          <button class="btn-ghost" onclick="clearErrors()">🗑 Clear Log</button>
+        </div>
+        <div id="error-log" class="error-log">
+          <div class="no-errors">✅ No critical errors detected. System running normally.</div>
+        </div>
+        <div class="rebuild-section">
+          <h3>Rebuild Features</h3>
+          <div class="form-group">
+            <label>Describe new feature or fix:</label>
+            <textarea id="rebuild-input" class="input-field" rows="3" placeholder="e.g. Add dark/light theme toggle, Fix mobile menu bug, Add Arabic language support..."></textarea>
+          </div>
+          <button class="btn-primary" onclick="requestRebuild()">🤖 AI Rebuild Request</button>
+          <div id="rebuild-output" class="rebuild-output"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="scripts/app.js"></script>
+</body>
+</html>

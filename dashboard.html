@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard — Liffix GYM AI</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.dash-grid{display:grid;grid-template-columns:1fr 320px;gap:1.5rem;}
+.mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:1.4rem;}
+.mini-box{background:var(--bg3);border:1px solid var(--br);border-radius:10px;padding:1rem;text-align:center;}
+.mini-ico{font-size:1.35rem;margin-bottom:.35rem;}
+.mini-val{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;color:var(--g);line-height:1;}
+.mini-lbl{font-size:.62rem;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
+.ring-wrap{position:relative;width:130px;height:130px;flex-shrink:0;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-val{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;line-height:1;}
+.ring-lbl{font-size:.6rem;color:var(--t3);text-transform:uppercase;letter-spacing:1px;}
+.msec{font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin:1rem 0 .45rem;}
+.add-row{border:1px dashed var(--br);border-radius:8px;padding:.7rem 1rem;text-align:center;cursor:pointer;font-size:.78rem;color:var(--t3);transition:.2s;margin-top:.3rem;}
+.add-row:hover{border-color:var(--bn);color:var(--g);}
+.days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:.6rem;}
+.dd{aspect-ratio:1;border-radius:4px;background:var(--bg4);}
+.dd.done{background:var(--g);}
+.dd.today{background:rgba(57,255,20,.35);border:1px solid var(--g);}
+.challenge-card{background:linear-gradient(135deg,rgba(57,255,20,.06),transparent);border:1px solid var(--bn);border-radius:12px;padding:1.2rem;}
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
+.qa{background:var(--bg3);border:1px solid var(--br);border-radius:10px;padding:.9rem;text-align:center;cursor:pointer;transition:.2s;text-decoration:none;display:block;}
+.qa:hover{border-color:var(--bn);}
+.qa-i{font-size:1.4rem;margin-bottom:.35rem;}
+.qa-l{font-size:.72rem;color:var(--t2);font-weight:600;letter-spacing:.5px;text-transform:uppercase;}
+@media(max-width:900px){.dash-grid{grid-template-columns:1fr;}.mini-grid{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<script src="../assets/app.js"></script>
+<script>buildNav('Dashboard');</script>
+
+<div class="ph">
+  <div class="wrap">
+    <div class="df ac jb" style="flex-wrap:wrap;gap:1rem;">
+      <div>
+        <div style="font-size:.68rem;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:.25rem;">Monday, April 7 · Week 12</div>
+        <h1 style="font-size:clamp(1.8rem,5vw,2.8rem);">GOOD MORNING, <span class="text-g">JAMES</span></h1>
+        <p style="color:var(--t2);font-size:.83rem;margin-top:.25rem;">🔥 14-day streak — keep it up!</p>
+      </div>
+      <div class="df g2">
+        <a href="profile.html" class="btn btn-o btn-sm">Edit Profile</a>
+        <a href="coach.html" class="btn btn-p btn-sm">Ask AI →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="sec-sm">
+  <div class="wrap">
+
+    <!-- MINI STATS -->
+    <div class="mini-grid an">
+      <div class="mini-box"><div class="mini-ico">🔥</div><div class="mini-val">1,540</div><div class="mini-lbl">Calories</div></div>
+      <div class="mini-box"><div class="mini-ico">💪</div><div class="mini-val">128g</div><div class="mini-lbl">Protein</div></div>
+      <div class="mini-box"><div class="mini-ico">💧</div><div class="mini-val" id="water-count">5</div><div class="mini-lbl">Glasses</div></div>
+      <div class="mini-box"><div class="mini-ico">👟</div><div class="mini-val">6,240</div><div class="mini-lbl">Steps</div></div>
+    </div>
+
+    <div class="dash-grid">
+      <!-- MAIN -->
+      <div style="display:flex;flex-direction:column;gap:1.4rem;">
+
+        <!-- CALORIE TRACKER -->
+        <div class="card card-p an">
+          <div class="df ac jb mb2">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;">TODAY'S CALORIES</div>
+            <span class="badge bg-g">Cut Goal</span>
+          </div>
+          <div class="df ac g3" style="flex-wrap:wrap;padding:.5rem 0 1.2rem;">
+            <div class="ring-wrap">
+              <svg width="130" height="130" viewBox="0 0 130 130">
+                <circle cx="65" cy="65" r="54" fill="none" stroke="var(--bg4)" stroke-width="9"/>
+                <circle cx="65" cy="65" r="54" fill="none" stroke="var(--g)" stroke-width="9" stroke-dasharray="339.3" stroke-dashoffset="136" stroke-linecap="round"/>
+              </svg>
+              <div class="ring-center"><div class="ring-val">1,540</div><div class="ring-lbl">of 2,290 kcal</div></div>
+            </div>
+            <div style="flex:1;min-width:160px;">
+              <div class="mbar"><div class="mbar-h"><span class="mbar-l">Protein</span><span class="mbar-v text-g">128g / 160g</span></div><div class="track"><div class="fill f-g" style="width:80%"></div></div></div>
+              <div class="mbar"><div class="mbar-h"><span class="mbar-l">Carbs</span><span class="mbar-v text-b">180g / 229g</span></div><div class="track"><div class="fill f-b" style="width:79%"></div></div></div>
+              <div class="mbar"><div class="mbar-h"><span class="mbar-l">Fats</span><span class="mbar-v" style="color:var(--or)">42g / 76g</span></div><div class="track"><div class="fill f-or" style="width:55%"></div></div></div>
+              <div class="df ac jb mt2"><span style="font-size:.75rem;color:var(--t2);">Remaining today</span><span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--g);">750 kcal</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MEALS -->
+        <div class="card card-p an">
+          <div class="df ac jb mb2">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;">TODAY'S MEALS</div>
+            <a href="meals.html" class="btn btn-no btn-sm">View All</a>
+          </div>
+          <div class="msec">🌅 Breakfast</div>
+          <div class="mrow"><div class="moji">🥣</div><div class="minfo"><div class="mname">Oats with Banana & Honey</div><div class="msub">P:12g · C:68g · F:6g</div></div><div class="mkcal">380</div></div>
+          <div class="msec">☀️ Lunch</div>
+          <div class="mrow"><div class="moji">🍗</div><div class="minfo"><div class="mname">Grilled Chicken Rice Bowl</div><div class="msub">P:52g · C:65g · F:8g</div></div><div class="mkcal">620</div></div>
+          <div class="msec">🍎 Snack</div>
+          <div class="mrow"><div class="moji">🥛</div><div class="minfo"><div class="mname">Greek Yogurt + Whey Shake</div><div class="msub">P:38g · C:22g · F:4g</div></div><div class="mkcal">280</div></div>
+          <div class="msec">🌙 Dinner — <span class="text-g">Not logged · 750 kcal left</span></div>
+          <button class="btn btn-p w100 mt1" onclick="toast('🤖 AI suggesting optimal dinner for remaining 750 kcal...','🤖')">+ Log Dinner (AI Suggest)</button>
+        </div>
+
+        <!-- WATER -->
+        <div class="card card-p an">
+          <div class="df ac jb mb2">
+            <div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;">WATER INTAKE</div><div style="font-size:.72rem;color:var(--t3);margin-top:2px;"><span id="water-count">5</span> / 8 glasses today</div></div>
+            <span class="badge bg-b">💧 2.5L Goal</span>
+          </div>
+          <div class="glass-wrap">
+            <div class="glass full"><div class="fw" style="height:100%"></div></div>
+            <div class="glass full"><div class="fw" style="height:100%"></div></div>
+            <div class="glass full"><div class="fw" style="height:100%"></div></div>
+            <div class="glass full"><div class="fw" style="height:100%"></div></div>
+            <div class="glass full"><div class="fw" style="height:100%"></div></div>
+            <div class="glass"><div class="fw" style="height:0"></div></div>
+            <div class="glass"><div class="fw" style="height:0"></div></div>
+            <div class="glass"><div class="fw" style="height:0"></div></div>
+          </div>
+          <p style="font-size:.72rem;color:var(--t3);margin-top:.8rem;">Tap a glass to log water</p>
+        </div>
+
+      </div>
+
+      <!-- SIDEBAR -->
+      <div style="display:flex;flex-direction:column;gap:1.4rem;">
+
+        <!-- WEIGHT -->
+        <div class="card card-p an">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;margin-bottom:.75rem;">WEIGHT PROGRESS</div>
+          <div class="df ac g2 mb2">
+            <div><div style="font-size:.62rem;color:var(--t3);text-transform:uppercase;letter-spacing:1px;">Current</div><div style="font-family:'Bebas Neue',sans-serif;font-size:2.1rem;line-height:1;">82.4<span style="font-size:.9rem;color:var(--t3);"> kg</span></div></div>
+            <div><div style="font-size:.62rem;color:var(--t3);text-transform:uppercase;letter-spacing:1px;">Target</div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--g);line-height:1;">75 kg</div></div>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:4px;height:60px;margin-bottom:.4rem;">
+            <div style="flex:1;height:45px;background:var(--bg3);border-radius:3px 3px 0 0;"></div>
+            <div style="flex:1;height:50px;background:var(--bg3);border-radius:3px 3px 0 0;"></div>
+            <div style="flex:1;height:44px;background:var(--bg3);border-radius:3px 3px 0 0;"></div>
+            <div style="flex:1;height:41px;background:var(--bg3);border-radius:3px 3px 0 0;"></div>
+            <div style="flex:1;height:38px;background:var(--bg3);border-radius:3px 3px 0 0;"></div>
+            <div style="flex:1;height:35px;background:var(--g);border-radius:3px 3px 0 0;opacity:.8;"></div>
+          </div>
+          <div style="font-size:.72rem;color:var(--g);">↓ 7.4kg lost · 7.4kg to goal</div>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <div class="card card-p an">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;margin-bottom:.85rem;">QUICK ACTIONS</div>
+          <div class="qa-grid">
+            <a href="coach.html" class="qa"><div class="qa-i">🤖</div><div class="qa-l">Ask Coach</div></a>
+            <a href="meals.html" class="qa"><div class="qa-i">🍽️</div><div class="qa-l">Log Meal</div></a>
+            <a href="workout.html" class="qa"><div class="qa-i">🏋️</div><div class="qa-l">Workout</div></a>
+            <a href="supplements.html" class="qa"><div class="qa-i">💊</div><div class="qa-l">Supps</div></a>
+          </div>
+        </div>
+
+        <!-- CHALLENGE -->
+        <div class="challenge-card an">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:1px;color:var(--g);margin-bottom:.4rem;">🔥 30-DAY CUT CHALLENGE</div>
+          <p style="font-size:.78rem;color:var(--t2);line-height:1.55;margin-bottom:.85rem;">Day 14 of 30. Maintain your calorie deficit every day!</p>
+          <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--t3);margin-bottom:.3rem;"><span>Progress</span><span>14 / 30</span></div>
+          <div class="track" style="height:6px;margin-bottom:.7rem;"><div class="fill f-g" style="width:46.7%"></div></div>
+          <div class="days-grid">
+            <div class="dd done"></div><div class="dd done"></div><div class="dd done"></div><div class="dd done"></div><div class="dd done"></div><div class="dd done"></div><div class="dd done"></div>
+            <div class="dd done"></div><div class="dd done"></div><div class="dd done"></div><div class="dd done"></div><div class="dd done"></div><div class="dd done"></div><div class="dd done"></div>
+            <div class="dd today"></div><div class="dd"></div><div class="dd"></div><div class="dd"></div><div class="dd"></div><div class="dd"></div><div class="dd"></div>
+            <div class="dd"></div><div class="dd"></div><div class="dd"></div><div class="dd"></div><div class="dd"></div><div class="dd"></div><div class="dd"></div>
+            <div class="dd"></div><div class="dd"></div>
+          </div>
+        </div>
+
+        <!-- TODAY'S WORKOUT -->
+        <div class="card card-p an">
+          <div class="df ac jb mb2">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;">TODAY'S WORKOUT</div>
+            <span class="badge bg-g">Push Day</span>
+          </div>
+          <div class="ex-list">
+            <div class="ex-row"><span class="ex-name">Bench Press</span><span class="ex-sets">4 × 8</span></div>
+            <div class="ex-row"><span class="ex-name">Incline Dumbbell Press</span><span class="ex-sets">3 × 10</span></div>
+            <div class="ex-row"><span class="ex-name">Shoulder Press</span><span class="ex-sets">3 × 12</span></div>
+            <div class="ex-row"><span class="ex-name">Tricep Pushdown</span><span class="ex-sets">3 × 15</span></div>
+          </div>
+          <a href="workout.html" class="btn btn-p btn-sm w100 mt2">Start Workout →</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>buildFooter();</script>
+</body>
+</html>

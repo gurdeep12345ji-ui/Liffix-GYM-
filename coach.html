@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Coach — Liffix GYM AI</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.coach-wrap{display:grid;grid-template-columns:260px 1fr;gap:0;height:calc(100vh - var(--nav) - 1px);}
+.sidebar{background:var(--bg2);border-right:1px solid var(--br);display:flex;flex-direction:column;overflow:hidden;}
+.sb-head{padding:1.1rem 1.2rem;border-bottom:1px solid var(--br);}
+.sb-head h3{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;margin-bottom:.2rem;}
+.sb-head p{font-size:.68rem;color:var(--t3);}
+.sb-hist{flex:1;overflow-y:auto;padding:.65rem;}
+.hi{padding:.65rem .8rem;border-radius:8px;cursor:pointer;transition:.2s;margin-bottom:.2rem;}
+.hi:hover,.hi.on{background:var(--bg3);}
+.hi-title{font-size:.78rem;font-weight:600;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.hi-date{font-size:.62rem;color:var(--t3);margin-top:2px;}
+.sb-foot{padding:.9rem;border-top:1px solid var(--br);}
+.chat-main{display:flex;flex-direction:column;background:var(--bg);}
+.chat-topbar{padding:.9rem 1.3rem;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:var(--g);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{flex:1;overflow-y:auto;padding:1.3rem;display:flex;flex-direction:column;gap:.9rem;}
+.chat-bottom{padding:.9rem 1.3rem;border-top:1px solid var(--br);background:var(--bg2);}
+.qp-row{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.7rem;}
+.qp{background:var(--bg3);border:1px solid var(--br);color:var(--t2);font-size:.7rem;padding:.32rem .7rem;border-radius:100px;cursor:pointer;transition:.2s;white-space:nowrap;}
+.qp:hover{border-color:var(--bn);color:var(--g);}
+.chat-inp-row{display:flex;gap:.65rem;}
+.chat-inp-row input{flex:1;}
+.remind-strip{background:rgba(57,255,20,.04);border:1px solid var(--bn);border-radius:10px;padding:.8rem 1rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:1rem 1.25rem 0;}
+.rc{display:inline-flex;align-items:center;gap:3px;background:rgba(57,255,20,.08);border:1px solid rgba(57,255,20,.18);color:var(--g);font-size:.68rem;font-weight:600;padding:.26rem .65rem;border-radius:100px;}
+@media(max-width:768px){.coach-wrap{grid-template-columns:1fr;height:auto;}.sidebar{display:none;}.chat-msgs{max-height:52vh;}.chat-topbar{padding:.7rem 1rem;}.chat-bottom{padding:.7rem 1rem;}.remind-strip{margin:.75rem .75rem 0;}}
+</style>
+</head>
+<body>
+<script src="../assets/app.js"></script>
+<script>buildNav('AI Coach');</script>
+
+<div style="margin-top:var(--nav);">
+  <div class="remind-strip">
+    <span style="font-size:.68rem;font-weight:700;color:var(--g);letter-spacing:1px;text-transform:uppercase;flex-shrink:0;">🔔 Reminders</span>
+    <span class="rc">💧 Drink water</span>
+    <span class="rc">💊 Take creatine 5g</span>
+    <span class="rc">🏋️ Workout in 2h</span>
+    <span class="rc">🍽️ Protein meal due</span>
+  </div>
+
+  <div class="coach-wrap">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sb-head"><h3>CHAT HISTORY</h3><p>Previous conversations</p></div>
+      <div class="sb-hist">
+        <div class="hi on"><div class="hi-title">What should I eat today?</div><div class="hi-date">Today · 9:14 AM</div></div>
+        <div class="hi"><div class="hi-title">Best supplements for cutting</div><div class="hi-date">Yesterday · 7:30 PM</div></div>
+        <div class="hi"><div class="hi-title">How to gain muscle faster?</div><div class="hi-date">Apr 5 · 11:00 AM</div></div>
+        <div class="hi"><div class="hi-title">Workout plan for beginners</div><div class="hi-date">Apr 4 · 3:20 PM</div></div>
+        <div class="hi"><div class="hi-title">Protein sources on budget</div><div class="hi-date">Apr 3 · 8:45 AM</div></div>
+      </div>
+      <div class="sb-foot">
+        <button class="btn btn-o btn-sm w100" onclick="document.getElementById('chat-body').innerHTML='';toast('New chat started','🤖')">+ New Chat</button>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="chat-main">
+      <div class="chat-topbar">
+        <div class="df ac g2">
+          <div class="ai-dot"></div>
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:1px;">LIFFIX AI COACH</div>
+            <div style="font-size:.65rem;color:var(--t3);">Online · Powered by Liffix AI</div>
+          </div>
+        </div>
+        <div class="df g1">
+          <span class="badge bg-g">Cut Goal</span>
+          <span class="badge bg-gold hide-m">🔥 14-day streak</span>
+        </div>
+      </div>
+
+      <div class="chat-msgs" id="chat-body">
+        <div class="cmsg ai"><div class="cav ai">AI</div><div><div class="cbubble">Hey James! 👋 I'm your Liffix AI Coach. I've loaded your profile — <strong style="color:var(--g)">cut goal</strong>, 82kg, targeting 75kg.<br><br>I can help with diet, workout, supplements and more. What do you need today?</div></div></div>
+        <div class="cmsg ai"><div class="cav ai">AI</div><div><div class="cbubble">📊 <strong>Today's Summary</strong><br>Calories: 1,540 / 2,290 kcal<br>Protein: 128 / 160g<br>Water: 5 / 8 glasses<br><br>On track! Finish with a protein-rich dinner.</div></div></div>
+      </div>
+
+      <div class="chat-bottom">
+        <div class="qp-row">
+          <span class="qp" onclick="qs('What should I eat for dinner?')">🍽️ Dinner ideas?</span>
+          <span class="qp" onclick="qs('How can I gain muscle faster?')">💪 Gain muscle?</span>
+          <span class="qp" onclick="qs('What supplements should I take?')">💊 Supplements?</span>
+          <span class="qp" onclick="qs('Give me a workout for today')">🏋️ Today\'s workout?</span>
+          <span class="qp" onclick="qs('How do I cut fat fast?')">🔥 Cut fat?</span>
+        </div>
+        <div class="chat-inp-row">
+          <input class="fc" type="text" id="chat-inp" placeholder="Ask anything about diet, workout, supplements..." autocomplete="off">
+          <button class="btn btn-p" id="chat-btn">Send →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>buildFooter();function qs(m){document.getElementById('chat-inp').value=m;document.getElementById('chat-btn').click();}</script>
+</body>
+</html>
