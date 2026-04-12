@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexusAI — Your AI Business Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#050507;--white:#f5f4f0;--green:#00ff88;--green2:#00cc6a;
+  --amber:#ffb830;--blue:#4488ff;--red:#ff4455;--pink:#ff44aa;
+  --surface:#0c0d11;--surface2:#13141a;--border:rgba(255,255,255,0.06);
+  --font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:var(--font-b);
+  font-weight:300;line-height:1.7;overflow-x:hidden;cursor:none}
+::selection{background:var(--green);color:var(--black)}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--black)}
+::-webkit-scrollbar-thumb{background:var(--green);border-radius:2px}
+
+/* Cursor */
+#cursor{position:fixed;top:0;left:0;width:40px;height:40px;
+  border:1px solid rgba(0,255,136,.4);border-radius:50%;
+  pointer-events:none;z-index:99999;transition:transform .08s,width .3s,height .3s,border-color .3s;
+  mix-blend-mode:difference}
+#cursor-dot{position:fixed;top:0;left:0;width:6px;height:6px;
+  background:var(--green);border-radius:50%;pointer-events:none;z-index:99999;
+  transition:transform .03s}
+#cursor.big{width:64px;height:64px;border-color:rgba(0,255,136,.7);background:rgba(0,255,136,.04)}
+
+/* Noise */
+body::after{content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9998;opacity:.35}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:20px 48px;display:flex;align-items:center;gap:48px;
+  background:linear-gradient(to bottom,rgba(5,5,7,.9),transparent);
+  backdrop-filter:blur(12px)}
+.nav-logo{font-family:var(--font-d);font-weight:800;font-size:20px;
+  color:var(--white);letter-spacing:-.02em}
+.nav-logo span{color:var(--green)}
+.nav-links{display:flex;gap:32px;margin-left:auto}
+.nav-links a{font-size:13px;color:rgba(245,244,240,.5);text-decoration:none;
+  transition:color .2s;letter-spacing:.02em}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{padding:10px 22px;background:var(--green);color:var(--black);
+  font-family:var(--font-d);font-weight:700;font-size:13px;border-radius:4px;
+  text-decoration:none;transition:all .3s;white-space:nowrap}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(0,255,136,.25)}
+
+/* Hero */
+#hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
+#hero-canvas{position:absolute;inset:0;z-index:0}
+.hero-glow{position:absolute;top:15%;left:50%;transform:translateX(-50%);
+  width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,255,136,.05) 0%,transparent 65%);
+  pointer-events:none;z-index:1}
+.hero-content{position:relative;z-index:2;max-width:1200px;margin:0 auto;
+  padding:140px 48px 80px}
+.tag{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;
+  background:rgba(0,255,136,.07);border:0.5px solid rgba(0,255,136,.2);
+  border-radius:100px;font-size:11px;color:var(--green);letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:36px}
+.tag::before{content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--green);animation:pulse 2s ease-in-out infinite}
+h1{font-family:var(--font-d);font-size:clamp(2.8rem,5.5vw,5.2rem);
+  font-weight:800;line-height:1.04;letter-spacing:-.03em;margin-bottom:28px;max-width:860px}
+h1 .accent{color:var(--green)}
+h1 .line2{display:block}
+.typewriter-wrap{display:inline-block;position:relative}
+.typewriter{color:var(--green)}
+.cursor-blink{animation:blink 1s step-end infinite;margin-left:1px}
+.hero-sub{font-size:17px;color:rgba(245,244,240,.5);max-width:500px;
+  margin-bottom:52px;font-weight:300;line-height:1.85}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:80px}
+.btn-p{display:inline-flex;align-items:center;gap:10px;padding:15px 30px;
+  background:var(--green);color:var(--black);font-family:var(--font-d);
+  font-weight:700;font-size:14px;border-radius:4px;text-decoration:none;
+  transition:all .3s;border:none;cursor:none}
+.btn-p:hover{transform:translateY(-3px);box-shadow:0 24px 48px rgba(0,255,136,.28)}
+.btn-g{display:inline-flex;align-items:center;gap:10px;padding:14px 29px;
+  background:transparent;color:var(--white);font-family:var(--font-d);
+  font-weight:700;font-size:14px;border:0.5px solid var(--border);border-radius:4px;
+  text-decoration:none;transition:all .3s;cursor:none}
+.btn-g:hover{border-color:var(--green);color:var(--green);transform:translateY(-2px)}
+
+/* Live stats ticker */
+.ticker{display:inline-flex;align-items:center;gap:0;
+  background:var(--surface);border:0.5px solid var(--border);border-radius:8px;
+  overflow:hidden}
+.ticker-item{padding:16px 28px;text-align:center}
+.ticker-item+.ticker-item{border-left:0.5px solid var(--border)}
+.ticker-val{font-size:26px;font-weight:700;font-family:var(--font-d);margin-bottom:2px}
+.ticker-lbl{font-size:10px;color:rgba(245,244,240,.35);letter-spacing:.08em;text-transform:uppercase}
+
+/* Scroll indicator */
+.scroll-ind{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;z-index:2}
+.scroll-line{width:1px;height:50px;background:linear-gradient(to bottom,rgba(0,255,136,.5),transparent);
+  animation:scrollline 2s ease-in-out infinite}
+@keyframes scrollline{0%,100%{transform:scaleY(1);opacity:1}50%{transform:scaleY(.6);opacity:.5}}
+
+/* Section base */
+section{position:relative;overflow:hidden}
+.container{max-width:1200px;margin:0 auto;padding:0 48px}
+.section-tag{font-size:11px;color:rgba(245,244,240,.35);letter-spacing:.12em;
+  text-transform:uppercase;margin-bottom:16px}
+h2{font-family:var(--font-d);font-size:clamp(2rem,3.5vw,3.2rem);
+  font-weight:800;letter-spacing:-.025em;line-height:1.1;margin-bottom:20px}
+h2 em{font-style:normal;color:var(--green)}
+.section-sub{font-size:16px;color:rgba(245,244,240,.45);max-width:480px;
+  font-weight:300;line-height:1.8}
+
+/* Services */
+#services{padding:140px 0}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--border);border:0.5px solid var(--border);border-radius:12px;
+  overflow:hidden;margin-top:64px}
+.service-card{background:var(--surface);padding:36px 32px;transition:background .3s;position:relative;overflow:hidden}
+.service-card::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 0% 0%,rgba(0,255,136,.04),transparent 60%);
+  opacity:0;transition:opacity .4s}
+.service-card:hover::before{opacity:1}
+.service-card:hover{background:#0f1016}
+.svc-icon{width:48px;height:48px;background:rgba(0,255,136,.07);
+  border:0.5px solid rgba(0,255,136,.15);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:24px;font-size:22px}
+.svc-title{font-family:var(--font-d);font-size:18px;font-weight:700;
+  margin-bottom:10px;letter-spacing:-.01em}
+.svc-desc{font-size:13px;color:rgba(245,244,240,.45);line-height:1.75;margin-bottom:20px}
+.svc-earn{font-size:22px;font-weight:700;font-family:var(--font-d);color:var(--green)}
+.svc-earn-lbl{font-size:11px;color:rgba(245,244,240,.3);margin-top:2px}
+
+/* How it works */
+#how{padding:140px 0;background:var(--surface)}
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;margin-top:64px}
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:flex;gap:24px;padding:28px 0;border-bottom:0.5px solid var(--border);
+  opacity:.4;transition:opacity .4s;cursor:none}
+.step.active{opacity:1}
+.step-num{width:40px;height:40px;border-radius:50%;background:rgba(0,255,136,.08);
+  border:0.5px solid rgba(0,255,136,.2);display:flex;align-items:center;
+  justify-content:center;font-family:var(--font-d);font-size:13px;font-weight:700;
+  color:var(--green);flex-shrink:0;transition:background .3s,border-color .3s}
+.step.active .step-num{background:var(--green);color:var(--black);border-color:var(--green)}
+.step-title{font-family:var(--font-d);font-size:16px;font-weight:700;
+  margin-bottom:6px;letter-spacing:-.01em}
+.step-desc{font-size:13px;color:rgba(245,244,240,.45);line-height:1.7}
+
+/* Agent visualization */
+.agent-viz{background:var(--black);border:0.5px solid var(--border);
+  border-radius:16px;overflow:hidden;position:relative}
+.viz-header{background:var(--surface2);padding:14px 20px;display:flex;
+  align-items:center;gap:10px;border-bottom:0.5px solid var(--border)}
+.viz-dots{display:flex;gap:6px}
+.viz-dot{width:10px;height:10px;border-radius:50%}
+.viz-title{font-size:12px;color:rgba(245,244,240,.4);margin-left:6px;font-family:'Courier New',monospace}
+.viz-body{padding:20px}
+.agent-log{font-family:'Courier New',monospace;font-size:11px;line-height:2}
+.log-entry{display:flex;gap:10px;animation:fadeIn .4s ease forwards;opacity:0}
+.log-time{color:rgba(245,244,240,.25)}
+.log-type{padding:1px 6px;border-radius:3px;font-size:9px}
+.lt-info{background:rgba(68,136,255,.15);color:#4488ff}
+.lt-ok{background:rgba(0,255,136,.1);color:var(--green)}
+.lt-warn{background:rgba(255,184,48,.1);color:var(--amber)}
+.lt-earn{background:rgba(0,255,136,.15);color:var(--green);font-weight:700}
+.log-msg{color:rgba(245,244,240,.7)}
+.approval-box{margin-top:16px;background:rgba(0,255,136,.04);
+  border:0.5px solid rgba(0,255,136,.2);border-radius:8px;padding:16px;
+  animation:fadeIn .5s ease forwards}
+.approval-title{font-size:13px;font-weight:500;margin-bottom:8px}
+.approval-task{font-size:12px;color:rgba(245,244,240,.5);margin-bottom:14px;line-height:1.6}
+.approval-btns{display:flex;gap:8px}
+.ab-approve{padding:8px 18px;background:var(--green);color:var(--black);
+  border:none;border-radius:4px;font-size:12px;font-weight:700;cursor:none;
+  font-family:var(--font-d);transition:all .2s}
+.ab-approve:hover{transform:scale(1.03)}
+.ab-reject{padding:8px 18px;background:transparent;color:rgba(245,244,240,.5);
+  border:0.5px solid var(--border);border-radius:4px;font-size:12px;cursor:none;
+  transition:all .2s}
+.ab-reject:hover{border-color:var(--red);color:var(--red)}
+.earning-flash{padding:12px 16px;background:rgba(0,255,136,.08);
+  border:0.5px solid rgba(0,255,136,.3);border-radius:6px;margin-top:12px;
+  font-size:13px;font-weight:500;color:var(--green);display:none;
+  animation:fadeIn .4s ease forwards}
+
+/* Earnings section */
+#earnings{padding:140px 0}
+.earnings-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:64px}
+.big-number{font-family:var(--font-d);font-size:clamp(3rem,6vw,6rem);
+  font-weight:800;line-height:1;letter-spacing:-.04em;color:var(--green)}
+.earnings-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--border);border:0.5px solid var(--border);border-radius:12px;
+  overflow:hidden;margin-bottom:40px}
+.earn-card{background:var(--surface);padding:28px 24px}
+.earn-val{font-size:28px;font-weight:700;font-family:var(--font-d);margin-bottom:4px}
+.earn-lbl{font-size:11px;color:rgba(245,244,240,.35);letter-spacing:.06em}
+.earn-change{font-size:11px;margin-top:6px}
+.up{color:var(--green)}
+.down{color:var(--red)}
+
+/* Chart bars */
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:80px;margin-top:20px}
+.bar{flex:1;background:rgba(0,255,136,.12);border-radius:3px 3px 0 0;
+  transition:height .6s ease,background .3s;position:relative}
+.bar:hover{background:rgba(0,255,136,.3)}
+.bar-tip{position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);
+  font-size:9px;color:var(--green);white-space:nowrap;opacity:0;transition:opacity .2s}
+.bar:hover .bar-tip{opacity:1}
+
+/* Income streams */
+.streams{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:40px}
+.stream-item{background:var(--surface);border:0.5px solid var(--border);
+  border-radius:8px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+.stream-icon{font-size:20px;width:40px;text-align:center}
+.stream-name{font-size:13px;font-weight:500;margin-bottom:2px}
+.stream-amount{font-size:12px;color:rgba(245,244,240,.4)}
+.stream-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:4px}
+.stream-fill{height:100%;background:var(--green);border-radius:2px;transition:width 1s ease}
+
+/* SVG illustration */
+.svg-section{padding:100px 0;background:var(--surface);position:relative;overflow:hidden}
+.svg-section::before{content:'';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);width:800px;height:800px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,255,136,.03),transparent 60%);
+  pointer-events:none}
+.arch-svg{width:100%;max-width:900px;margin:60px auto 0;display:block}
+
+/* CTA */
+#cta{padding:160px 0;text-align:center;position:relative}
+#cta::before{content:'';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,255,136,.07),transparent 65%);
+  pointer-events:none}
+.cta-inner{position:relative;z-index:1}
+.cta-title{font-family:var(--font-d);font-size:clamp(2.5rem,4.5vw,4.5rem);
+  font-weight:800;letter-spacing:-.03em;line-height:1.08;margin-bottom:24px}
+.cta-sub{font-size:16px;color:rgba(245,244,240,.45);margin-bottom:48px;max-width:420px;margin-left:auto;margin-right:auto}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* Footer */
+footer{padding:60px 0 40px;border-top:0.5px solid var(--border)}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.footer-logo{font-family:var(--font-d);font-weight:800;font-size:18px}
+.footer-logo span{color:var(--green)}
+.footer-links{display:flex;gap:24px}
+.footer-links a{font-size:12px;color:rgba(245,244,240,.35);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--white)}
+.footer-copy{font-size:11px;color:rgba(245,244,240,.2)}
+
+/* Keyframes */
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.9)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes orbit{from{transform:rotate(0deg) translateX(80px) rotate(0deg)}
+  to{transform:rotate(360deg) translateX(80px) rotate(-360deg)}}
+@keyframes orbitRev{from{transform:rotate(0deg) translateX(140px) rotate(0deg)}
+  to{transform:rotate(-360deg) translateX(140px) rotate(360deg)}}
+@keyframes dash{to{stroke-dashoffset:0}}
+@keyframes countup{from{opacity:0}to{opacity:1}}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(0,255,136,.1)}
+  50%{box-shadow:0 0 40px rgba(0,255,136,.25)}}
+@keyframes slideIn{from{transform:translateX(-20px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:900px){
+  nav{padding:16px 24px}
+  .nav-links{display:none}
+  .hero-content{padding:120px 24px 60px}
+  .container{padding:0 24px}
+  .services-grid{grid-template-columns:1fr}
+  .how-grid{grid-template-columns:1fr}
+  .earnings-grid{grid-template-columns:repeat(2,1fr)}
+  .streams{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Nexus<span>AI</span></div>
+  <div class="nav-links">
+    <a href="#services">Services</a>
+    <a href="#how">How It Works</a>
+    <a href="#earnings">Earnings</a>
+    <a href="#cta">Get Started</a>
+  </div>
+  <a href="#cta" class="nav-cta">Launch Agent →</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="tag">AI Business Agent · Live</div>
+    <h1>
+      Your AI earns real money
+      <span class="line2">from <span class="typewriter-wrap"><span class="typewriter" id="tw"></span><span class="cursor-blink">|</span></span></span>
+    </h1>
+    <p class="hero-sub">
+      The first autonomous AI agent that runs your online business.
+      You approve every action. It earns while you sleep.
+    </p>
+    <div class="hero-btns">
+      <a href="#cta" class="btn-p">
+        Launch Your Agent
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="#how" class="btn-g">See How It Works</a>
+    </div>
+    <div class="ticker">
+      <div class="ticker-item">
+        <div class="ticker-val" style="color:var(--green)" id="t1">$0</div>
+        <div class="ticker-lbl">Earned Today</div>
+      </div>
+      <div class="ticker-item">
+        <div class="ticker-val" id="t2">12,847</div>
+        <div class="ticker-lbl">Active Agents</div>
+      </div>
+      <div class="ticker-item">
+        <div class="ticker-val" style="color:var(--amber)">94.2%</div>
+        <div class="ticker-lbl">Success Rate</div>
+      </div>
+      <div class="ticker-item">
+        <div class="ticker-val" style="color:var(--blue)">47</div>
+        <div class="ticker-lbl">Countries</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-ind">
+    <span style="font-size:9px;color:rgba(245,244,240,.2);letter-spacing:.1em">SCROLL</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">What your agent does</div>
+      <h2>6 ways to earn <em>right now</em></h2>
+      <p class="section-sub">Your AI agent finds opportunities, executes tasks, and deposits money — after your approval.</p>
+    </div>
+    <div class="services-grid reveal">
+      <div class="service-card">
+        <div class="svc-icon">🖥</div>
+        <div class="svc-title">Tech Support</div>
+        <div class="svc-desc">Resolves tickets on Upwork, Fiverr, and direct clients. Python, JS, React, databases — 24/7.</div>
+        <div class="svc-earn">$15–$85</div>
+        <div class="svc-earn-lbl">per task · avg 45 min</div>
+      </div>
+      <div class="service-card">
+        <div class="svc-icon">✍</div>
+        <div class="svc-title">Content Creation</div>
+        <div class="svc-desc">Blog posts, product descriptions, social copy, SEO articles written and delivered automatically.</div>
+        <div class="svc-earn">$8–$45</div>
+        <div class="svc-earn-lbl">per piece · avg 20 min</div>
+      </div>
+      <div class="service-card">
+        <div class="svc-icon">💼</div>
+        <div class="svc-title">Freelance Projects</div>
+        <div class="svc-desc">Bids, negotiates, and delivers small projects on every major freelance platform autonomously.</div>
+        <div class="svc-earn">$50–$300</div>
+        <div class="svc-earn-lbl">per project · 1–3 days</div>
+      </div>
+      <div class="service-card">
+        <div class="svc-icon">📊</div>
+        <div class="svc-title">Data Services</div>
+        <div class="svc-desc">Web scraping, data cleaning, Excel automation, and research reports for businesses.</div>
+        <div class="svc-earn">$10–$60</div>
+        <div class="svc-earn-lbl">per task · avg 30 min</div>
+      </div>
+      <div class="service-card">
+        <div class="svc-icon">📧</div>
+        <div class="svc-title">Outreach & Sales</div>
+        <div class="svc-desc">Cold emails, LinkedIn outreach, lead generation — personalized at scale for your services.</div>
+        <div class="svc-earn">$25–$150</div>
+        <div class="svc-earn-lbl">per closed deal</div>
+      </div>
+      <div class="service-card">
+        <div class="svc-icon">🤖</div>
+        <div class="svc-title">AI Consulting</div>
+        <div class="svc-desc">Helps small businesses automate workflows, build chatbots, and integrate AI tools.</div>
+        <div class="svc-earn">$75–$400</div>
+        <div class="svc-earn-lbl">per engagement</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="how-grid">
+      <div class="reveal">
+        <div class="section-tag">The process</div>
+        <h2>Human first.<br><em>Always.</em></h2>
+        <div class="steps" id="steps">
+          <div class="step active" data-step="0">
+            <div class="step-num">1</div>
+            <div>
+              <div class="step-title">AI finds an opportunity</div>
+              <div class="step-desc">The agent scans Upwork, Fiverr, Reddit, and 40+ platforms for tasks matching your skills and earning potential.</div>
+            </div>
+          </div>
+          <div class="step" data-step="1">
+            <div class="step-num">2</div>
+            <div>
+              <div class="step-title">You see the plan</div>
+              <div class="step-desc">The agent shows you exactly what it wants to do, how long it'll take, and how much you'll earn. Full transparency.</div>
+            </div>
+          </div>
+          <div class="step" data-step="2">
+            <div class="step-num">3</div>
+            <div>
+              <div class="step-title">You approve or reject</div>
+              <div class="step-desc">One tap. The agent never spends money, sends messages, or takes action without your explicit approval.</div>
+            </div>
+          </div>
+          <div class="step" data-step="3">
+            <div class="step-num">4</div>
+            <div>
+              <div class="step-title">Money hits your account</div>
+              <div class="step-desc">After task completion, earnings transfer directly to your wallet. You track every dollar in real time.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live agent demo -->
+      <div class="reveal" id="agent-viz-wrap">
+        <div class="agent-viz">
+          <div class="viz-header">
+            <div class="viz-dots">
+              <div class="viz-dot" style="background:#ff5f57"></div>
+              <div class="viz-dot" style="background:#ffbd2e"></div>
+              <div class="viz-dot" style="background:#28c840"></div>
+            </div>
+            <div class="viz-title">nexus-agent-01 · running</div>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite"></div>
+              <span style="font-size:10px;color:var(--green);font-family:'Courier New',monospace">LIVE</span>
+            </div>
+          </div>
+          <div class="viz-body">
+            <div class="agent-log" id="agent-log"></div>
+            <div class="approval-box" id="approval-box" style="display:none">
+              <div class="approval-title">⚡ Approval Required</div>
+              <div class="approval-task" id="approval-task">Loading task...</div>
+              <div class="approval-btns">
+                <button class="ab-approve" onclick="handleApprove()">✓ Approve</button>
+                <button class="ab-reject" onclick="handleReject()">✗ Skip</button>
+              </div>
+            </div>
+            <div class="earning-flash" id="earn-flash"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE SVG -->
+<section class="svg-section">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="section-tag">System Architecture</div>
+      <h2>Built for <em>scale</em></h2>
+      <p class="section-sub" style="margin:0 auto">Multi-language, microservice architecture. Python AI core, Rust performance layer, Go real-time, Java enterprise APIs.</p>
+    </div>
+    <svg class="arch-svg reveal" viewBox="0 0 900 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="rgba(0,255,136,.4)"/>
+        </marker>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- User -->
+      <rect x="20" y="170" width="120" height="80" rx="8" fill="#0c0d11" stroke="rgba(68,136,255,.4)" stroke-width=".5"/>
+      <text x="80" y="200" text-anchor="middle" fill="rgba(245,244,240,.8)" font-family="Syne,sans-serif" font-size="13" font-weight="700">User</text>
+      <text x="80" y="218" text-anchor="middle" fill="rgba(245,244,240,.35)" font-family="DM Sans,sans-serif" font-size="10">Human Approval</text>
+      <text x="80" y="234" text-anchor="middle" fill="#4488ff" font-family="DM Sans,sans-serif" font-size="9">React/Next.js</text>
+
+      <!-- Arrow user -> gateway -->
+      <line x1="140" y1="210" x2="220" y2="210" stroke="rgba(0,255,136,.3)" stroke-width=".5" stroke-dasharray="4,3" marker-end="url(#arr)">
+        <animate attributeName="stroke-dashoffset" values="7;0" dur="1s" repeatCount="indefinite"/>
+      </line>
+
+      <!-- API Gateway -->
+      <rect x="230" y="155" width="130" height="110" rx="8" fill="#0c0d11" stroke="rgba(0,255,136,.35)" stroke-width=".5"/>
+      <text x="295" y="185" text-anchor="middle" fill="rgba(245,244,240,.8)" font-family="Syne,sans-serif" font-size="12" font-weight="700">API Gateway</text>
+      <text x="295" y="203" text-anchor="middle" fill="rgba(245,244,240,.35)" font-family="DM Sans,sans-serif" font-size="9">Auth · Rate Limit</text>
+      <text x="295" y="219" text-anchor="middle" fill="rgba(245,244,240,.35)" font-family="DM Sans,sans-serif" font-size="9">Load Balance</text>
+      <text x="295" y="238" text-anchor="middle" fill="#f0883e" font-family="DM Sans,sans-serif" font-size="9">Java Spring Boot</text>
+
+      <!-- Lines from gateway -->
+      <line x1="360" y1="185" x2="420" y2="145" stroke="rgba(0,255,136,.2)" stroke-width=".5" marker-end="url(#arr)"/>
+      <line x1="360" y1="210" x2="420" y2="210" stroke="rgba(0,255,136,.2)" stroke-width=".5" marker-end="url(#arr)"/>
+      <line x1="360" y1="235" x2="420" y2="275" stroke="rgba(0,255,136,.2)" stroke-width=".5" marker-end="url(#arr)"/>
+
+      <!-- AI Engine -->
+      <rect x="430" y="100" width="130" height="90" rx="8" fill="#0a0f0c" stroke="rgba(0,255,136,.5)" stroke-width=".5" filter="url(#glow)"/>
+      <text x="495" y="128" text-anchor="middle" fill="var(--green)" font-family="Syne,sans-serif" font-size="12" font-weight="700">AI Engine</text>
+      <text x="495" y="146" text-anchor="middle" fill="rgba(245,244,240,.4)" font-family="DM Sans,sans-serif" font-size="9">Claude · Orchestrator</text>
+      <text x="495" y="162" text-anchor="middle" fill="rgba(245,244,240,.4)" font-family="DM Sans,sans-serif" font-size="9">Task Generation</text>
+      <text x="495" y="178" text-anchor="middle" fill="#3ddc84" font-family="DM Sans,sans-serif" font-size="9">Python FastAPI</text>
+
+      <!-- Task Queue -->
+      <rect x="430" y="175" width="130" height="70" rx="8" fill="#0c0d11" stroke="rgba(255,184,48,.3)" stroke-width=".5"/>
+      <text x="495" y="200" text-anchor="middle" fill="rgba(245,244,240,.8)" font-family="Syne,sans-serif" font-size="12" font-weight="700">Task Queue</text>
+      <text x="495" y="216" text-anchor="middle" fill="rgba(245,244,240,.4)" font-family="DM Sans,sans-serif" font-size="9">Priority · Fraud Check</text>
+      <text x="495" y="232" text-anchor="middle" fill="#ff7b72" font-family="DM Sans,sans-serif" font-size="9">Rust</text>
+
+      <!-- Notifications -->
+      <rect x="430" y="260" width="130" height="70" rx="8" fill="#0c0d11" stroke="rgba(68,136,255,.3)" stroke-width=".5"/>
+      <text x="495" y="285" text-anchor="middle" fill="rgba(245,244,240,.8)" font-family="Syne,sans-serif" font-size="12" font-weight="700">Notifications</text>
+      <text x="495" y="301" text-anchor="middle" fill="rgba(245,244,240,.4)" font-family="DM Sans,sans-serif" font-size="9">WebSocket · Push</text>
+      <text x="495" y="317" text-anchor="middle" fill="#79c0ff" font-family="DM Sans,sans-serif" font-size="9">Go</text>
+
+      <!-- Lines to right side -->
+      <line x1="560" y1="145" x2="620" y2="145" stroke="rgba(0,255,136,.2)" stroke-width=".5" marker-end="url(#arr)"/>
+      <line x1="560" y1="210" x2="620" y2="210" stroke="rgba(0,255,136,.2)" stroke-width=".5" marker-end="url(#arr)"/>
+      <line x1="560" y1="295" x2="620" y2="295" stroke="rgba(0,255,136,.2)" stroke-width=".5" marker-end="url(#arr)"/>
+
+      <!-- Platforms -->
+      <rect x="630" y="110" width="110" height="70" rx="8" fill="#0c0d11" stroke="rgba(255,255,255,.08)" stroke-width=".5"/>
+      <text x="685" y="140" text-anchor="middle" fill="rgba(245,244,240,.7)" font-family="Syne,sans-serif" font-size="11" font-weight="700">Platforms</text>
+      <text x="685" y="157" text-anchor="middle" fill="rgba(245,244,240,.35)" font-family="DM Sans,sans-serif" font-size="9">Upwork · Fiverr</text>
+      <text x="685" y="171" text-anchor="middle" fill="rgba(245,244,240,.35)" font-family="DM Sans,sans-serif" font-size="9">Freelancer · More</text>
+
+      <!-- Payments -->
+      <rect x="630" y="180" width="110" height="60" rx="8" fill="#0a100a" stroke="rgba(0,255,136,.25)" stroke-width=".5"/>
+      <text x="685" y="207" text-anchor="middle" fill="rgba(245,244,240,.7)" font-family="Syne,sans-serif" font-size="11" font-weight="700">Payments</text>
+      <text x="685" y="223" text-anchor="middle" fill="var(--green)" font-family="DM Sans,sans-serif" font-size="9">Stripe · Wise · PayPal</text>
+
+      <!-- Database -->
+      <rect x="630" y="260" width="110" height="70" rx="8" fill="#0c0d11" stroke="rgba(255,255,255,.08)" stroke-width=".5"/>
+      <text x="685" y="290" text-anchor="middle" fill="rgba(245,244,240,.7)" font-family="Syne,sans-serif" font-size="11" font-weight="700">Database</text>
+      <text x="685" y="307" text-anchor="middle" fill="rgba(245,244,240,.35)" font-family="DM Sans,sans-serif" font-size="9">PostgreSQL</text>
+      <text x="685" y="321" text-anchor="middle" fill="rgba(245,244,240,.35)" font-family="DM Sans,sans-serif" font-size="9">Redis Cache</text>
+
+      <!-- Animated data flow dots -->
+      <circle r="3" fill="rgba(0,255,136,.7)">
+        <animateMotion dur="2s" repeatCount="indefinite" path="M140,210 L230,210"/>
+      </circle>
+      <circle r="2" fill="rgba(0,255,136,.5)">
+        <animateMotion dur="2.5s" repeatCount="indefinite" begin=".5s" path="M360,210 L430,210"/>
+      </circle>
+      <circle r="2" fill="rgba(0,255,136,.5)">
+        <animateMotion dur="1.8s" repeatCount="indefinite" begin="1s" path="M560,145 L620,145"/>
+      </circle>
+    </svg>
+  </div>
+</section>
+
+<!-- EARNINGS -->
+<section id="earnings">
+  <div class="container">
+    <div class="earnings-header reveal">
+      <div>
+        <div class="section-tag">Real results</div>
+        <h2>Agents have earned</h2>
+        <div class="big-number" id="big-earn">$0</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:12px;color:rgba(245,244,240,.3);margin-bottom:4px">This month alone</div>
+        <div style="font-size:32px;font-weight:700;font-family:var(--font-d);color:var(--amber)">+$184K</div>
+      </div>
+    </div>
+    <div class="earnings-grid reveal">
+      <div class="earn-card">
+        <div class="earn-val" style="color:var(--green)">$2,847</div>
+        <div class="earn-lbl">Avg monthly per agent</div>
+        <div class="earn-change up">↑ 23% vs last month</div>
+        <div class="chart-bars" id="bar1"></div>
+      </div>
+      <div class="earn-card">
+        <div class="earn-val">$47.30</div>
+        <div class="earn-lbl">Avg per approved task</div>
+        <div class="earn-change up">↑ 11% vs last week</div>
+        <div class="chart-bars" id="bar2"></div>
+      </div>
+      <div class="earn-card">
+        <div class="earn-val" style="color:var(--amber)">3.2 hrs</div>
+        <div class="earn-lbl">Avg to first earning</div>
+        <div class="earn-change up">↓ 40% faster</div>
+        <div class="chart-bars" id="bar3"></div>
+      </div>
+      <div class="earn-card">
+        <div class="earn-val" style="color:var(--blue)">$12,400</div>
+        <div class="earn-lbl">Top agent this month</div>
+        <div class="earn-change up">↑ 68% vs avg</div>
+        <div class="chart-bars" id="bar4"></div>
+      </div>
+    </div>
+
+    <div class="streams reveal">
+      <div class="stream-item">
+        <div class="stream-icon">🖥</div>
+        <div style="flex:1">
+          <div class="stream-name">Tech Support</div>
+          <div class="stream-amount">$84,200 earned · 1,840 tasks</div>
+          <div class="stream-bar"><div class="stream-fill" style="width:0%" data-w="78%"></div></div>
+        </div>
+        <div style="font-family:var(--font-d);font-weight:700;color:var(--green)">78%</div>
+      </div>
+      <div class="stream-item">
+        <div class="stream-icon">✍</div>
+        <div style="flex:1">
+          <div class="stream-name">Content Creation</div>
+          <div class="stream-amount">$31,500 earned · 2,100 pieces</div>
+          <div class="stream-bar"><div class="stream-fill" style="width:0%;background:var(--amber)" data-w="52%"></div></div>
+        </div>
+        <div style="font-family:var(--font-d);font-weight:700;color:var(--amber)">52%</div>
+      </div>
+      <div class="stream-item">
+        <div class="stream-icon">💼</div>
+        <div style="flex:1">
+          <div class="stream-name">Freelance Projects</div>
+          <div class="stream-amount">$47,900 earned · 320 projects</div>
+          <div class="stream-bar"><div class="stream-fill" style="width:0%;background:var(--blue)" data-w="65%"></div></div>
+        </div>
+        <div style="font-family:var(--font-d);font-weight:700;color:var(--blue)">65%</div>
+      </div>
+      <div class="stream-item">
+        <div class="stream-icon">🤖</div>
+        <div style="flex:1">
+          <div class="stream-name">AI Consulting</div>
+          <div class="stream-amount">$22,300 earned · 87 clients</div>
+          <div class="stream-bar"><div class="stream-fill" style="width:0%;background:var(--pink)" data-w="38%"></div></div>
+        </div>
+        <div style="font-family:var(--font-d);font-weight:700;color:var(--pink)">38%</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-inner reveal">
+      <div class="tag" style="margin:0 auto 32px;width:fit-content">Start earning in 3 minutes</div>
+      <div class="cta-title">
+        Your AI agent is<br>
+        <span style="color:var(--green)">waiting to work.</span>
+      </div>
+      <p class="cta-sub">No subscriptions. No setup fees. The agent earns, you keep 85%. We take 15% only when you get paid.</p>
+      <div class="cta-btns">
+        <a href="#" class="btn-p" style="font-size:16px;padding:18px 36px">
+          Launch Free Agent
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="#" class="btn-g" style="font-size:16px;padding:17px 35px">Talk to Sales</a>
+      </div>
+      <p style="margin-top:24px;font-size:12px;color:rgba(245,244,240,.25)">
+        No credit card required · Human approval always required · Withdraw anytime
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Nexus<span>AI</span></div>
+      <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Docs</a>
+        <a href="#">API</a>
+        <a href="#">Status</a>
+      </div>
+      <div class="footer-copy">© 2026 NexusAI Inc. All rights reserved.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ─── CURSOR ───────────────────────────────────────────────────
+const cursor = document.getElementById('cursor');
+const dot = document.getElementById('cursor-dot');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove', e=>{
+  mx=e.clientX;my=e.clientY;
+  dot.style.transform=`translate(${mx-3}px,${my-3}px)`;
+});
+(function ani(){
+  cx+=(mx-cx)*.1;cy+=(my-cy)*.1;
+  cursor.style.transform=`translate(${cx-20}px,${cy-20}px)`;
+  requestAnimationFrame(ani);
+})();
+document.querySelectorAll('a,button,[data-cursor]').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cursor.classList.add('big'));
+  el.addEventListener('mouseleave',()=>cursor.classList.remove('big'));
+});
+
+// ─── CANVAS PARTICLES ─────────────────────────────────────────
+const canvas=document.getElementById('hero-canvas');
+const ctx=canvas.getContext('2d');
+let W,H,particles=[];
+const resize=()=>{W=canvas.width=innerWidth;H=canvas.height=innerHeight};
+resize();addEventListener('resize',resize);
+const colors=['rgba(0,255,136,','rgba(68,136,255,','rgba(255,184,48,'];
+for(let i=0;i<100;i++)particles.push({
+  x:Math.random()*1920,y:Math.random()*1080,
+  vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,
+  s:Math.random()*2+.4,a:Math.random()*.5+.08,
+  c:colors[Math.floor(Math.random()*3)]
+});
+let pmx=W/2,pmy=H/2;
+addEventListener('mousemove',e=>{pmx=e.clientX;pmy=e.clientY});
+(function draw(){
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,.018)';ctx.lineWidth=.5;
+  const g=90;
+  for(let x=0;x<W;x+=g){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+  for(let y=0;y<H;y+=g){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<110){ctx.beginPath();ctx.strokeStyle=`rgba(0,255,136,${.07*(1-d/110)})`;
+        ctx.lineWidth=.4;ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);ctx.stroke()}
+    }
+    const p=particles[i];
+    const dx=pmx-p.x,dy=pmy-p.y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<180){p.vx+=dx*.00006;p.vy+=dy*.00006}
+    p.vx*=.992;p.vy*=.992;p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.s,0,Math.PI*2);
+    ctx.fillStyle=p.c+p.a+')';ctx.fill();
+  }
+  requestAnimationFrame(draw);
+})();
+
+// ─── TYPEWRITER ───────────────────────────────────────────────
+const words=['Tech Support','Freelancing','AI Consulting','Content Writing','Data Services','Online Business'];
+let wi=0,ci=0,del=false;
+const tw=document.getElementById('tw');
+setInterval(()=>{
+  const w=words[wi];
+  if(!del&&ci<w.length){tw.textContent=w.slice(0,++ci)}
+  else if(!del&&ci===w.length){setTimeout(()=>del=true,1800);return}
+  else if(del&&ci>0){tw.textContent=w.slice(0,--ci)}
+  else{del=false;wi=(wi+1)%words.length}
+},del?40:80);
+
+// ─── LIVE COUNTERS ────────────────────────────────────────────
+let earned=48291;
+const t1=document.getElementById('t1');
+const be=document.getElementById('big-earn');
+setInterval(()=>{
+  earned+=Math.floor(Math.random()*18+4);
+  t1.textContent='$'+earned.toLocaleString();
+  be.textContent='$'+(earned*2.3).toLocaleString();
+},1100);
+
+// ─── SCROLL REVEALS ───────────────────────────────────────────
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      if(e.target.id==='bar1'||e.target.closest('.earnings-grid')){animateBars()}
+      if(e.target.closest('.streams')){animateStreams()}
+    }
+  });
+},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// ─── CHART BARS ───────────────────────────────────────────────
+function makeBars(id,data,color){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=data.map((v,i)=>`
+    <div class="bar" style="height:${v}%;background:${color||'rgba(0,255,136,.12)'};animation:fadeIn .4s ${i*.06}s both">
+      <div class="bar-tip">$${(v*12).toFixed(0)}</div>
+    </div>`).join('');
+}
+function animateBars(){
+  const d1=[40,55,45,70,60,80,65,90,75,88,70,95];
+  const d2=[30,45,55,40,65,50,70,60,75,65,80,72];
+  const d3=[60,55,65,50,70,60,55,75,65,80,70,85];
+  const d4=[20,35,45,55,40,65,55,70,60,75,80,90];
+  makeBars('bar1',d1,'rgba(0,255,136,.18)');
+  makeBars('bar2',d2,'rgba(245,244,240,.1)');
+  makeBars('bar3',d3,'rgba(255,184,48,.15)');
+  makeBars('bar4',d4,'rgba(68,136,255,.15)');
+}
+function animateStreams(){
+  document.querySelectorAll('.stream-fill').forEach(el=>{
+    const w=el.dataset.w;
+    setTimeout(()=>el.style.width=w,100);
+  });
+}
+
+// ─── AGENT LOG DEMO ───────────────────────────────────────────
+const log=document.getElementById('agent-log');
+const approvalBox=document.getElementById('approval-box');
+const approvalTask=document.getElementById('approval-task');
+const earnFlash=document.getElementById('earn-flash');
+let logCount=0;
+const tasks=[
+  {desc:'Submit proposal to Upwork client needing Python API debugging.\nEstimated: $65 · Time: 45 min · Risk: Low',earn:65},
+  {desc:'Write SEO blog post about AI tools for small businesses (1200 words).\nEstimated: $28 · Time: 20 min · Risk: Low',earn:28},
+  {desc:'Fix React TypeScript errors for startup MVP on Fiverr.\nEstimated: $45 · Time: 30 min · Risk: Low',earn:45},
+  {desc:'Scrape and clean 500 leads from LinkedIn for B2B client.\nEstimated: $38 · Time: 25 min · Risk: Low',earn:38},
+];
+let taskIdx=0;
+const addLog=(type,msg)=>{
+  const t=new Date().toTimeString().slice(0,8);
+  const div=document.createElement('div');
+  div.className='log-entry';div.style.animationDelay=`${logCount*.05}s`;
+  div.innerHTML=`<span class="log-time">${t}</span><span class="log-type ${type}">${type.replace('lt-','').toUpperCase()}</span><span class="log-msg">${msg}</span>`;
+  log.appendChild(div);log.scrollTop=log.scrollHeight;logCount++;
+  if(log.children.length>12)log.removeChild(log.firstChild);
+};
+const sequence=[
+  ()=>addLog('lt-info','Scanning Upwork for Python/JS tasks...'),
+  ()=>addLog('lt-info','Found 3 matching opportunities (>$30 each)'),
+  ()=>addLog('lt-info','Analyzing client requirements and ratings...'),
+  ()=>addLog('lt-warn','AWAITING HUMAN APPROVAL'),
+  ()=>{
+    approvalTask.textContent=tasks[taskIdx].desc;
+    approvalBox.style.display='block';
+    stepIdx=-1;
+  },
+];
+let stepIdx=0,approved=false,sequenceTimeout=null;
+function handleApprove(){
+  approved=true;
+  approvalBox.style.display='none';
+  addLog('lt-ok','✓ Approved by human. Executing task...');
+  setTimeout(()=>addLog('lt-info','Submitting proposal with custom intro...'),800);
+  setTimeout(()=>addLog('lt-info','Client responded — negotiating rate...'),2000);
+  setTimeout(()=>{
+    const amt=tasks[taskIdx].earn;
+    addLog('lt-earn',`💰 EARNED $${amt}.00 — Payment received!`);
+    earnFlash.textContent=`+$${amt}.00 deposited to your wallet`;
+    earnFlash.style.display='block';
+    setTimeout(()=>{earnFlash.style.display='none';taskIdx=(taskIdx+1)%tasks.length;startSequence()},3000);
+  },3500);
+}
+function handleReject(){
+  approvalBox.style.display='none';
+  addLog('lt-warn','Task skipped. Finding alternative...');
+  taskIdx=(taskIdx+1)%tasks.length;
+  setTimeout(startSequence,1500);
+}
+function startSequence(){
+  let i=0;
+  const run=()=>{
+    if(i<sequence.length){sequence[i++]();if(i<4)sequenceTimeout=setTimeout(run,1200)}
+  };
+  run();
+}
+// Start after a short delay
+setTimeout(startSequence,1000);
+
+// ─── STEP ANIMATION ───────────────────────────────────────────
+const steps=document.querySelectorAll('.step');
+let activeStep=0;
+setInterval(()=>{
+  steps.forEach(s=>s.classList.remove('active'));
+  activeStep=(activeStep+1)%steps.length;
+  steps[activeStep].classList.add('active');
+},2800);
+
+// ─── BIG EARN COUNTER ─────────────────────────────────────────
+let bigTarget=1847382,bigCurrent=0;
+const bigEl=document.getElementById('big-earn');
+const bigObs=new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting){
+    const tick=()=>{
+      bigCurrent=Math.min(bigCurrent+18200,bigTarget);
+      bigEl.textContent='$'+Math.floor(bigCurrent).toLocaleString();
+      if(bigCurrent<bigTarget)requestAnimationFrame(tick);
+    };
+    tick();bigObs.disconnect();
+  }
+});
+if(bigEl)bigObs.observe(bigEl);
+</script>
+</body>
+</html>
