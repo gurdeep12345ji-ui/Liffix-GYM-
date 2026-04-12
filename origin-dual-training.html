@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORIGIN — Dual AI Training Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#060709;--s1:#0b0d12;--s2:#0f1218;--s3:#141820;--s4:#1a2030;
+  --b1:#1e2638;--b2:#263048;--b3:#303d58;
+  --blue:#4f7cff;--blue2:#7aa3ff;--blue3:#b8d0ff;
+  --green:#00d47e;--red:#ff4560;--yellow:#ffb93e;--purple:#9b72ff;--cyan:#00c8ff;--orange:#ff8c42;
+  --t1:#eef2ff;--t2:#8896b8;--t3:#4a5478;--t4:#1e2640;
+}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--t1);font-family:'Outfit',sans-serif;display:flex;flex-direction:column;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(79,124,255,.07) 0%,transparent 60%);pointer-events:none;}
+
+/* TOPBAR */
+.top{height:54px;background:rgba(11,13,18,.97);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;backdrop-filter:blur(20px);z-index:100;position:relative;}
+.logo{font-size:18px;font-weight:900;letter-spacing:-1px;color:var(--blue2);margin-right:8px;}
+.logo em{color:var(--t3);font-style:normal;font-weight:400;font-size:11px;margin-left:5px;letter-spacing:0;}
+.nav{display:flex;gap:2px;}
+.nv{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;color:var(--t2);transition:all .15s;border:1px solid transparent;}
+.nv:hover{color:var(--t1);background:var(--s2);}
+.nv.on{background:var(--s2);color:var(--t1);border-color:var(--b1);}
+.tr{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.chip{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;background:var(--s1);border:1px solid var(--b1);color:var(--t2);font-family:'JetBrains Mono',monospace;}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.dot.g{background:var(--green);box-shadow:0 0 8px var(--green);}
+.dot.b{background:var(--blue2);box-shadow:0 0 8px var(--blue2);}
+.dot.r{background:var(--red);}
+.dot.y{background:var(--yellow);box-shadow:0 0 6px var(--yellow);}
+.dot.p{animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* SHELL */
+.shell{flex:1;display:flex;overflow:hidden;}
+.page{flex:1;display:none;overflow:hidden;flex-direction:column;}
+.page.on{display:flex;}
+
+/* ══ TRAIN PAGE ══ */
+#pg-train{flex-direction:column;}
+.train-wrap{flex:1;display:flex;overflow:hidden;}
+
+/* Command Panel */
+.cmd-panel{width:340px;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;flex-shrink:0;}
+.cmd-head{padding:20px;border-bottom:1px solid var(--b1);}
+.cmd-title{font-size:16px;font-weight:800;letter-spacing:-.4px;margin-bottom:4px;}
+.cmd-sub{font-size:11px;color:var(--t3);line-height:1.6;}
+.cmd-body{flex:1;overflow-y:auto;padding:16px;}
+.cmd-body::-webkit-scrollbar{width:3px;}
+.cmd-body::-webkit-scrollbar-thumb{background:var(--b2);}
+
+/* Command input */
+.cmd-input-wrap{padding:16px;border-top:1px solid var(--b1);}
+.cmd-label{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--t3);margin-bottom:8px;text-transform:uppercase;}
+.cmd-textarea{width:100%;background:var(--s2);border:1px solid var(--b1);color:var(--t1);padding:12px 14px;border-radius:12px;font-family:'Outfit',sans-serif;font-size:13px;resize:none;outline:none;line-height:1.65;transition:border-color .15s;min-height:90px;}
+.cmd-textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,124,255,.1);}
+.cmd-textarea::placeholder{color:var(--t3);}
+.cmd-engines{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0;}
+.eng-toggle{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;border:1px solid var(--b1);cursor:pointer;transition:all .15s;background:var(--s2);}
+.eng-toggle.on{border-color:rgba(79,124,255,.4);background:rgba(79,124,255,.08);}
+.eng-toggle.on .eng-dot{background:var(--green);box-shadow:0 0 6px var(--green);}
+.eng-dot{width:8px;height:8px;border-radius:50%;background:var(--t3);transition:all .2s;flex-shrink:0;}
+.eng-name{font-size:12px;font-weight:700;}
+.eng-sub{font-size:9px;color:var(--t3);}
+.btn-train{width:100%;padding:12px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;letter-spacing:.3px;transition:all .15s;margin-top:8px;}
+.btn-train:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(79,124,255,.4);}
+.btn-train:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* Quick commands */
+.qcmd-label{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--t3);margin-bottom:10px;text-transform:uppercase;}
+.qcmds{display:flex;flex-direction:column;gap:6px;}
+.qcmd{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:11px 14px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:10px;}
+.qcmd:hover{border-color:var(--b2);background:var(--s3);}
+.qcmd-ic{font-size:18px;flex-shrink:0;margin-top:1px;}
+.qcmd-txt{font-size:12px;font-weight:600;line-height:1.5;}
+.qcmd-desc{font-size:10px;color:var(--t3);margin-top:2px;line-height:1.5;}
+
+/* Training Output */
+.train-output{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.out-head{padding:16px 20px;border-bottom:1px solid var(--b1);background:var(--s1);display:flex;align-items:center;gap:12px;}
+.out-title{font-size:14px;font-weight:700;}
+.out-status{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.engine-badge{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.eb-claude{background:rgba(255,140,66,.12);color:var(--orange);border:1px solid rgba(255,140,66,.25);}
+.eb-openai{background:rgba(0,212,126,.1);color:var(--green);border:1px solid rgba(0,212,126,.2);}
+.out-feed{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;}
+.out-feed::-webkit-scrollbar{width:3px;}
+.out-feed::-webkit-scrollbar-thumb{background:var(--b2);}
+
+/* Training result cards */
+.result-card{background:var(--s2);border:1px solid var(--b1);border-radius:14px;overflow:hidden;animation:cardIn .3s ease;}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.rc-head{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--b1);}
+.rc-engine{font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace;}
+.rc-engine.claude{background:rgba(255,140,66,.15);color:var(--orange);}
+.rc-engine.openai{background:rgba(0,212,126,.12);color:var(--green);}
+.rc-topic{font-size:13px;font-weight:700;flex:1;}
+.rc-time{font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace;}
+.rc-body{padding:14px 16px;}
+.rc-text{font-size:12px;color:var(--t1);line-height:1.85;}
+.rc-mems{margin-top:12px;display:flex;flex-direction:column;gap:5px;}
+.rc-mem{background:var(--s1);border:1px solid var(--b1);border-radius:7px;padding:8px 12px;font-size:11px;color:var(--t2);display:flex;gap:8px;align-items:flex-start;border-left:2px solid var(--b2);}
+.rc-mem.saved{border-left-color:var(--green);}
+.rc-mem-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(0,212,126,.12);color:var(--green);flex-shrink:0;margin-top:1px;}
+.rc-footer{padding:10px 16px;border-top:1px solid var(--b1);display:flex;gap:8px;align-items:center;}
+.rc-stat{font-size:10px;color:var(--t3);display:flex;align-items:center;gap:4px;}
+.rc-stat span{color:var(--t2);font-weight:600;}
+
+/* Progress bar */
+.progress-wrap{padding:16px 20px;background:var(--s1);border-top:1px solid var(--b1);}
+.prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-bottom:6px;}
+.prog-bar{background:var(--b1);border-radius:20px;height:5px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .5s ease;width:0%;}
+
+/* Empty state */
+.train-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--t4);}
+.te-ic{font-size:56px;margin-bottom:16px;opacity:.3;}
+.te-title{font-size:16px;font-weight:700;opacity:.5;margin-bottom:6px;}
+.te-sub{font-size:12px;opacity:.35;line-height:1.8;text-align:center;}
+
+/* ══ MEMORY PAGE ══ */
+#pg-memory{flex-direction:row;}
+.mem-l{width:360px;background:var(--s1);border-right:1px solid var(--b1);padding:24px;overflow-y:auto;flex-shrink:0;}
+.mem-r{flex:1;padding:24px;overflow-y:auto;}
+.mem-l::-webkit-scrollbar,.mem-r::-webkit-scrollbar{width:3px;}
+.mem-l::-webkit-scrollbar-thumb,.mem-r::-webkit-scrollbar-thumb{background:var(--b2);}
+
+/* ══ CHAT PAGE ══ */
+#pg-chat{flex-direction:row;}
+.chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.chat-feed{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:18px;}
+.chat-feed::-webkit-scrollbar{width:3px;}
+.chat-feed::-webkit-scrollbar-thumb{background:var(--b2);}
+.msg{display:flex;gap:12px;animation:msgIn .2s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{flex-direction:row-reverse;}
+.av{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px;}
+.msg.ai .av{background:rgba(79,124,255,.15);border:1px solid rgba(79,124,255,.3);}
+.msg.user .av{background:var(--s2);border:1px solid var(--b1);}
+.mc{max-width:74%;}
+.bub{padding:13px 17px;border-radius:16px;font-size:13px;line-height:1.85;}
+.msg.ai .bub{background:var(--s2);border:1px solid var(--b1);border-radius:4px 16px 16px 16px;}
+.msg.user .bub{background:rgba(79,124,255,.11);border:1px solid rgba(79,124,255,.22);border-radius:16px 4px 16px 16px;}
+.msg-time{font-size:10px;color:var(--t3);margin-top:5px;font-family:'JetBrains Mono',monospace;}
+.think{display:flex;gap:5px;align-items:center;}
+.tk{width:6px;height:6px;border-radius:50%;background:var(--blue2);opacity:.3;animation:blink 1.2s infinite;}
+.tk:nth-child(2){animation-delay:.2s;}.tk:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+.chat-foot{background:rgba(11,13,18,.98);border-top:1px solid var(--b1);padding:16px 20px;display:flex;flex-direction:column;gap:10px;}
+.chat-meta{display:flex;gap:14px;font-size:11px;color:var(--t3);}
+.chat-meta b{color:var(--t2);}
+.chat-row{display:flex;gap:10px;align-items:flex-end;}
+.ci{flex:1;background:var(--s2);border:1px solid var(--b1);color:var(--t1);padding:12px 16px;border-radius:12px;font-family:'Outfit',sans-serif;font-size:13px;resize:none;outline:none;max-height:140px;line-height:1.6;transition:border-color .15s;}
+.ci:focus{border-color:var(--blue);}
+.ci::placeholder{color:var(--t3);}
+.sbtn{width:42px;height:42px;border-radius:12px;background:var(--blue);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.sbtn:hover{background:var(--blue2);box-shadow:0 0 20px rgba(79,124,255,.4);}
+.sbtn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none;}
+.chat-side{width:220px;background:var(--s1);border-left:1px solid var(--b1);padding:16px;overflow-y:auto;flex-shrink:0;}
+.csh{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--t3);margin-bottom:10px;margin-top:14px;text-transform:uppercase;}
+.csh:first-child{margin-top:0;}
+.crow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--b1);font-size:11px;}
+.crow .l{color:var(--t2);}.crow .v{color:var(--blue2);font-weight:600;font-family:'JetBrains Mono',monospace;}
+.mchip{background:var(--s2);border:1px solid var(--b1);border-radius:6px;padding:6px 9px;font-size:10px;color:var(--t2);margin-bottom:4px;line-height:1.5;border-left:2px solid var(--b2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mchip.hi{border-left-color:var(--green);color:var(--t1);}
+
+/* ══ SETUP PAGE ══ */
+#pg-setup{flex-direction:column;}
+.setup-body{flex:1;overflow-y:auto;padding:28px;}
+.setup-inner{max-width:680px;margin:0 auto;}
+
+/* COMMON */
+.sh{font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--t3);margin-bottom:14px;display:flex;align-items:center;gap:10px;text-transform:uppercase;}
+.sh::after{content:'';flex:1;height:1px;background:var(--b1);}
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:20px;margin-bottom:16px;}
+.card.gb{border-color:rgba(79,124,255,.22);background:rgba(79,124,255,.04);}
+.card.gg{border-color:rgba(0,212,126,.18);background:rgba(0,212,126,.03);}
+.fl{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--t2);margin-bottom:7px;display:block;text-transform:uppercase;}
+.fi,.fs,.fta{width:100%;background:var(--s2);border:1px solid var(--b1);color:var(--t1);padding:10px 14px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:12px;outline:none;transition:border-color .15s;}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,124,255,.1);}
+.fi::placeholder,.fta::placeholder{color:var(--t3);}
+.fta{resize:vertical;min-height:80px;line-height:1.75;}
+.fs{cursor:pointer;}.fs option{background:var(--s2);}
+.fg{margin-bottom:14px;}
+.btn{padding:9px 20px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s;border:1px solid transparent;}
+.btn-b{background:var(--blue);color:#fff;border-color:var(--blue);}
+.btn-b:hover{background:var(--blue2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,124,255,.35);}
+.btn-g{background:var(--green);color:#000;border-color:var(--green);}
+.btn-g:hover{box-shadow:0 6px 18px rgba(0,212,126,.3);}
+.btn-gh{background:none;border-color:var(--b2);color:var(--t2);}
+.btn-gh:hover{border-color:var(--blue);color:var(--blue2);}
+.btn-r{background:rgba(255,69,96,.1);border-color:rgba(255,69,96,.3);color:var(--red);}
+.btn-sm{padding:7px 16px;font-size:11px;}
+.btn-xs{padding:4px 11px;font-size:10px;}
+.br{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.sc{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:16px;}
+.scv{font-size:24px;font-weight:800;line-height:1;font-family:'JetBrains Mono',monospace;}
+.scl{font-size:9px;letter-spacing:2px;color:var(--t3);margin-top:5px;text-transform:uppercase;}
+.mi{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:13px 15px;margin-bottom:8px;transition:border-color .15s;}
+.mi:hover{border-color:var(--b2);}
+.mi-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+.mi-cat{font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(79,124,255,.12);color:var(--blue2);border:1px solid rgba(79,124,255,.2);font-weight:700;}
+.mi-src{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.mi-src.claude{background:rgba(255,140,66,.12);color:var(--orange);}
+.mi-src.openai{background:rgba(0,212,126,.1);color:var(--green);}
+.mi-src.manual{background:rgba(79,124,255,.1);color:var(--blue2);}
+.mi-txt{font-size:12px;color:var(--t1);line-height:1.7;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.mi-bot{display:flex;align-items:center;margin-top:8px;gap:8px;}
+.mi-date{font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace;}
+.mi-del{margin-left:auto;background:none;border:none;color:var(--t3);cursor:pointer;font-size:15px;padding:2px 6px;border-radius:4px;transition:color .1s;}
+.mi-del:hover{color:var(--red);}
+.pr-row{background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:15px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;transition:border-color .15s;}
+.pr-row.linked{border-color:rgba(0,212,126,.3);background:rgba(0,212,126,.02);}
+.pr-ic{font-size:22px;width:36px;text-align:center;flex-shrink:0;}
+.pr-info{min-width:150px;flex-shrink:0;}
+.pr-name{font-size:13px;font-weight:700;}
+.pr-sub{font-size:10px;color:var(--t3);margin-top:2px;}
+.pr-key{flex:1;background:var(--bg);border:1px solid var(--b1);color:var(--t1);padding:9px 13px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:11px;outline:none;transition:border-color .15s;}
+.pr-key:focus{border-color:var(--blue);}
+.cors-warn{background:rgba(255,185,62,.07);border:1px solid rgba(255,185,62,.25);border-radius:12px;padding:14px 18px;font-size:12px;color:var(--yellow);line-height:1.9;margin-bottom:16px;display:none;}
+.cors-warn.show{display:block;}
+.empty{text-align:center;padding:40px 20px;color:var(--t3);}
+.empty-ic{font-size:40px;margin-bottom:14px;opacity:.25;}
+.empty-tx{font-size:12px;line-height:2.2;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--s2);border:1px solid var(--b2);padding:11px 22px;border-radius:20px;font-size:12px;font-weight:600;z-index:9999;transition:transform .3s;box-shadow:0 10px 40px rgba(0,0,0,.8);white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+@media(max-width:800px){.chat-side,.mem-l{width:100%;}.#pg-memory{flex-direction:column;}.stats{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">ORIGIN <em>Dual AI Training</em></div>
+  <div class="nav">
+    <div class="nv on" onclick="go('train',this)">⚡ Train</div>
+    <div class="nv" onclick="go('memory',this)">🧠 Memory</div>
+    <div class="nv" onclick="go('chat',this)">💬 Chat</div>
+    <div class="nv" onclick="go('setup',this)">⚙️ Setup</div>
+  </div>
+  <div class="tr">
+    <div class="chip" id="chip-claude"><div class="dot r" id="dot-claude"></div><span id="txt-claude">Claude: OFF</span></div>
+    <div class="chip" id="chip-openai"><div class="dot r" id="dot-openai"></div><span id="txt-openai">OpenAI: OFF</span></div>
+    <div class="chip"><div class="dot g p"></div><span id="mem-pill">0 memories</span></div>
+  </div>
+</div>
+
+<div class="shell">
+
+<!-- ═══ TRAIN PAGE ═══ -->
+<div class="page on" id="pg-train">
+  <div class="train-wrap">
+
+    <!-- LEFT: Command Panel -->
+    <div class="cmd-panel">
+      <div class="cmd-head">
+        <div class="cmd-title">⚡ AI Training Command</div>
+        <div class="cmd-sub">Type what you want your AI to learn. Claude + OpenAI will both train it and save knowledge to memory automatically.</div>
+      </div>
+
+      <div class="cmd-body">
+        <div class="qcmd-label">Quick Training Commands</div>
+        <div class="qcmds">
+          <div class="qcmd" onclick="setCmd('Train my AI to be a professional web developer. Teach it HTML, CSS, JavaScript, React, and how to build beautiful website interfaces.')">
+            <div class="qcmd-ic">💻</div>
+            <div><div class="qcmd-txt">Pro Web Developer</div><div class="qcmd-desc">HTML, CSS, JS, React, UI/UX, frontend</div></div>
+          </div>
+          <div class="qcmd" onclick="setCmd('Train my AI to be a professional backend developer. Teach it Node.js, Python, APIs, databases, authentication, and server architecture.')">
+            <div class="qcmd-ic">⚙️</div>
+            <div><div class="qcmd-txt">Pro Backend Developer</div><div class="qcmd-desc">Node.js, Python, APIs, databases</div></div>
+          </div>
+          <div class="qcmd" onclick="setCmd('Train my AI to be a full-stack developer expert. Teach it both frontend and backend — React, Node.js, databases, deployment, and modern web architecture.')">
+            <div class="qcmd-ic">🔥</div>
+            <div><div class="qcmd-txt">Full-Stack Expert</div><div class="qcmd-desc">Complete frontend + backend mastery</div></div>
+          </div>
+          <div class="qcmd" onclick="setCmd('Train my AI to be a professional UI/UX designer. Teach it design principles, color theory, typography, user experience, Figma, and how to build stunning interfaces.')">
+            <div class="qcmd-ic">🎨</div>
+            <div><div class="qcmd-txt">UI/UX Designer</div><div class="qcmd-desc">Design, Figma, color, typography</div></div>
+          </div>
+          <div class="qcmd" onclick="setCmd('Train my AI to be an AI and machine learning expert. Teach it Python, TensorFlow, PyTorch, LLMs, fine-tuning, RAG, vector databases, and how to build AI applications.')">
+            <div class="qcmd-ic">🤖</div>
+            <div><div class="qcmd-txt">AI & ML Expert</div><div class="qcmd-desc">LLMs, fine-tuning, RAG, ML models</div></div>
+          </div>
+          <div class="qcmd" onclick="setCmd('Train my AI to be a mobile app developer expert. Teach it React Native, Flutter, iOS, Android development, and how to build cross-platform mobile apps.')">
+            <div class="qcmd-ic">📱</div>
+            <div><div class="qcmd-txt">Mobile App Developer</div><div class="qcmd-desc">React Native, Flutter, iOS, Android</div></div>
+          </div>
+          <div class="qcmd" onclick="setCmd('Train my AI to be a cybersecurity expert. Teach it ethical hacking, penetration testing, network security, encryption, and how to protect web applications.')">
+            <div class="qcmd-ic">🔐</div>
+            <div><div class="qcmd-txt">Cybersecurity Expert</div><div class="qcmd-desc">Security, hacking, protection</div></div>
+          </div>
+          <div class="qcmd" onclick="setCmd('Train my AI to be a business and startup expert. Teach it business models, marketing, sales, growth hacking, fundraising, and how to build successful companies.')">
+            <div class="qcmd-ic">🚀</div>
+            <div><div class="qcmd-txt">Business & Startup</div><div class="qcmd-desc">Marketing, sales, growth, funding</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cmd-input-wrap">
+        <div class="cmd-label">Or Write Your Own Command</div>
+        <textarea class="cmd-textarea" id="cmd-input" placeholder="e.g. Train my AI to be an expert in Python data science, teach it pandas, numpy, machine learning, and data visualization..."></textarea>
+        <div class="cmd-label" style="margin-top:12px;">Train With</div>
+        <div class="cmd-engines">
+          <div class="eng-toggle on" id="eng-claude" onclick="toggleEng('claude')">
+            <div class="eng-dot" id="engdot-claude"></div>
+            <div><div class="eng-name">Claude</div><div class="eng-sub">Anthropic</div></div>
+          </div>
+          <div class="eng-toggle on" id="eng-openai" onclick="toggleEng('openai')">
+            <div class="eng-dot" id="engdot-openai"></div>
+            <div><div class="eng-name">OpenAI</div><div class="eng-sub">GPT-4o</div></div>
+          </div>
+        </div>
+        <button class="btn-train" id="train-btn" onclick="runTraining()">⚡ Start Training Both AIs</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Training Output -->
+    <div class="train-output">
+      <div class="out-head">
+        <div class="out-title">Training Output</div>
+        <div class="out-status">
+          <div class="engine-badge eb-claude" id="status-claude">Claude: Ready</div>
+          <div class="engine-badge eb-openai" id="status-openai">OpenAI: Ready</div>
+        </div>
+      </div>
+
+      <div class="out-feed" id="out-feed">
+        <div class="train-empty" id="train-empty">
+          <div class="te-ic">⚡</div>
+          <div class="te-title">Ready to Train</div>
+          <div class="te-sub">Choose a topic from the left panel<br>or write your own command.<br>Both Claude and OpenAI will train<br>your AI and save knowledge to memory.</div>
+        </div>
+      </div>
+
+      <div class="progress-wrap" id="prog-wrap" style="display:none;">
+        <div class="prog-label"><span id="prog-label">Initializing...</span><span id="prog-pct">0%</span></div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ MEMORY PAGE ═══ -->
+<div class="page" id="pg-memory">
+  <div class="mem-l">
+    <div class="sh">Add Manual Memory</div>
+    <div class="card gb" style="font-size:12px;color:var(--t2);line-height:1.8;margin-bottom:16px;">
+      Memories trained by Claude and OpenAI are saved here automatically. You can also add memories manually for things specific to you.
+    </div>
+    <div class="fg"><label class="fl">Category</label>
+      <select class="fs" id="m-cat">
+        <option>🧍 About Me</option><option>💼 My Business</option><option>📦 My Product</option>
+        <option>📋 Rules</option><option>📚 Knowledge</option><option>💻 Coding</option>
+        <option>🎨 Design</option><option>🤖 AI/ML</option><option>⚠️ Never Say</option><option>🔧 Other</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Priority</label>
+      <select class="fs" id="m-imp">
+        <option value="HIGH">🔴 HIGH — Always used first</option>
+        <option value="MEDIUM" selected>🟡 MEDIUM — Important</option>
+        <option value="LOW">🟢 LOW — Extra detail</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Content</label>
+      <textarea class="fta" id="m-txt" style="min-height:150px;" oninput="document.getElementById('m-chars').textContent=this.value.length+' chars'" placeholder="Write what your AI should know..."></textarea>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:10px;color:var(--t3);" id="m-chars">0 chars</span>
+      <button class="btn btn-b" onclick="addMem()">Save to Brain ✦</button>
+    </div>
+  </div>
+  <div class="mem-r">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="sh" style="margin:0;flex:1;">All Memories</div>
+      <div class="br" style="margin-left:12px;">
+        <select class="fs" id="mf" style="width:auto;padding:5px 10px;font-size:10px;" onchange="renderMems()"><option value="">All Sources</option><option value="claude">Claude trained</option><option value="openai">OpenAI trained</option><option value="manual">Manual</option></select>
+        <button class="btn btn-gh btn-xs" onclick="if(confirm('Delete all?')){MEMS=[];save();renderMems();updAll();}">Clear All</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="sc"><div class="scv" id="ms-tot" style="color:var(--blue2)">0</div><div class="scl">Total</div></div>
+      <div class="sc"><div class="scv" id="ms-claude" style="color:var(--orange)">0</div><div class="scl">Claude</div></div>
+      <div class="sc"><div class="scv" id="ms-openai" style="color:var(--green)">0</div><div class="scl">OpenAI</div></div>
+      <div class="sc"><div class="scv" id="ms-manual" style="color:var(--blue2)">0</div><div class="scl">Manual</div></div>
+    </div>
+    <div id="mem-list"></div>
+  </div>
+</div>
+
+<!-- ═══ CHAT PAGE ═══ -->
+<div class="page" id="pg-chat">
+  <div class="chat-main">
+    <div class="chat-feed" id="feed">
+      <div class="msg ai">
+        <div class="av">◈</div>
+        <div class="mc">
+          <div class="bub">
+            <strong>Hello. I am ORIGIN.</strong><br><br>
+            I have been trained by both <strong style="color:var(--orange)">Claude</strong> and <strong style="color:var(--green)">OpenAI</strong>. Every training session adds real knowledge to my brain.<br><br>
+            Go to <strong>⚡ Train</strong> → pick a topic → both AIs train me → come back and ask me anything about it.<br><br>
+            <em style="color:var(--t3);font-size:12px;">Built with Claude AI · Trained by Claude + OpenAI</em>
+          </div>
+          <div class="msg-time">ORIGIN · Ready</div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-foot">
+      <div class="chat-meta">
+        <span>🧠 <b id="ci-m">0</b> memories</span>
+        <span>🟠 <b id="ci-claude">0</b> Claude trained</span>
+        <span>🟢 <b id="ci-openai">0</b> OpenAI trained</span>
+        <span>🤖 <b id="ci-md">Not configured</b></span>
+      </div>
+      <div class="chat-row">
+        <textarea class="ci" id="ci" rows="1" placeholder="Ask your AI anything... (Enter to send)" onkeydown="ck(event)" oninput="ar(this)"></textarea>
+        <button class="sbtn" id="sbtn" onclick="send()">↑</button>
+      </div>
+    </div>
+  </div>
+  <div class="chat-side">
+    <div class="csh">Brain Status</div>
+    <div class="crow"><span class="l">Total memories</span><span class="v" id="cs-tot">0</span></div>
+    <div class="crow"><span class="l">Claude trained</span><span class="v" id="cs-cl" style="color:var(--orange)">0</span></div>
+    <div class="crow"><span class="l">OpenAI trained</span><span class="v" id="cs-oa" style="color:var(--green)">0</span></div>
+    <div class="crow"><span class="l">Model</span><span class="v" id="cs-md" style="font-size:9px">—</span></div>
+    <div class="csh" style="margin-top:14px;">Recent Training</div>
+    <div id="side-mems"></div>
+  </div>
+</div>
+
+<!-- ═══ SETUP PAGE ═══ -->
+<div class="page" id="pg-setup">
+  <div class="setup-body">
+    <div class="setup-inner">
+      <div class="sh">API Keys — Both AIs Need Keys to Train</div>
+      <div class="cors-warn" id="cors-warn">
+        ⚠️ <strong>Running locally.</strong> API calls blocked by browser.<br>
+        ✅ Fix: Go to <strong>netlify.com/drop</strong> → drag this file → open the live URL. 30 seconds.
+      </div>
+      <div class="card gb" style="font-size:12px;color:var(--t2);line-height:1.9;margin-bottom:16px;">
+        Both Claude and OpenAI train your AI with real knowledge. You need an API key from each. Keys stay in your browser only.
+      </div>
+
+      <div class="pr-row" id="pr-anthropic">
+        <div class="pr-ic">🟠</div>
+        <div class="pr-info"><div class="pr-name">Anthropic — Claude</div><div class="pr-sub">console.anthropic.com → API Keys</div></div>
+        <input class="pr-key" id="k-anthropic" type="password" placeholder="sk-ant-api03-...">
+        <button class="btn btn-b btn-sm" onclick="saveKey('anthropic')">Save</button>
+        <span id="kb-anthropic" style="display:none;color:var(--green);font-weight:800;font-size:14px;">✓</span>
+      </div>
+
+      <div class="pr-row" id="pr-openai">
+        <div class="pr-ic">🟢</div>
+        <div class="pr-info"><div class="pr-name">OpenAI — GPT-4o</div><div class="pr-sub">platform.openai.com → API Keys</div></div>
+        <input class="pr-key" id="k-openai" type="password" placeholder="sk-proj-...">
+        <button class="btn btn-b btn-sm" onclick="saveKey('openai')">Save</button>
+        <span id="kb-openai" style="display:none;color:var(--green);font-weight:800;font-size:14px;">✓</span>
+      </div>
+
+      <div class="sh" style="margin-top:20px;">Active Chat Model</div>
+      <div class="card">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+          <div class="fg" style="margin:0;"><label class="fl">Provider</label>
+            <select class="fs" id="ap" onchange="updateModels()">
+              <option value="anthropic">Anthropic (Claude)</option>
+              <option value="openai">OpenAI (GPT)</option>
+            </select>
+          </div>
+          <div class="fg" style="margin:0;"><label class="fl">Model</label>
+            <select class="fs" id="am">
+              <option>claude-sonnet-4-20250514</option>
+              <option>claude-3-5-sonnet-20241022</option>
+              <option>claude-opus-4-20250514</option>
+              <option>claude-3-haiku-20240307</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-b" onclick="saveModel()">✦ Set Active Model</button>
+      </div>
+
+      <div class="sh" style="margin-top:8px;">Export / Import Brain</div>
+      <div class="card" style="display:flex;gap:10px;">
+        <button class="btn btn-g" onclick="exportAll()">⬇ Export brain.json</button>
+        <button class="btn btn-gh" onclick="importAll()">⬆ Import brain.json</button>
+        <button class="btn btn-r" onclick="if(confirm('Reset everything?')){MEMS=[];save();updAll();renderMems();toast('Reset done','green');}">Reset All</button>
+      </div>
+
+      <div style="text-align:center;padding:20px 0;font-size:11px;color:var(--t3);">ORIGIN AI Studio · Built with Anthropic Claude AI</div>
+    </div>
+  </div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let MEMS  = L('o_mems',  []);
+let KEYS  = L('o_keys',  {});
+let CHATS = L('o_chats', []);
+let ST    = L('o_st', {prov:'anthropic',model:'claude-sonnet-4-20250514',temp:.7,maxT:2000,aiName:'ORIGIN'});
+let engClaude = true, engOpenAI = true;
+let busy = false, trainBusy = false;
+
+// ═══════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════
+(function boot(){
+  if(location.protocol==='file:') document.getElementById('cors-warn').classList.add('show');
+  renderMems(); updAll(); updSide();
+  loadSetup();
+  checkStatus();
+})();
+
+// ═══════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════
+function go(n,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nv').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pg-'+n).classList.add('on');
+  if(el) el.classList.add('on');
+}
+
+// ═══════════════════════════════════════
+// ENGINE TOGGLES
+// ═══════════════════════════════════════
+function toggleEng(e){
+  if(e==='claude'){
+    engClaude=!engClaude;
+    document.getElementById('eng-claude').classList.toggle('on',engClaude);
+    document.getElementById('engdot-claude').style.background=engClaude?'var(--green)':'var(--t3)';
+  } else {
+    engOpenAI=!engOpenAI;
+    document.getElementById('eng-openai').classList.toggle('on',engOpenAI);
+    document.getElementById('engdot-openai').style.background=engOpenAI?'var(--green)':'var(--t3)';
+  }
+  const both=engClaude&&engOpenAI, one=engClaude||engOpenAI;
+  document.getElementById('train-btn').textContent = both?'⚡ Train Both AIs':engClaude?'⚡ Train with Claude':'⚡ Train with OpenAI';
+}
+
+function setCmd(txt){ document.getElementById('cmd-input').value=txt; }
+
+// ═══════════════════════════════════════
+// TRAINING — The core feature
+// ═══════════════════════════════════════
+async function runTraining(){
+  if(trainBusy){ toast('Training in progress...','red'); return; }
+  const cmd = document.getElementById('cmd-input').value.trim();
+  if(!cmd){ toast('Write a training command first','red'); return; }
+  if(!engClaude&&!engOpenAI){ toast('Enable at least one AI engine','red'); return; }
+
+  const claudeKey = KEYS['anthropic'];
+  const openaiKey = KEYS['openai'];
+
+  if(engClaude && !claudeKey){ toast('Add Claude API key in Setup first','red'); return; }
+  if(engOpenAI && !openaiKey){ toast('Add OpenAI API key in Setup first','red'); return; }
+
+  trainBusy = true;
+  document.getElementById('train-btn').disabled = true;
+  document.getElementById('train-btn').textContent = '⚡ Training...';
+  document.getElementById('train-empty').style.display = 'none';
+
+  // Show progress
+  const pw = document.getElementById('prog-wrap');
+  pw.style.display='block';
+  setProgress(0,'Starting training engines...');
+
+  // Training system prompt — tells AI to generate structured knowledge
+  const trainSys = `You are a professional AI trainer. Your job is to train another AI by generating rich, detailed, structured knowledge about a topic.
+
+When given a training command, you must respond with a JSON object in this EXACT format:
+{
+  "topic": "short topic name",
+  "summary": "2-3 sentence overview of what was trained",
+  "memories": [
+    {
+      "category": "category name",
+      "importance": "HIGH" or "MEDIUM" or "LOW",
+      "content": "detailed knowledge content — be thorough, specific, and practical"
+    }
+  ],
+  "training_pairs": [
+    {
+      "question": "question someone might ask",
+      "answer": "detailed expert answer"
+    }
+  ]
+}
+
+Generate 6-10 memories and 5-8 training pairs. Make them detailed, expert-level, and immediately useful. The memories should cover core concepts, best practices, common patterns, tools, and expert tips. RESPOND ONLY WITH THE JSON OBJECT, NO OTHER TEXT.`;
+
+  const results = [];
+  let totalSteps = (engClaude?1:0) + (engOpenAI?1:0);
+  let step = 0;
+
+  // ── CLAUDE TRAINING ──
+  if(engClaude && claudeKey){
+    setProgress(10,'Claude is analyzing the topic...');
+    document.getElementById('status-claude').textContent = 'Claude: Training...';
+    try{
+      const r = await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':claudeKey,'anthropic-version':'2023-06-01'},
+        body:JSON.stringify({
+          model:'claude-sonnet-4-20250514',
+          max_tokens:3000,
+          system:trainSys,
+          messages:[{role:'user',content:'Training command: '+cmd}]
+        })
+      });
+      const d = await r.json();
+      if(d.error) throw new Error(d.error.message);
+      const text = d.content?.[0]?.text||'{}';
+      const data = safeJSON(text);
+      if(data && data.memories){
+        results.push({engine:'claude', data});
+        saveTrainingData(data,'claude');
+        setProgress(45,'Claude training complete — saving to memory...');
+        document.getElementById('status-claude').textContent = 'Claude: ✓ Done';
+        renderTrainingCard('claude', data, cmd);
+      }
+    } catch(err){
+      document.getElementById('status-claude').textContent = 'Claude: Error';
+      renderErrorCard('claude', err.message.includes('fetch')?'Connection blocked. Upload to netlify.com/drop to fix.':err.message);
+    }
+    step++;
+  }
+
+  // ── OPENAI TRAINING ──
+  if(engOpenAI && openaiKey){
+    setProgress(55,'OpenAI is analyzing the topic...');
+    document.getElementById('status-openai').textContent = 'OpenAI: Training...';
+    try{
+      const r = await fetch('https://api.openai.com/v1/chat/completions',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+openaiKey},
+        body:JSON.stringify({
+          model:'gpt-4o',
+          max_tokens:3000,
+          temperature:0.4,
+          response_format:{type:'json_object'},
+          messages:[
+            {role:'system',content:trainSys},
+            {role:'user',content:'Training command: '+cmd}
+          ]
+        })
+      });
+      const d = await r.json();
+      if(d.error) throw new Error(d.error.message);
+      const text = d.choices?.[0]?.message?.content||'{}';
+      const data = safeJSON(text);
+      if(data && data.memories){
+        results.push({engine:'openai', data});
+        saveTrainingData(data,'openai');
+        setProgress(90,'OpenAI training complete — saving to memory...');
+        document.getElementById('status-openai').textContent = 'OpenAI: ✓ Done';
+        renderTrainingCard('openai', data, cmd);
+      }
+    } catch(err){
+      document.getElementById('status-openai').textContent = 'OpenAI: Error';
+      renderErrorCard('openai', err.message.includes('fetch')?'Connection blocked. Upload to netlify.com/drop to fix.':err.message);
+    }
+    step++;
+  }
+
+  setProgress(100,'Training complete! Memories saved to brain.');
+  updAll(); updSide(); renderMems();
+  setTimeout(()=>{ pw.style.display='none'; setProgress(0,''); },3000);
+
+  trainBusy = false;
+  document.getElementById('train-btn').disabled = false;
+  document.getElementById('train-btn').textContent = '⚡ Start Training Both AIs';
+  document.getElementById('cmd-input').value='';
+  toast('Training complete! '+MEMS.length+' total memories','green');
+}
+
+function saveTrainingData(data, engine){
+  // Save memories
+  if(data.memories){
+    data.memories.forEach(m=>{
+      MEMS.unshift({
+        id: Date.now()+Math.random(),
+        txt: m.content,
+        cat: m.category || '📚 Knowledge',
+        imp: m.importance || 'MEDIUM',
+        source: engine,
+        topic: data.topic || 'Training',
+        date: new Date().toLocaleDateString(),
+        time: TS()
+      });
+    });
+  }
+  // Save training pairs as memories too
+  if(data.training_pairs){
+    data.training_pairs.forEach(p=>{
+      MEMS.push({
+        id: Date.now()+Math.random(),
+        txt: 'Q: '+p.question+'\nA: '+p.answer,
+        cat: '⚡ Training Pair',
+        imp: 'HIGH',
+        source: engine,
+        topic: data.topic || 'Training',
+        date: new Date().toLocaleDateString(),
+        time: TS()
+      });
+    });
+  }
+  save();
+}
+
+function renderTrainingCard(engine, data, cmd){
+  const feed = document.getElementById('out-feed');
+  const card = document.createElement('div');
+  card.className='result-card';
+  const engLabel = engine==='claude'?'Claude':'OpenAI';
+  const memCount = (data.memories||[]).length;
+  const pairCount = (data.training_pairs||[]).length;
+
+  const memsHTML = (data.memories||[]).slice(0,4).map(m=>
+    `<div class="rc-mem saved">
+      <span class="rc-mem-badge">SAVED</span>
+      <span style="font-size:11px;color:var(--t1);line-height:1.6;">${X(m.content.slice(0,120))}${m.content.length>120?'...':''}</span>
+    </div>`
+  ).join('');
+
+  card.innerHTML=`
+    <div class="rc-head">
+      <span class="rc-engine ${engine}">${engLabel}</span>
+      <span class="rc-topic">${X(data.topic||'Training Complete')}</span>
+      <span class="rc-time">${TS()}</span>
+    </div>
+    <div class="rc-body">
+      <div class="rc-text">${X(data.summary||'Training completed successfully.')}</div>
+      <div class="rc-mems">${memsHTML}</div>
+    </div>
+    <div class="rc-footer">
+      <div class="rc-stat">🧠 <span>${memCount}</span> memories saved</div>
+      <div class="rc-stat" style="margin-left:12px;">⚡ <span>${pairCount}</span> training pairs</div>
+      <div class="rc-stat" style="margin-left:auto;color:var(--green);font-weight:700;">✓ All saved to brain</div>
+    </div>
+  `;
+  feed.appendChild(card);
+  feed.scrollTop = feed.scrollHeight;
+}
+
+function renderErrorCard(engine, msg){
+  const feed = document.getElementById('out-feed');
+  const card = document.createElement('div');
+  card.className='result-card';
+  card.innerHTML=`
+    <div class="rc-head">
+      <span class="rc-engine ${engine}">${engine==='claude'?'Claude':'OpenAI'}</span>
+      <span class="rc-topic" style="color:var(--red);">Training Failed</span>
+    </div>
+    <div class="rc-body">
+      <div class="rc-text" style="color:var(--red);">⚠️ ${X(msg)}</div>
+    </div>
+  `;
+  feed.appendChild(card);
+  feed.scrollTop = feed.scrollHeight;
+}
+
+function setProgress(pct, label){
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-label').textContent=label;
+  document.getElementById('prog-pct').textContent=pct+'%';
+}
+
+function safeJSON(txt){
+  try{
+    const clean = txt.replace(/```json|```/g,'').trim();
+    return JSON.parse(clean);
+  }catch{ return null; }
+}
+
+// ═══════════════════════════════════════
+// MEMORY
+// ═══════════════════════════════════════
+function addMem(){
+  const txt=document.getElementById('m-txt').value.trim();
+  if(!txt){ toast('Write something first','red'); return; }
+  MEMS.unshift({id:Date.now(),txt,cat:document.getElementById('m-cat').value,imp:document.getElementById('m-imp').value,source:'manual',date:new Date().toLocaleDateString(),time:TS()});
+  save(); renderMems(); updAll(); updSide();
+  document.getElementById('m-txt').value=''; document.getElementById('m-chars').textContent='0 chars';
+  toast('Memory saved ✦','green');
+}
+
+function delMem(id){ MEMS=MEMS.filter(m=>m.id!==id); save(); renderMems(); updAll(); updSide(); toast('Deleted'); }
+
+function renderMems(){
+  const mf=document.getElementById('mf'), sel=mf.value;
+  const show=sel?MEMS.filter(m=>m.source===sel):MEMS;
+  const el=document.getElementById('mem-list');
+  if(!show.length){ el.innerHTML='<div class="empty"><div class="empty-ic">🧠</div><div class="empty-tx">No memories yet.<br>Run a training command to fill this automatically.</div></div>'; }
+  else {
+    el.innerHTML=show.map(m=>`
+      <div class="mi">
+        <div class="mi-top">
+          <span class="mi-cat">${X(m.cat)}</span>
+          <div style="display:flex;gap:5px;align-items:center;">
+            <span class="mi-src ${m.source||'manual'}">${m.source==='claude'?'Claude':m.source==='openai'?'OpenAI':'Manual'}</span>
+            <span style="font-size:10px;color:${m.imp==='HIGH'?'var(--red)':m.imp==='MEDIUM'?'var(--yellow)':'var(--green)'}">${m.imp}</span>
+          </div>
+        </div>
+        <div class="mi-txt">${X(m.txt)}</div>
+        <div class="mi-bot"><span class="mi-date">${m.date}</span><button class="mi-del" onclick="delMem(${m.id})">×</button></div>
+      </div>`).join('');
+  }
+  // stats
+  const n=MEMS.length, cl=MEMS.filter(m=>m.source==='claude').length, oa=MEMS.filter(m=>m.source==='openai').length, mn=MEMS.filter(m=>m.source==='manual'||!m.source).length;
+  document.getElementById('ms-tot').textContent=n;
+  document.getElementById('ms-claude').textContent=cl;
+  document.getElementById('ms-openai').textContent=oa;
+  document.getElementById('ms-manual').textContent=mn;
+}
+
+// ═══════════════════════════════════════
+// CHAT
+// ═══════════════════════════════════════
+function ck(ev){ if(ev.key==='Enter'&&!ev.shiftKey){ ev.preventDefault(); send(); } }
+function ar(el){ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,140)+'px'; }
+
+async function send(){
+  if(busy) return;
+  const inp=document.getElementById('ci'), msg=inp.value.trim();
+  if(!msg){ toast('Type something','red'); return; }
+  const prov=ST.prov||'anthropic', key=KEYS[prov];
+  if(!key){ toast('Add API key in Setup first','red'); return; }
+  inp.value=''; inp.style.height='auto';
+  addBub('user',msg); busy=true; document.getElementById('sbtn').disabled=true;
+  const tid='t'+Date.now(); addThink(tid);
+  try{
+    const reply=await callAI(prov,key,msg);
+    rmEl(tid); addBub('ai',reply);
+    CHATS.push({role:'user',content:msg,time:TS()},{role:'ai',content:reply,time:TS()});
+    localStorage.setItem('o_chats',JSON.stringify(CHATS));
+  } catch(err){
+    rmEl(tid);
+    let m=err.message;
+    if(m.includes('fetch')||m.includes('CORS')) m='❌ Connection blocked.\n\n✅ Upload to netlify.com/drop and open the live URL. Takes 30 seconds.';
+    else if(m.includes('401')) m='❌ Invalid API key. Check Setup.';
+    addBub('ai',m);
+  }
+  busy=false; document.getElementById('sbtn').disabled=false;
+}
+
+async function callAI(prov,key,msg){
+  const sys=buildSys(), model=ST.model||'claude-sonnet-4-20250514', maxT=ST.maxT||2000;
+  if(prov==='anthropic'){
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model,max_tokens:maxT,system:sys,messages:[{role:'user',content:msg}]})});
+    if(!r.ok){const d=await r.json();throw new Error(d.error?.message||'HTTP '+r.status);}
+    const d=await r.json(); return d.content?.[0]?.text||'No response.';
+  }
+  if(prov==='openai'){
+    const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,max_tokens:maxT,temperature:.7,messages:[{role:'system',content:sys},{role:'user',content:msg}]})});
+    if(!r.ok){const d=await r.json();throw new Error(d.error?.message||'HTTP '+r.status);}
+    const d=await r.json(); return d.choices?.[0]?.message?.content||'No response.';
+  }
+  throw new Error('Unknown provider');
+}
+
+function buildSys(){
+  const name=ST.aiName||'ORIGIN';
+  const sorted=[...MEMS].sort((a,b)=>({HIGH:0,MEDIUM:1,LOW:2}[a.imp]||1)-({HIGH:0,MEDIUM:1,LOW:2}[b.imp]||1));
+  const memBlock=sorted.length
+    ?'\n\n━━━ TRAINED KNOWLEDGE BANK ━━━\n'+sorted.map(m=>`[${m.imp}][${m.cat}][Trained by: ${(m.source||'manual').toUpperCase()}]\n${m.txt}`).join('\n\n')
+    :'\n\n━━━ TRAINED KNOWLEDGE BANK ━━━\nNo training data yet. Ask your creator to run training commands.';
+  return `You are ${name}, a powerful personal AI trained by both Claude AI and OpenAI GPT-4o.
+You are NOT a generic AI — you are ${name}, a unique AI growing smarter with every training session.
+Built with Anthropic Claude AI.
+
+YOUR TRAINING: You have been trained by two of the world's most powerful AI systems — Claude and GPT-4o. Your knowledge comes from both.
+
+RULES:
+1. Answer from your Trained Knowledge Bank below.
+2. HIGH priority knowledge is most important — always use it.
+3. Be confident, expert, and detailed. You are trained by the best AIs.
+4. If something is not in your knowledge bank, say: "I haven't been trained on that topic yet. Ask your creator to run a training command for it."
+5. You are ${name}. Stay in character always.
+${memBlock}`;
+}
+
+function addBub(role,text){
+  const f=document.getElementById('feed'), d=document.createElement('div');
+  d.className='msg '+role;
+  d.innerHTML=`<div class="av">${role==='ai'?'◈':'◉'}</div><div class="mc"><div class="bub">${X(text).replace(/\n/g,'<br>')}</div><div class="msg-time">${role==='ai'?(ST.aiName||'ORIGIN'):'You'} · ${TS()}</div></div>`;
+  f.appendChild(d); f.scrollTop=f.scrollHeight;
+}
+
+function addThink(id){
+  const f=document.getElementById('feed'), d=document.createElement('div');
+  d.id=id; d.className='msg ai';
+  d.innerHTML=`<div class="av">◈</div><div class="mc"><div class="bub"><div class="think"><div class="tk"></div><div class="tk"></div><div class="tk"></div></div></div></div>`;
+  f.appendChild(d); f.scrollTop=f.scrollHeight;
+}
+
+function rmEl(id){ const e=document.getElementById(id); if(e) e.remove(); }
+
+// ═══════════════════════════════════════
+// SETUP / API
+// ═══════════════════════════════════════
+function saveKey(prov){
+  const val=document.getElementById('k-'+prov).value.trim();
+  if(val.length<8){ toast('Paste the full API key','red'); return; }
+  KEYS[prov]=val; localStorage.setItem('o_keys',JSON.stringify(KEYS));
+  document.getElementById('pr-'+prov).classList.add('linked');
+  document.getElementById('kb-'+prov).style.display='inline';
+  checkStatus(); updSide();
+  toast(prov+' key saved ✦','green');
+}
+
+function loadSetup(){
+  Object.entries(KEYS).forEach(([k,v])=>{
+    const el=document.getElementById('k-'+k);
+    if(el){el.value=v;document.getElementById('pr-'+k)?.classList.add('linked');const b=document.getElementById('kb-'+k);if(b)b.style.display='inline';}
+  });
+  if(ST.prov) document.getElementById('ap').value=ST.prov;
+  if(ST.model) document.getElementById('am').value=ST.model;
+}
+
+function saveModel(){
+  ST.prov=document.getElementById('ap').value;
+  ST.model=document.getElementById('am').value;
+  saveST(); checkStatus(); updSide(); toast('Model set: '+ST.model,'green');
+}
+
+function updateModels(){
+  const m={anthropic:['claude-sonnet-4-20250514','claude-3-5-sonnet-20241022','claude-opus-4-20250514','claude-3-haiku-20240307'],openai:['gpt-4o','gpt-4o-mini','gpt-4-turbo']};
+  document.getElementById('am').innerHTML=(m[document.getElementById('ap').value]||[]).map(v=>`<option>${v}</option>`).join('');
+}
+
+function checkStatus(){
+  const hasClaude=KEYS['anthropic']&&KEYS['anthropic'].length>5;
+  const hasOpenAI=KEYS['openai']&&KEYS['openai'].length>5;
+  document.getElementById('dot-claude').className='dot '+(hasClaude?'g p':'r');
+  document.getElementById('txt-claude').textContent='Claude: '+(hasClaude?'ON':'OFF');
+  document.getElementById('dot-openai').className='dot '+(hasOpenAI?'g p':'r');
+  document.getElementById('txt-openai').textContent='OpenAI: '+(hasOpenAI?'ON':'OFF');
+}
+
+function exportAll(){
+  const a=document.createElement('a');
+  a.href='data:application/json,'+encodeURIComponent(JSON.stringify({origin:true,v:6,MEMS,CHATS,ST},null,2));
+  a.download='origin-brain-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); toast('Exported ✦','green');
+}
+
+function importAll(){
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='.json';
+  inp.onchange=ev=>{
+    const r=new FileReader();
+    r.onload=e=>{
+      try{
+        const d=JSON.parse(e.target.result);
+        if(d.MEMS) MEMS=[...MEMS,...d.MEMS];
+        save(); renderMems(); updAll(); updSide();
+        toast('Imported! Memories: '+MEMS.length,'green');
+      }catch{ toast('Invalid file','red'); }
+    };
+    r.readAsText(ev.target.files[0]);
+  };
+  inp.click();
+}
+
+// ═══════════════════════════════════════
+// STATUS / UTILS
+// ═══════════════════════════════════════
+function updSide(){
+  const n=MEMS.length, cl=MEMS.filter(m=>m.source==='claude').length, oa=MEMS.filter(m=>m.source==='openai').length;
+  document.getElementById('cs-tot').textContent=n;
+  document.getElementById('cs-cl').textContent=cl;
+  document.getElementById('cs-oa').textContent=oa;
+  document.getElementById('cs-md').textContent=ST.model||'—';
+  const recent=MEMS.slice(0,5);
+  document.getElementById('side-mems').innerHTML=recent.length?recent.map(m=>`<div class="mchip hi">${X(m.txt.slice(0,50))}...</div>`).join(''):'<div class="mchip">No training yet</div>';
+}
+
+function updAll(){
+  const n=MEMS.length, cl=MEMS.filter(m=>m.source==='claude').length, oa=MEMS.filter(m=>m.source==='openai').length;
+  document.getElementById('mem-pill').textContent=n+' memor'+(n===1?'y':'ies');
+  document.getElementById('ci-m').textContent=n;
+  document.getElementById('ci-claude').textContent=cl;
+  document.getElementById('ci-openai').textContent=oa;
+  document.getElementById('ci-md').textContent=ST.model||'Not configured';
+}
+
+function save(){ localStorage.setItem('o_mems',JSON.stringify(MEMS)); }
+function saveST(){ localStorage.setItem('o_st',JSON.stringify(ST)); }
+function L(k,d){ try{return JSON.parse(localStorage.getItem(k)||'null')||d;}catch{return d;} }
+function X(t){ return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function TS(){ return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+let _tt;
+function toast(msg,col=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.borderColor=col==='green'?'var(--green)':col==='red'?'var(--red)':'var(--b2)';
+  t.style.color=col==='green'?'var(--green)':col==='red'?'var(--red)':'var(--t1)';
+  t.classList.add('show'); clearTimeout(_tt);
+  _tt=setTimeout(()=>t.classList.remove('show'),3500);
+}
+</script>
+</body>
+</html>
