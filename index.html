@@ -6,7 +6,6 @@
     <title>Coding AI Assistant</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: sans-serif;
             background: #0f0f0f;
@@ -17,27 +16,15 @@
             align-items: center;
             padding: 2rem 1rem;
         }
-
-        h1 {
-            font-size: 24px;
-            margin-bottom: 8px;
-            color: #60a5fa;
-        }
-
-        p.subtitle {
-            color: #888;
-            font-size: 14px;
-            margin-bottom: 2rem;
-        }
-
-        .chat-box {
+        h1 { font-size: 24px; margin-bottom: 8px; color: #60a5fa; }
+        p.sub { color: #888; font-size: 14px; margin-bottom: 2rem; }
+        .box {
             width: 100%;
             max-width: 600px;
             background: #1a1a1a;
             border-radius: 12px;
             padding: 1.5rem;
         }
-
         textarea {
             width: 100%;
             height: 100px;
@@ -49,7 +36,6 @@
             font-size: 15px;
             resize: none;
         }
-
         button {
             width: 100%;
             margin-top: 12px;
@@ -61,108 +47,94 @@
             font-size: 16px;
             cursor: pointer;
         }
-
-        button:hover { background: #1d4ed8; }
-        button:disabled { background: #444; cursor: not-allowed; }
-
-        .answer-box {
+        button:disabled { background: #444; }
+        .answer {
             margin-top: 1.5rem;
             background: #2a2a2a;
             border-radius: 8px;
             padding: 1rem;
             display: none;
         }
-
-        .answer-label {
-            font-size: 12px;
-            color: #60a5fa;
-            margin-bottom: 8px;
-        }
-
+        .answer-label { font-size: 12px; color: #60a5fa; margin-bottom: 8px; }
         pre {
-            font-family: monospace;
             font-size: 13px;
             white-space: pre-wrap;
             word-break: break-word;
-            color: #e2e8f0;
             line-height: 1.6;
-        }
-
-        .loading {
-            text-align: center;
-            color: #888;
-            font-size: 14px;
-            margin-top: 1rem;
-            display: none;
         }
     </style>
 </head>
 <body>
 
-    <h1>Coding AI Assistant</h1>
-    <p class="subtitle">Ask any coding question — Python, JS, HTML, SQL, React</p>
+<h1>Coding AI Assistant</h1>
+<p class="sub">Ask any coding question — Python, JS, HTML, SQL, React</p>
 
-    <div class="chat-box">
-        <textarea
-            id="question"
-            placeholder="Example: How do I reverse a list in Python?">
-        </textarea>
-
-        <button id="askBtn" onclick="askAI()">Ask AI</button>
-
-        <div class="loading" id="loading">
-            Thinking...
-        </div>
-
-        <div class="answer-box" id="answerBox">
-            <div class="answer-label">Answer</div>
-            <pre id="answerText"></pre>
-        </div>
+<div class="box">
+    <textarea id="q" placeholder="Example: How do I reverse a list in Python?"></textarea>
+    <button id="btn" onclick="ask()">Ask AI</button>
+    <div class="answer" id="ans">
+        <div class="answer-label">Answer</div>
+        <pre id="text"></pre>
     </div>
+</div>
 
-    <script>
-        async function askAI() {
-            const question = document.getElementById("question").value.trim();
+<script>
+const TOKEN = "hf_ceOFjXfYetakTSmWlDOSjOGJtXGyPYDTr";
+const MODEL = "Liffix/coding-ai-model";
 
-            if (!question) {
-                alert("Please type a question first!");
-                return;
+async function ask() {
+    const question = document.getElementById("q").value.trim();
+    if (!question) return;
+
+    const btn = document.getElementById("btn");
+    const ans = document.getElementById("ans");
+    const text = document.getElementById("text");
+
+    btn.disabled = true;
+    btn.textContent = "Thinking...";
+    ans.style.display = "block";
+    text.textContent = "Loading...";
+
+    try {
+        const res = await fetch(
+            `https://api-inference.huggingface.co/models/${MODEL}`,
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${TOKEN}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    inputs: `### Question:\n${question}\n\n### Answer:\n`,
+                    parameters: {
+                        max_new_tokens: 200,
+                        return_full_text: false,
+                        temperature: 0.7
+                    }
+                })
             }
+        );
 
-            const btn = document.getElementById("askBtn");
-            const loading = document.getElementById("loading");
-            const answerBox = document.getElementById("answerBox");
-            const answerText = document.getElementById("answerText");
+        const data = await res.json();
 
-            btn.disabled = true;
-            btn.textContent = "Thinking...";
-            loading.style.display = "block";
-            answerBox.style.display = "none";
-
-            try {
-                const response = await fetch("/api/ask", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ question: question })
-                });
-
-                const data = await response.json();
-
-                answerText.textContent = data.answer;
-                answerBox.style.display = "block";
-
-            } catch (error) {
-                answerText.textContent = "Error connecting to AI. Please try again.";
-                answerBox.style.display = "block";
+        if (data.error) {
+            if (data.error.includes("loading")) {
+                text.textContent = "Model is warming up. Wait 20 seconds and tap Ask AI again.";
+            } else {
+                text.textContent = "Error: " + data.error;
             }
-
-            btn.disabled = false;
-            btn.textContent = "Ask AI";
-            loading.style.display = "none";
+        } else {
+            text.textContent = data[0]?.generated_text?.trim() || "No answer generated";
         }
-    </script>
+
+    } catch(e) {
+        text.textContent = "Connection error. Check internet and try again.";
+    }
+
+    btn.disabled = false;
+    btn.textContent = "Ask AI";
+}
+</script>
 
 </body>
 </html>
