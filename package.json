@@ -1,0 +1,19 @@
+{
+  "name": "my-learning-ai",
+  "version": "1.0.0",
+  "description": "AI agent that learns from internet using only free APIs",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.21.1",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.5"
+  }
+}
