@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="theme-color" content="#0a0a0a">
+<title>My Learning AI</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { background: #0a0a0a; color: #fff; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding: 1rem;
+  min-height: 100vh;
+  padding-bottom: 100px;
+}
+h1 {
+  font-size: 22px;
+  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 2px;
+}
+.sub { font-size: 11px; color: #555; margin-bottom: 1rem; }
+
+/* STATS */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.stat {
+  background: linear-gradient(145deg, #1a1a1a, #151515);
+  padding: 10px 6px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid #222;
+}
+.stat-val {
+  font-size: 20px;
+  font-weight: 700;
+  color: #60a5fa;
+  line-height: 1.2;
+}
+.stat-lbl { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  color: #888;
+  padding: 8px 12px;
+  border-radius: 18px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  transition: all 0.15s;
+}
+.tab.active {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* PANELS */
+.panel { display: none; animation: fadeIn 0.2s; }
+.panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* CARDS */
+.card {
+  background: #111;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  border: 1px solid #1f1f1f;
+}
+.card-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #e5e5e5; }
+
+/* INPUTS */
+input, textarea {
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  color: #fff;
+  padding: 11px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  margin-bottom: 8px;
+}
+input:focus, textarea:focus { outline: none; border-color: #3b82f6; }
+textarea { min-height: 80px; resize: vertical; }
+
+/* BUTTONS */
+button {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: #fff;
+  border: none;
+  padding: 11px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 6px;
+  margin-bottom: 4px;
+  transition: transform 0.1s;
+  font-family: inherit;
+}
+button:active { transform: scale(0.97); }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+button.approve { background: linear-gradient(135deg, #059669, #047857); }
+button.reject { background: linear-gradient(135deg, #dc2626, #991b1b); }
+button.ghost { background: transparent; border: 1px solid #333; color: #ccc; }
+button.small { padding: 6px 12px; font-size: 11px; }
+button.chip {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  color: #60a5fa;
+  padding: 6px 12px;
+  font-size: 11px;
+  border-radius: 18px;
+  margin: 2px;
+}
+
+/* FINDINGS */
+.finding {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.finding-meta {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.b-jina { background: #1e3a8a; color: #93c5fd; }
+.b-tavily { background: #581c87; color: #d8b4fe; }
+.b-wikipedia { background: #374151; color: #d1d5db; }
+.b-hackernews { background: #7c2d12; color: #fdba74; }
+.b-github { background: #0c0a09; color: #a8a29e; border: 1px solid #333; }
+.b-stackoverflow { background: #7c2d12; color: #fb923c; }
+.b-arxiv { background: #14532d; color: #86efac; }
+.b-searxng { background: #1f2937; color: #9ca3af; }
+.b-jina-reader { background: #1e3a8a; color: #93c5fd; }
+.b-manual { background: #1f2937; color: #9ca3af; }
+
+.finding-q { font-size: 13px; font-weight: 600; color: #f3f4f6; margin-bottom: 4px; line-height: 1.4; }
+.finding-a {
+  font-size: 12px;
+  color: #9ca3af;
+  line-height: 1.5;
+  margin-bottom: 8px;
+  max-height: 80px;
+  overflow-y: auto;
+}
+.finding-src {
+  font-size: 10px;
+  color: #4b5563;
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+/* CHAT */
+.chat-box {
+  background: #0f0f0f;
+  border: 1px solid #1f1f1f;
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+.msg {
+  padding: 9px 12px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 90%;
+}
+.msg.you {
+  background: linear-gradient(135deg, #1e40af, #1e3a8a);
+  color: #dbeafe;
+  margin-left: auto;
+  text-align: left;
+  border-bottom-right-radius: 2px;
+}
+.msg.ai {
+  background: #1a1a1a;
+  color: #e5e7eb;
+  border: 1px solid #2a2a2a;
+  border-bottom-left-radius: 2px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.msg.error { background: #450a0a; color: #fecaca; border-color: #7f1d1d; }
+
+/* LIVE LOGS */
+.log-entry {
+  background: #111;
+  padding: 8px 11px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  font-size: 11px;
+  border-left: 3px solid #2563eb;
+  font-family: ui-monospace, "SF Mono", Monaco, monospace;
+  animation: slideIn 0.2s;
+}
+@keyframes slideIn { from { opacity: 0; transform: translateX(-4px); } to { opacity: 1; transform: translateX(0); } }
+.log-entry.SEARCHING { border-color: #f59e0b; }
+.log-entry.FOUND { border-color: #10b981; }
+.log-entry.ERROR { border-color: #ef4444; }
+.log-entry.DONE { border-color: #8b5cf6; }
+.log-entry.START { border-color: #3b82f6; }
+.log-entry.APPROVED { border-color: #22c55e; }
+.log-entry.READ { border-color: #06b6d4; }
+.log-time { color: #4b5563; font-size: 9px; }
+.log-msg { color: #e5e7eb; }
+
+.loading {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #555;
+  font-size: 12px;
+}
+
+.api-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.api-status-item {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: #1a1a1a;
+  border: 1px solid #222;
+}
+.api-status-item.on { background: #14532d; color: #86efac; border-color: #166534; }
+.api-status-item.off { background: #1f1f1f; color: #6b7280; }
+
+.pulse {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: #22c55e;
+  border-radius: 50%;
+  margin-right: 6px;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #4b5563;
+  font-size: 12px;
+}
+.empty-state-icon { font-size: 36px; margin-bottom: 8px; opacity: 0.3; }
+
+.flex-row { display: flex; gap: 6px; }
+.mt { margin-top: 10px; }
+.mb { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<h1>My Learning AI</h1>
+<div class="sub"><span class="pulse"></span>Free internet access · You approve · Grows daily</div>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-val" id="brainSize">0</div>
+    <div class="stat-lbl">Brain</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val" id="pendingSize">0</div>
+    <div class="stat-lbl">Pending</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val" id="topicsSize">0</div>
+    <div class="stat-lbl">Topics</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab(event, 'learn')">📚 Learn</div>
+  <div class="tab" onclick="showTab(event, 'approve')">✅ Approve</div>
+  <div class="tab" onclick="showTab(event, 'chat')">💬 Chat</div>
+  <div class="tab" onclick="showTab(event, 'live')">🔴 Live</div>
+  <div class="tab" onclick="showTab(event, 'read')">🌐 Read URL</div>
+  <div class="tab" onclick="showTab(event, 'settings')">⚙️ Settings</div>
+</div>
+
+<!-- LEARN PANEL -->
+<div class="panel active" id="learn">
+  <div class="card">
+    <div class="card-title">🎯 Teach AI a new topic</div>
+    <input id="topicInput" placeholder="e.g. Python decorators, React hooks..." autocomplete="off">
+    <button onclick="learn()">🌐 Search Internet & Learn</button>
+    <div id="learnResult" style="color:#86efac;font-size:12px;margin-top:8px;"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚡ Quick learn topics</div>
+    <button class="chip" onclick="quickLearn('JavaScript tutorial advanced')">JavaScript</button>
+    <button class="chip" onclick="quickLearn('Python programming guide')">Python</button>
+    <button class="chip" onclick="quickLearn('HTML CSS modern')">HTML/CSS</button>
+    <button class="chip" onclick="quickLearn('React hooks patterns')">React</button>
+    <button class="chip" onclick="quickLearn('SQL database queries')">SQL</button>
+    <button class="chip" onclick="quickLearn('Next.js 14 features')">Next.js</button>
+    <button class="chip" onclick="quickLearn('TypeScript guide')">TypeScript</button>
+    <button class="chip" onclick="quickLearn('Node.js server')">Node.js</button>
+    <button class="chip" onclick="quickLearn('Tailwind CSS')">Tailwind</button>
+    <button class="chip" onclick="quickLearn('REST API design')">APIs</button>
+    <button class="chip" onclick="quickLearn('Docker containers')">Docker</button>
+    <button class="chip" onclick="quickLearn('MongoDB queries')">MongoDB</button>
+  </div>
+</div>
+
+<!-- APPROVE PANEL -->
+<div class="panel" id="approve">
+  <div class="card">
+    <div class="flex-row">
+      <button class="approve" onclick="approveAll()">✅ Approve All</button>
+      <button class="ghost" onclick="loadPending()">🔄 Refresh</button>
+    </div>
+    <div style="font-size:11px;color:#555;margin-top:8px">Review what AI found from the internet</div>
+  </div>
+  <div id="pendingList">
+    <div class="empty-state">
+      <div class="empty-state-icon">📭</div>
+      <div>No items to approve yet</div>
+      <div style="margin-top:4px;font-size:10px">Go to Learn tab to start!</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT PANEL -->
+<div class="panel" id="chat">
+  <div class="chat-box" id="chatBox">
+    <div class="msg ai">Hey! I am your AI. I learn from the internet and remember what you approve. Ask me anything you have taught me!</div>
+  </div>
+  <div class="flex-row">
+    <input id="chatInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')chat()">
+    <button onclick="chat()" id="chatBtn">Send</button>
+  </div>
+</div>
+
+<!-- LIVE PANEL -->
+<div class="panel" id="live">
+  <div class="card">
+    <div class="card-title">🔴 Live Activity</div>
+    <div class="flex-row">
+      <button class="ghost small" onclick="loadLogs()">🔄 Refresh</button>
+      <button class="ghost small" onclick="clearLogs()">🧹 Clear</button>
+    </div>
+    <div style="font-size:10px;color:#555;margin-top:6px">Auto-refreshes every 2s</div>
+  </div>
+  <div id="logList">
+    <div class="empty-state">
+      <div class="empty-state-icon">⏱️</div>
+      <div>No activity yet</div>
+    </div>
+  </div>
+</div>
+
+<!-- READ URL PANEL -->
+<div class="panel" id="read">
+  <div class="card">
+    <div class="card-title">🌐 Read any website</div>
+    <input id="urlInput" placeholder="https://example.com" autocomplete="off">
+    <button onclick="readURL()">📖 Read & Save</button>
+    <div id="readResult" style="color:#86efac;font-size:12px;margin-top:8px"></div>
+    <div style="font-size:10px;color:#555;margin-top:10px">
+      Uses Jina Reader - reads any webpage cleanly (works with JavaScript sites too)
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div class="panel" id="settings">
+  <div class="card">
+    <div class="card-title">📊 Active Free APIs</div>
+    <div class="api-status" id="apiStatus">Loading...</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💾 Export Brain</div>
+    <div style="color:#888;font-size:11px;margin-bottom:10px">Download your entire JSONL knowledge base</div>
+    <button onclick="window.location='/download'">⬇️ Download brain.jsonl</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔑 API Keys (all optional)</div>
+    <div style="color:#888;font-size:11px;line-height:1.6">
+      Add these FREE keys to .env file to boost the AI:<br><br>
+      <b>JINA_KEY</b> — 10M tokens free at jina.ai<br>
+      <b>TAVILY_KEY</b> — 1000 searches/month at tavily.com<br>
+      <b>GH_TOKEN</b> — 5000 requests/hour at github.com/settings/tokens<br><br>
+      All work without credit cards!
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 About</div>
+    <div style="color:#888;font-size:11px;line-height:1.6">
+      Built with 8 FREE APIs:<br>
+      Jina · Tavily · SearXNG · Wikipedia · HackerNews · GitHub · Stack Overflow · arXiv
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== STATE ==========
+let liveTimer = null;
+
+// ========== TABS ==========
+function showTab(ev, name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  ev.target.classList.add('active');
+  document.getElementById(name).classList.add('active');
+
+  if (name === 'approve') loadPending();
+  if (name === 'live') {
+    loadLogs();
+    if (liveTimer) clearInterval(liveTimer);
+    liveTimer = setInterval(loadLogs, 2000);
+  } else if (liveTimer) {
+    clearInterval(liveTimer);
+    liveTimer = null;
+  }
+  if (name === 'settings') loadAPIs();
+}
+
+// ========== STATS ==========
+async function loadStats() {
+  try {
+    const r = await fetch('/stats');
+    const d = await r.json();
+    document.getElementById('brainSize').textContent = d.brain_size;
+    document.getElementById('pendingSize').textContent = d.pending_size;
+    document.getElementById('topicsSize').textContent = d.topics.length;
+  } catch(e) {}
+}
+loadStats();
+setInterval(loadStats, 5000);
+
+// ========== LEARN ==========
+async function learn() {
+  const topic = document.getElementById('topicInput').value.trim();
+  if (!topic) return;
+  const result = document.getElementById('learnResult');
+  result.textContent = '🌐 Searching 4+ free APIs in parallel...';
+  result.style.color = '#60a5fa';
+
+  try {
+    const r = await fetch('/learn', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic })
+    });
+    const d = await r.json();
+    if (d.success) {
+      result.textContent = `✅ Found ${d.found} items! Check Approve tab →`;
+      result.style.color = '#86efac';
+      loadStats();
+    } else {
+      result.textContent = `❌ ${d.error}`;
+      result.style.color = '#fca5a5';
+    }
+  } catch(e) {
+    result.textContent = `❌ Error: ${e.message}`;
+    result.style.color = '#fca5a5';
+  }
+}
+
+function quickLearn(topic) {
+  document.getElementById('topicInput').value = topic;
+  learn();
+}
+
+// ========== APPROVE ==========
+async function loadPending() {
+  try {
+    const r = await fetch('/pending');
+    const d = await r.json();
+    const list = document.getElementById('pendingList');
+    if (!d.pending.length) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">📭</div>
+          <div>No items to approve</div>
+          <div style="margin-top:4px;font-size:10px">Go to Learn tab!</div>
+        </div>`;
+      return;
+    }
+    list.innerHTML = d.pending.map(f => `
+      <div class="finding">
+        <div class="finding-meta">
+          <span class="badge b-${f.from}">${f.from}</span>
+          <span style="font-size:10px;color:#555">${f.topic}</span>
+        </div>
+        <div class="finding-q">${escapeHtml(f.question || 'No title')}</div>
+        <div class="finding-a">${escapeHtml((f.answer || '').slice(0, 300))}</div>
+        <div class="finding-src">🔗 ${escapeHtml(f.source || 'unknown')}</div>
+        <button class="approve small" onclick="approve('${f.id}')">✅ Approve</button>
+        <button class="reject small" onclick="reject('${f.id}')">❌ Reject</button>
+      </div>
+    `).join('');
+  } catch(e) {
+    document.getElementById('pendingList').innerHTML = `<div class="empty-state">Error loading</div>`;
+  }
+}
+
+async function approve(id) {
+  await fetch('/approve/' + id, { method: 'POST' });
+  loadPending();
+  loadStats();
+}
+
+async function reject(id) {
+  await fetch('/reject/' + id, { method: 'POST' });
+  loadPending();
+  loadStats();
+}
+
+async function approveAll() {
+  if (!confirm('Approve everything in pending?')) return;
+  await fetch('/approve-all', { method: 'POST' });
+  loadPending();
+  loadStats();
+}
+
+// ========== CHAT ==========
+async function chat() {
+  const input = document.getElementById('chatInput');
+  const btn = document.getElementById('chatBtn');
+  const q = input.value.trim();
+  if (!q) return;
+
+  const box = document.getElementById('chatBox');
+  box.innerHTML += `<div class="msg you">${escapeHtml(q)}</div>`;
+  input.value = '';
+  btn.disabled = true;
+  box.scrollTop = box.scrollHeight;
+
+  try {
+    const r = await fetch('/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q })
+    });
+    const d = await r.json();
+
+    let html = `<div class="msg ${d.found ? 'ai' : 'error'}">`;
+    html += escapeHtml(d.answer);
+    if (d.source) html += `\n\n🔗 ${escapeHtml(d.source)}`;
+    html += '</div>';
+    box.innerHTML += html;
+  } catch(e) {
+    box.innerHTML += `<div class="msg error">Connection error</div>`;
+  }
+
+  btn.disabled = false;
+  box.scrollTop = box.scrollHeight;
+}
+
+// ========== LIVE LOGS ==========
+async function loadLogs() {
+  try {
+    const r = await fetch('/logs');
+    const d = await r.json();
+    const list = document.getElementById('logList');
+    if (!d.logs.length) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⏱️</div><div>No activity</div></div>`;
+      return;
+    }
+    list.innerHTML = d.logs.map(log => {
+      const t = new Date(log.time).toLocaleTimeString();
+      return `
+        <div class="log-entry ${log.type}">
+          <div class="log-time">${t} · ${log.type}</div>
+          <div class="log-msg">${escapeHtml(log.message)}</div>
+        </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+async function clearLogs() {
+  await fetch('/clear-logs', { method: 'POST' });
+  loadLogs();
+}
+
+// ========== READ URL ==========
+async function readURL() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) return;
+  const result = document.getElementById('readResult');
+  result.textContent = '📖 Reading website with Jina Reader...';
+  result.style.color = '#60a5fa';
+
+  try {
+    const r = await fetch('/read', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    const d = await r.json();
+    if (d.content) {
+      result.textContent = `✅ Read ${d.content.length} characters! Check Approve tab →`;
+      result.style.color = '#86efac';
+    } else {
+      result.textContent = `❌ ${d.error || 'Failed to read'}`;
+      result.style.color = '#fca5a5';
+    }
+    loadStats();
+  } catch(e) {
+    result.textContent = `❌ Error: ${e.message}`;
+    result.style.color = '#fca5a5';
+  }
+}
+
+// ========== SETTINGS ==========
+async function loadAPIs() {
+  try {
+    const r = await fetch('/stats');
+    const d = await r.json();
+    const apis = d.apis_active;
+    const html = Object.entries(apis).map(([name, on]) => `
+      <span class="api-status-item ${on ? 'on' : 'off'}">
+        ${on ? '✅' : '⚪'} ${name}
+      </span>
+    `).join('');
+    document.getElementById('apiStatus').innerHTML = html;
+  } catch(e) {}
+}
+
+// ========== UTILS ==========
+function escapeHtml(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+</script>
+</body>
+</html>
