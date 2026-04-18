@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Learning AI</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, sans-serif;
+  background: #0a0a0a;
+  color: #fff;
+  padding: 1rem;
+  min-height: 100vh;
+}
+h1 { font-size: 22px; color: #60a5fa; margin-bottom: 4px; }
+.sub { font-size: 12px; color: #666; margin-bottom: 1.5rem; }
+
+.tabs { display: flex; gap: 6px; margin-bottom: 1rem; overflow-x: auto; }
+.tab {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #aaa;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tab.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+.card {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #222;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+.stat {
+  background: #1a1a1a;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+}
+.stat-val { font-size: 20px; font-weight: 700; color: #60a5fa; }
+.stat-lbl { font-size: 10px; color: #666; }
+
+input, textarea {
+  width: 100%;
+  background: #222;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  margin-bottom: 8px;
+}
+textarea { resize: vertical; min-height: 80px; }
+
+button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 6px;
+  margin-bottom: 4px;
+}
+button.approve { background: #059669; }
+button.reject { background: #dc2626; }
+button.small { padding: 6px 12px; font-size: 11px; }
+
+.finding {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.finding-topic {
+  display: inline-block;
+  background: #1e3a5f;
+  color: #93c5fd;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+.finding-q { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #fff; }
+.finding-a { font-size: 12px; color: #aaa; line-height: 1.5; margin-bottom: 6px; }
+.finding-src { font-size: 10px; color: #555; margin-bottom: 8px; }
+
+.chat-box {
+  background: #1a1a1a;
+  border-radius: 10px;
+  padding: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+.msg { padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; font-size: 13px; }
+.msg.you { background: #1e3a5f; color: #93c5fd; }
+.msg.ai {
+  background: #0f2d1f;
+  color: #86efac;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.loading { color: #666; font-size: 12px; padding: 1rem; text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>My Learning AI</h1>
+<p class="sub">Learns from internet · You approve · Grows daily</p>
+
+<div class="stats">
+  <div class="stat"><div class="stat-val" id="brainSize">0</div><div class="stat-lbl">Brain pairs</div></div>
+  <div class="stat"><div class="stat-val" id="pendingSize">0</div><div class="stat-lbl">Pending</div></div>
+  <div class="stat"><div class="stat-val" id="topicsSize">0</div><div class="stat-lbl">Topics</div></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('learn')">Learn</div>
+  <div class="tab" onclick="showTab('approve')">Approve</div>
+  <div class="tab" onclick="showTab('chat')">Chat</div>
+  <div class="tab" onclick="showTab('read')">Read URL</div>
+  <div class="tab" onclick="showTab('export')">Export</div>
+</div>
+
+<!-- LEARN PANEL -->
+<div class="panel active" id="learn">
+  <div class="card">
+    <h3 style="font-size:14px;margin-bottom:8px">Teach AI a new topic</h3>
+    <input id="topicInput" placeholder="e.g. Python decorators, React hooks, SQL joins">
+    <button onclick="learn()">Search Internet & Learn</button>
+    <div id="learnResult" style="color:#86efac;font-size:12px;margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h3 style="font-size:14px;margin-bottom:8px">Quick topics to learn</h3>
+    <button class="small" onclick="quickLearn('JavaScript tutorials')">JavaScript</button>
+    <button class="small" onclick="quickLearn('Python programming')">Python</button>
+    <button class="small" onclick="quickLearn('HTML CSS tricks')">HTML/CSS</button>
+    <button class="small" onclick="quickLearn('React hooks')">React</button>
+    <button class="small" onclick="quickLearn('SQL queries')">SQL</button>
+    <button class="small" onclick="quickLearn('Next.js features')">Next.js</button>
+  </div>
+</div>
+
+<!-- APPROVE PANEL -->
+<div class="panel" id="approve">
+  <div class="card">
+    <button class="approve" onclick="approveAll()">Approve All</button>
+    <button onclick="loadPending()">Refresh</button>
+  </div>
+  <div id="pendingList">
+    <div class="loading">No pending items. Go to Learn tab!</div>
+  </div>
+</div>
+
+<!-- CHAT PANEL -->
+<div class="panel" id="chat">
+  <div class="chat-box" id="chatBox">
+    <div class="msg ai">Hey! I am your AI. Ask me anything I have learned!</div>
+  </div>
+  <input id="chatInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')chat()">
+  <button onclick="chat()">Send</button>
+</div>
+
+<!-- READ URL PANEL -->
+<div class="panel" id="read">
+  <div class="card">
+    <h3 style="font-size:14px;margin-bottom:8px">Read any website</h3>
+    <input id="urlInput" placeholder="https://example.com">
+    <button onclick="readURL()">Read & Learn</button>
+    <div id="readResult" style="color:#86efac;font-size:12px;margin-top:8px"></div>
+  </div>
+</div>
+
+<!-- EXPORT PANEL -->
+<div class="panel" id="export">
+  <div class="card">
+    <h3 style="font-size:14px;margin-bottom:8px">Download your AI brain</h3>
+    <p style="color:#888;font-size:12px;margin-bottom:10px">Get the JSONL file to train a model or backup your data</p>
+    <button onclick="window.location='/download'">Download brain.jsonl</button>
+  </div>
+</div>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(name).classList.add('active');
+  if (name === 'approve') loadPending();
+}
+
+function loadStats() {
+  fetch('/stats').then(r => r.json()).then(d => {
+    document.getElementById('brainSize').textContent = d.brain_size;
+    document.getElementById('pendingSize').textContent = d.pending_size;
+    document.getElementById('topicsSize').textContent = d.topics.length;
+  });
+}
+
+async function learn() {
+  const topic = document.getElementById('topicInput').value.trim();
+  if (!topic) return;
+  document.getElementById('learnResult').textContent = 'Searching internet...';
+  const r = await fetch('/learn', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ topic })
+  });
+  const d = await r.json();
+  document.getElementById('learnResult').textContent =
+    d.success ? `Found ${d.found} new items! Go to Approve tab.` : `Error: ${d.error}`;
+  loadStats();
+}
+
+function quickLearn(topic) {
+  document.getElementById('topicInput').value = topic;
+  learn();
+}
+
+async function loadPending() {
+  const r = await fetch('/pending');
+  const d = await r.json();
+  const list = document.getElementById('pendingList');
+  if (!d.pending.length) {
+    list.innerHTML = '<div class="loading">No pending items!</div>';
+    return;
+  }
+  list.innerHTML = d.pending.map(f => `
+    <div class="finding">
+      <div class="finding-topic">${f.topic}</div>
+      <div class="finding-q">${f.question}</div>
+      <div class="finding-a">${f.answer}</div>
+      <div class="finding-src">Source: ${f.source || 'internet'}</div>
+      <button class="approve small" onclick="approve('${f.id}')">Approve</button>
+      <button class="reject small" onclick="reject('${f.id}')">Reject</button>
+    </div>
+  `).join('');
+}
+
+async function approve(id) {
+  await fetch('/approve/' + id, { method: 'POST' });
+  loadPending();
+  loadStats();
+}
+
+async function reject(id) {
+  await fetch('/reject/' + id, { method: 'POST' });
+  loadPending();
+  loadStats();
+}
+
+async function approveAll() {
+  await fetch('/approve-all', { method: 'POST' });
+  loadPending();
+  loadStats();
+}
+
+async function chat() {
+  const input = document.getElementById('chatInput');
+  const q = input.value.trim();
+  if (!q) return;
+  const box = document.getElementById('chatBox');
+  box.innerHTML += `<div class="msg you">${q}</div>`;
+  input.value = '';
+
+  const r = await fetch('/ask', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ question: q })
+  });
+  const d = await r.json();
+  box.innerHTML += `<div class="msg ai">${d.answer}${d.source ? '\n\nSource: ' + d.source : ''}</div>`;
+  box.scrollTop = box.scrollHeight;
+}
+
+async function readURL() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) return;
+  document.getElementById('readResult').textContent = 'Reading website...';
+  const r = await fetch('/read-url', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ url })
+  });
+  const d = await r.json();
+  document.getElementById('readResult').textContent =
+    d.text ? `Read successfully! Title: ${d.title}. Go to Approve tab.` : `Error: ${d.error}`;
+  loadStats();
+}
+
+// Load on start
+loadStats();
+setInterval(loadStats, 10000);
+</script>
+</body>
+  </html>
